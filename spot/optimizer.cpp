@@ -26,16 +26,16 @@ namespace spot
 
 	optimizer::stop_condition optimizer::run()
 	{
-		for ( auto cb : callbacks_ )
-			cb->start_cb( *this );
+		for ( auto cb : reporters_ )
+			cb->start( *this );
 
 		step_count_ = 0;
 		stop_condition_ = test_stop_condition();
 
 		while ( stop_condition_ == no_stop_condition )
 		{
-			for ( auto cb : callbacks_ )
-				cb->next_generation_cb( step_count_ );
+			for ( auto cb : reporters_ )
+				cb->next_step( *this, step_count_ );
 
 			step();
 			++step_count_;
@@ -43,8 +43,8 @@ namespace spot
 			stop_condition_ = test_stop_condition();
 		}
 
-		for ( auto cb : callbacks_ )
-			cb->finish_cb( *this );
+		for ( auto cb : reporters_ )
+			cb->finish( *this );
 
 		return stop_condition_;
 	}
@@ -96,8 +96,8 @@ namespace spot
 							results[ it->second ] = it->first.get();
 
 							// run callbacks
-							for ( auto cb : callbacks_ )
-								cb->evaluate_cb( pop[ it->second ], results[ it->second ] );
+							for ( auto cb : reporters_ )
+								cb->evaluate( *this, pop[ it->second ], results[ it->second ] );
 
 							it = threads.erase( it );
 						}
@@ -115,20 +115,20 @@ namespace spot
 				results[ f.second ] = f.first.valid() ? f.first.get() : objective_.info().worst_fitness();
 
 				// run callbacks
-				for ( auto cb : callbacks_ )
-					cb->evaluate_cb( pop[ f.second ], results[ f.second ] );
+				for ( auto cb : reporters_ )
+					cb->evaluate( *this, pop[ f.second ], results[ f.second ] );
 			}
 
 			// run callbacks
-			for ( auto cb : callbacks_ )
-				cb->evaluate_cb( pop, results );
+			for ( auto cb : reporters_ )
+				cb->evaluate( *this, pop, results );
 
 			auto best_idx = objective_.info().find_best_fitness( results );
 			if ( results[ best_idx ] > current_fitness_ )
 			{
 				current_fitness_ = results[ best_idx ];
-				for ( auto cb : callbacks_ )
-					cb->new_best_cb( pop[ best_idx ], results[ best_idx ] );
+				for ( auto cb : reporters_ )
+					cb->new_best( *this, pop[ best_idx ], results[ best_idx ] );
 			}
 		}
 		catch ( std::exception& e )

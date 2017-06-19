@@ -35,7 +35,7 @@ namespace spot
 		virtual stop_condition run();
 		virtual void step() { FLUT_NOT_IMPLEMENTED; }
 
-		void add_reporter( reporter* cb ) { callbacks_.push_back( cb ); }
+		void add_reporter( reporter* cb ) { reporters_.push_back( cb ); }
 
 		void signal_abort() { abort_flag_ = true; }
 		void abort_and_wait();
@@ -70,7 +70,7 @@ namespace spot
 		fitness_t current_fitness_;
 
 		const objective& objective_;
-		vector< reporter* > callbacks_;
+		vector< reporter* > reporters_;
 
 		// stop conditions
 		size_t max_generations_ = 10000;

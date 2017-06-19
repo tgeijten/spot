@@ -14,11 +14,11 @@ namespace spot
 		reporter() {}
 		virtual ~reporter() {}
 
-		virtual void start_cb( const optimizer& opt ) {}
-		virtual void finish_cb( const optimizer& opt ) {}
-		virtual void evaluate_cb( const search_point& point, fitness_t fitness_t ) {}
-		virtual void evaluate_cb( const search_point_vec& pop, const fitness_vec_t& fitnesses ) {}
-		virtual void next_generation_cb( size_t gen ) {}
-		virtual void new_best_cb( const search_point& ps, fitness_t fitness ) {}
+		virtual void start( const optimizer& opt ) {}
+		virtual void finish( const optimizer& opt ) {}
+		virtual void evaluate( const optimizer& opt, const search_point& point, fitness_t fitness_t ) {}
+		virtual void evaluate( const optimizer& opt,const search_point_vec& pop, const fitness_vec_t& fitnesses ) {}
+		virtual void next_step( const optimizer& opt, size_t gen ) {}
+		virtual void new_best( const optimizer& opt, const search_point& ps, fitness_t fitness ) {}
 	};
 }
