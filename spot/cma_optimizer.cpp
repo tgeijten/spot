@@ -408,7 +408,7 @@ namespace spot
 		{
 			t->B[ i ][ i ] = 1.;
 			t->C[ i ][ i ] = t->rgD[ i ] = t->sp.rgInitialStds[ i ] * sqrt( N / trace );
-			t->C[ i ][ i ] *= t->C[ i ][ i ];
+			t->C[ i ][ i ] = t->C[ i ][ i ] * t->C[ i ][ i ];
 			t->rgpc[ i ] = t->rgps[ i ] = 0.;
 		}
 
@@ -1212,20 +1212,35 @@ namespace spot
 		return pimpl->get_bounded( pimpl->cmaes.current_mean );
 	}
 
-	vector< double > cma_optimizer::current_std() const
+	vector< double > cma_optimizer::current_std( bool use_covariance ) const
 	{
-		// TODO: get this from the covariance matrix
-		auto m = current_mean();
 		vector< double > stds( dim() );
-		for ( index_t pop_idx = 0; pop_idx < pimpl->bounded_pop.size(); ++pop_idx )
+
+		if ( use_covariance )
 		{
+			// get from covariance matrix
 			for ( index_t i = 0; i < dim(); ++i )
-				stds[ i ] += math::squared( pimpl->bounded_pop[ pop_idx ][ i ] - m[ i ] ) / pimpl->bounded_pop.size();
+				stds[ i ] = sqrt( pimpl->cmaes.C[ i ][ i ] );
 		}
-		for ( index_t i = 0; i < dim(); ++i )
-			stds[ i ] = sqrt( stds[ i ] );
+		else
+		{
+			// compute from population
+			auto m = current_mean();
+			for ( index_t pop_idx = 0; pop_idx < pimpl->bounded_pop.size(); ++pop_idx )
+			{
+				for ( index_t i = 0; i < dim(); ++i )
+					stds[ i ] += math::squared( pimpl->bounded_pop[ pop_idx ][ i ] - m[ i ] ) / pimpl->bounded_pop.size();
+			}
+			for ( index_t i = 0; i < dim(); ++i )
+				stds[ i ] = sqrt( stds[ i ] );
+		}
 
 		return stds;
+	}
+
+	vector< par_vec > cma_optimizer::current_covariance() const
+	{
+		return pimpl->cmaes.C;
 	}
 
 	int cma_optimizer::lambda() const
