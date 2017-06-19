@@ -6,28 +6,28 @@ project(spot)
 # To create a folder hierarchy within Visual Studio.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-find_path(SPOT_INCLUDE_DIR
-    NAMES spot/optimizer.h
-	PATHS ${CMAKE_CURRENT_SOURCE_DIR}/src
-	)
+find_path(SPOT_INCLUDE_DIR NAMES spot/optimizer.h PATHS ${CMAKE_CURRENT_SOURCE_DIR} )
+find_path(FLUT_INCLUDE_DIR NAMES "flut/system/types.hpp" PATHS "${FLUT_DIR}")
+
+include_directories( ${FLUT_INCLUDE_DIR} )
 
 # Compiler flags.
 # ---------------
-# Must compile with C++11 with gcc/clang.
+# Must compile with C++14 with gcc/clang.
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR
    ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     if(APPLE)
         if(XCODE)
-            set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
+            set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++14")
             set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
         else()
-            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
             if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
                 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
             endif()
         endif()
     else()
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
     endif()
 endif()
 	
@@ -39,8 +39,8 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin/${CONFIG_NAME}")
 set(LIBRARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin/${CONFIG_NAME}")
 
 # Process source code.
-add_subdirectory(src/spot)
-add_subdirectory(src/spottest)
+add_subdirectory(spot)
 
-enable_testing()
-add_test(spot_test "${CMAKE_SOURCE_DIR}/bin/${CONFIG_NAME}/spottest")
+#add_subdirectory(test)
+#enable_testing()
+#add_test(spot_test "${CMAKE_SOURCE_DIR}/bin/${CONFIG_NAME}/spottest")

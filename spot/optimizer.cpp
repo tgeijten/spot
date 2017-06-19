@@ -1,35 +1,157 @@
 #include "optimizer.h"
+#include <future>
+#include "flut/system/log.hpp"
+#include <cmath>
+#include "flut/system_tools.hpp"
 
-#include "ss/builder/model_builder.h"
-#include "ss/core/arena.h"
-#include "ss/core/simulator.h"
-
-namespace ss
+namespace spot
 {
-	optimizer::optimizer( const simulator_factory& f, const prop_node& pn ) : factory_( f )
+	optimizer::optimizer( const objective& o ) :
+	objective_( o ),
+	current_fitness_( o.info().worst_fitness() ),
+	step_count_( 0 ),
+	stop_condition_( no_stop_condition )
+	{}
+
+	optimizer::~optimizer()
 	{
-		INIT_PROP( pn, maximize, true );
+		abort_and_wait();
 	}
 
-	std::vector< double > optimizer::evaluate( const prop_node& builder_pn, std::vector<par_set>& ps_vec )
+	void optimizer::run_threaded()
 	{
-		std::vector< double > results;
+		abort_flag_ = false;
+		background_thread = std::thread( [this]() { flut::set_thread_priority( thread_priority ); this->run(); } );
+	}
 
-		for ( auto& ps : ps_vec )
+	optimizer::stop_condition optimizer::run()
+	{
+		for ( auto cb : callbacks_ )
+			cb->start_cb( *this );
+
+		step_count_ = 0;
+		stop_condition_ = test_stop_condition();
+
+		while ( stop_condition_ == no_stop_condition )
 		{
-			auto sim = factory_.create_simulator( prop_node() );
-			prop_node ap;
-			ap[ "settings" ].set( "simulation_frequency", 720 );
+			for ( auto cb : callbacks_ )
+				cb->next_generation_cb( step_count_ );
 
-			arena a( *sim, nullptr, ap );
-			model_builder mb( builder_pn, ps );
-			a.register_model_info( mb.create_model_info() );
-			auto m = a.create_model( mb.get_name(), transformf( vec3f( 0, 1, 0 ) ) );
-			a.simulate_to( 10.0 );
-			m->compute_com();
-			results.push_back( m->com_pos.length() );
+			step();
+			++step_count_;
+
+			stop_condition_ = test_stop_condition();
+		}
+
+		for ( auto cb : callbacks_ )
+			cb->finish_cb( *this );
+
+		return stop_condition_;
+	}
+
+	void optimizer::abort_and_wait()
+	{
+		if ( background_thread.joinable() )
+		{
+			signal_abort();
+			background_thread.join();
+		}
+	}
+
+	optimizer::stop_condition optimizer::test_stop_condition() const
+	{
+		if ( test_abort() )
+			return user_abort;
+
+		if ( generation_count() >= max_generations_ )
+			return max_steps_reached;
+
+		if ( target_fitness_ && objective_.info().is_better( current_fitness(), *target_fitness_ ) )
+			return target_fitness_reached;
+
+		// none of the criteria is met -> return false
+		return no_stop_condition;
+	}
+
+	fitness_vec_t optimizer::evaluate( const search_point_vec& pop )
+	{
+		vector< double > results( pop.size(), objective_.info().worst_fitness() );
+		try
+		{
+			vector< std::pair< std::future< double >, index_t > > threads;
+
+			for ( index_t eval_idx = 0; eval_idx < pop.size(); ++eval_idx )
+			{
+				if ( abort_flag_.load() )
+					break;
+
+				// first make sure enough threads are available
+				while ( threads.size() >= max_threads() )
+				{
+					for ( auto it = threads.begin(); it != threads.end(); )
+					{
+						if ( it->first.wait_for( std::chrono::milliseconds( 1 ) ) == std::future_status::ready )
+						{
+							// a thread is finished, add it to the results and make room for a new thread
+							results[ it->second ] = it->first.get();
+
+							// run callbacks
+							for ( auto cb : callbacks_ )
+								cb->evaluate_cb( pop[ it->second ], results[ it->second ] );
+
+							it = threads.erase( it );
+						}
+						else ++it;
+					}
+				}
+
+				// add new thread
+				threads.push_back( std::make_pair( std::async( std::launch::async, [&]( const search_point& p ) { return objective_.evaluate( p ); }, pop[ eval_idx ] ), eval_idx ) );
+			}
+
+			// wait for remaining threads
+			for ( auto& f : threads )
+			{
+				results[ f.second ] = f.first.valid() ? f.first.get() : objective_.info().worst_fitness();
+
+				// run callbacks
+				for ( auto cb : callbacks_ )
+					cb->evaluate_cb( pop[ f.second ], results[ f.second ] );
+			}
+
+			// run callbacks
+			for ( auto cb : callbacks_ )
+				cb->evaluate_cb( pop, results );
+
+			auto best_idx = objective_.info().find_best_fitness( results );
+			if ( results[ best_idx ] > current_fitness_ )
+			{
+				current_fitness_ = results[ best_idx ];
+				for ( auto cb : callbacks_ )
+					cb->new_best_cb( pop[ best_idx ], results[ best_idx ] );
+			}
+		}
+		catch ( std::exception& e )
+		{
+			log::critical( "Error during multi-threaded evaluation: ", e.what() );
 		}
 
 		return results;
+	}
+
+	void optimizer::set_min_progress( fitness_t relative_improvement_per_step, size_t window )
+	{
+		min_progress_ = relative_improvement_per_step;
+		progress_window.reserve( window );
+	}
+
+	void optimizer::update_progress( fitness_t current_median )
+	{
+		if ( progress_window.capacity() > 0 )
+		{
+			if ( progress_window.size() == progress_window.capacity() )
+				progress_window.pop_front();
+			progress_window.push_back( current_median );
+		}
 	}
 }

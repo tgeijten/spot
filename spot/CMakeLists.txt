@@ -11,6 +11,8 @@ include_directories(${SPOT_INCLUDE_DIR})
 
 target_compile_definitions( spot PRIVATE SPOT_EXPORTS )
 
+target_link_libraries( spot flut )
+
 set_target_properties(spot PROPERTIES 
 	PROJECT_LABEL "spot"
 	OUTPUT_NAME spot
