@@ -6,9 +6,7 @@ project(spot)
 # To create a folder hierarchy within Visual Studio.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-find_path(SPOT_INCLUDE_DIR NAMES spot/optimizer.h PATHS ${CMAKE_CURRENT_SOURCE_DIR} )
-find_path(FLUT_INCLUDE_DIR NAMES "flut/system/types.hpp" PATHS "${FLUT_DIR}")
-
+find_package(Flut REQUIRED)
 include_directories( ${FLUT_INCLUDE_DIR} )
 
 # Compiler flags.
