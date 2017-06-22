@@ -2,7 +2,7 @@
 
 #include "flut/string_tools.hpp"
 #include "flut/prop_node.hpp"
-#include "flut/math/optional_pod.hpp"
+#include "flut/math/optional.hpp"
 #include "types.h"
 
 #if defined(_MSC_VER)

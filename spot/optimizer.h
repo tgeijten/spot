@@ -8,7 +8,7 @@
 #include "flut/system/types.hpp"
 
 #include "flut/math/math.hpp"
-#include "flut/math/optional_pod.hpp"
+#include "flut/math/optional.hpp"
 #include "flut/system_tools.hpp"
 #include "flut/circular_deque.hpp"
 
@@ -76,7 +76,7 @@ namespace spot
 		size_t max_generations_ = 10000;
 		fitness_t min_progress_ = 0;
 		circular_deque< fitness_t > progress_window;
-		optional_pod< fitness_t > target_fitness_;
+		optional< fitness_t > target_fitness_;
 
 		void update_progress( fitness_t current_median );
 	};

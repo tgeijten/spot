@@ -11,7 +11,7 @@
 #endif
 
 #include "flut/system/types.hpp"
-#include "flut/math/optional_pod.hpp"
+#include "flut/math/optional.hpp"
 
 namespace spot
 {
@@ -21,6 +21,6 @@ namespace spot
 	using fitness_vec_t = vector< fitness_t >;
 
 	using par_value = double;
-	using optional_par_value = optional_pod< par_value >;
+	using optional_par_value = optional< par_value >;
 	using par_vec = vector< par_value >;
 }
