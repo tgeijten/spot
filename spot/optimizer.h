@@ -32,7 +32,7 @@ namespace spot
 		virtual ~optimizer();
 
 		void run_threaded();
-		virtual stop_condition run();
+		virtual stop_condition run( size_t number_of_steps = 0 );
 		virtual void step() { FLUT_NOT_IMPLEMENTED; }
 
 		void add_reporter( reporter* cb ) { reporters_.push_back( cb ); }
@@ -48,14 +48,16 @@ namespace spot
 		int max_threads() const { return max_threads_; }
 		void set_max_threads( int val ) { max_threads_ = val; }
 
-		void set_max_generations( size_t gen ) { max_generations_ = gen; }
+		void set_max_generations( size_t gen ) { max_steps_ = gen; }
 		void set_min_progress( fitness_t relative_improvement_per_step, size_t window );
 
 		size_t generation_count() const { return step_count_; }
-		fitness_t current_fitness() const { return current_fitness_; }
+		fitness_t current_best_fitness() const { return current_best_fitness_; }
+		const search_point& current_best() const { return current_best_; }
 
 		const objective_info& info() const { return objective_.info(); }
 		const objective& obj() const { return objective_; }
+		bool is_better( fitness_t a, fitness_t b ) const { return objective_.info().is_better( a, b ); }
 
 	protected:
 		// evaluation settings
@@ -67,13 +69,14 @@ namespace spot
 		flut::thread_priority thread_priority;
 
 		size_t step_count_;
-		fitness_t current_fitness_;
+		fitness_t current_best_fitness_;
+		search_point current_best_;
 
 		const objective& objective_;
 		vector< reporter* > reporters_;
 
 		// stop conditions
-		size_t max_generations_ = 10000;
+		size_t max_steps_ = 10000;
 		fitness_t min_progress_ = 0;
 		circular_deque< fitness_t > progress_window;
 		optional< fitness_t > target_fitness_;

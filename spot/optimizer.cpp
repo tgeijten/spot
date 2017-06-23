@@ -8,7 +8,8 @@ namespace spot
 {
 	optimizer::optimizer( const objective& o ) :
 	objective_( o ),
-	current_fitness_( o.info().worst_fitness() ),
+	current_best_fitness_( o.info().worst_fitness() ),
+	current_best_( o.info() ),
 	step_count_( 0 ),
 	stop_condition_( no_stop_condition )
 	{}
@@ -24,23 +25,26 @@ namespace spot
 		background_thread = std::thread( [this]() { flut::set_thread_priority( thread_priority ); this->run(); } );
 	}
 
-	optimizer::stop_condition optimizer::run()
+	optimizer::stop_condition optimizer::run( size_t number_of_steps )
 	{
+		if ( number_of_steps == 0 )
+			number_of_steps = max_steps_;
+
 		for ( auto cb : reporters_ )
 			cb->start( *this );
 
-		step_count_ = 0;
-		stop_condition_ = test_stop_condition();
 
-		while ( stop_condition_ == no_stop_condition )
+		for ( size_t n = 0; n < number_of_steps; ++n )
 		{
+			stop_condition_ = test_stop_condition();
+			if ( stop_condition_ != no_stop_condition )
+				break;
+
 			for ( auto cb : reporters_ )
 				cb->next_step( *this, step_count_ );
 
 			step();
 			++step_count_;
-
-			stop_condition_ = test_stop_condition();
 		}
 
 		for ( auto cb : reporters_ )
@@ -63,10 +67,10 @@ namespace spot
 		if ( test_abort() )
 			return user_abort;
 
-		if ( generation_count() >= max_generations_ )
+		if ( generation_count() >= max_steps_ )
 			return max_steps_reached;
 
-		if ( target_fitness_ && objective_.info().is_better( current_fitness(), *target_fitness_ ) )
+		if ( target_fitness_ && objective_.info().is_better( current_best_fitness(), *target_fitness_ ) )
 			return target_fitness_reached;
 
 		// none of the criteria is met -> return false
@@ -124,9 +128,10 @@ namespace spot
 				cb->evaluate( *this, pop, results );
 
 			auto best_idx = objective_.info().find_best_fitness( results );
-			if ( results[ best_idx ] > current_fitness_ )
+			if ( objective_.info().is_better( results[ best_idx ], current_best_fitness_ ) )
 			{
-				current_fitness_ = results[ best_idx ];
+				current_best_fitness_ = results[ best_idx ];
+				current_best_.set_values( pop[ best_idx ].values() );
 				for ( auto cb : reporters_ )
 					cb->new_best( *this, pop[ best_idx ], results[ best_idx ] );
 			}
