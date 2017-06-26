@@ -10,7 +10,7 @@ namespace spot
 	objective_( o ),
 	current_best_fitness_( o.info().worst_fitness() ),
 	current_best_( o.info() ),
-	step_count_( 0 ),
+	current_step_( 0 ),
 	stop_condition_( no_stop_condition )
 	{}
 
@@ -41,10 +41,10 @@ namespace spot
 				break;
 
 			for ( auto cb : reporters_ )
-				cb->next_step( *this, step_count_ );
+				cb->next_step( *this, current_step_ );
 
 			step();
-			++step_count_;
+			++current_step_;
 		}
 
 		for ( auto cb : reporters_ )
@@ -67,7 +67,7 @@ namespace spot
 		if ( test_abort() )
 			return user_abort;
 
-		if ( generation_count() >= max_steps_ )
+		if ( current_step() >= max_steps_ )
 			return max_steps_reached;
 
 		if ( target_fitness_ && objective_.info().is_better( current_best_fitness(), *target_fitness_ ) )
@@ -123,18 +123,17 @@ namespace spot
 					cb->evaluate( *this, pop[ f.second ], results[ f.second ] );
 			}
 
-			// run callbacks
-			for ( auto cb : reporters_ )
-				cb->evaluate( *this, pop, results );
-
 			auto best_idx = objective_.info().find_best_fitness( results );
-			if ( objective_.info().is_better( results[ best_idx ], current_best_fitness_ ) )
+			bool new_best = objective_.info().is_better( results[ best_idx ], current_best_fitness_ );
+			if ( new_best )
 			{
 				current_best_fitness_ = results[ best_idx ];
 				current_best_.set_values( pop[ best_idx ].values() );
-				for ( auto cb : reporters_ )
-					cb->new_best( *this, pop[ best_idx ], results[ best_idx ] );
 			}
+
+			// run callbacks
+			for ( auto cb : reporters_ )
+				cb->evaluate( *this, pop, results, new_best );
 		}
 		catch ( std::exception& e )
 		{

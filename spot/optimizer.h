@@ -51,7 +51,7 @@ namespace spot
 		void set_max_generations( size_t gen ) { max_steps_ = gen; }
 		void set_min_progress( fitness_t relative_improvement_per_step, size_t window );
 
-		size_t generation_count() const { return step_count_; }
+		size_t current_step() const { return current_step_; }
 		fitness_t current_best_fitness() const { return current_best_fitness_; }
 		const search_point& current_best() const { return current_best_; }
 
@@ -68,7 +68,7 @@ namespace spot
 		std::thread background_thread;
 		flut::thread_priority thread_priority;
 
-		size_t step_count_;
+		size_t current_step_;
 		fitness_t current_best_fitness_;
 		search_point current_best_;
 
