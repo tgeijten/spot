@@ -22,6 +22,10 @@ namespace spot
 		par_vec current_std( bool use_covariance = true ) const;
 		vector< par_vec > current_covariance() const;
 
+		// state
+		virtual void save_state( const path& filename ) const override;
+		virtual objective_info make_updated_objective_info() const;
+
 		// actual parameters
 		int dim() const;
 		int lambda() const;

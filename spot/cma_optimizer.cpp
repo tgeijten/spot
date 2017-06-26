@@ -1243,6 +1243,18 @@ namespace spot
 		return pimpl->cmaes.C;
 	}
 
+	void cma_optimizer::save_state( const path& filename ) const
+	{
+		FLUT_NOT_IMPLEMENTED;
+	}
+
+	spot::objective_info cma_optimizer::make_updated_objective_info() const
+	{
+		objective_info inf( info() );
+		inf.set_mean_std( current_mean(), current_std( true ) );
+		return inf;
+	}
+
 	int cma_optimizer::lambda() const
 	{
 		return pimpl->cmaes.sp.lambda;

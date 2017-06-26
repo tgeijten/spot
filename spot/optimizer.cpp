@@ -3,16 +3,22 @@
 #include "flut/system/log.hpp"
 #include <cmath>
 #include "flut/system_tools.hpp"
+#include "flut/prop_node_tools.hpp"
 
 namespace spot
 {
-	optimizer::optimizer( const objective& o ) :
+	optimizer::optimizer( const objective& o, const prop_node& pn ) :
 	objective_( o ),
 	current_best_fitness_( o.info().worst_fitness() ),
 	current_best_( o.info() ),
 	current_step_( 0 ),
 	stop_condition_( no_stop_condition )
-	{}
+	{
+		flut_error_if( o.dim() <= 0, "Error, objective has no free parameters" );
+
+		INIT_PROP( pn, max_threads, 32 );
+		INIT_PROP( pn, max_steps, 10000 );
+	}
 
 	optimizer::~optimizer()
 	{
@@ -28,7 +34,7 @@ namespace spot
 	optimizer::stop_condition optimizer::run( size_t number_of_steps )
 	{
 		if ( number_of_steps == 0 )
-			number_of_steps = max_steps_;
+			number_of_steps = max_steps;
 
 		for ( auto cb : reporters_ )
 			cb->start( *this );
@@ -67,10 +73,10 @@ namespace spot
 		if ( test_abort() )
 			return user_abort;
 
-		if ( current_step() >= max_steps_ )
+		if ( current_step() >= max_steps )
 			return max_steps_reached;
 
-		if ( target_fitness_ && objective_.info().is_better( current_best_fitness(), *target_fitness_ ) )
+		if ( target_fitness_ && objective_.info().is_better( best_fitness(), *target_fitness_ ) )
 			return target_fitness_reached;
 
 		// none of the criteria is met -> return false
@@ -89,8 +95,8 @@ namespace spot
 				if ( abort_flag_.load() )
 					break;
 
-				// first make sure enough threads are available
-				while ( threads.size() >= max_threads() )
+				// wait for threads to finish
+				while ( threads.size() >= max_threads )
 				{
 					for ( auto it = threads.begin(); it != threads.end(); )
 					{
@@ -98,11 +104,8 @@ namespace spot
 						{
 							// a thread is finished, add it to the results and make room for a new thread
 							results[ it->second ] = it->first.get();
-
-							// run callbacks
 							for ( auto cb : reporters_ )
 								cb->evaluate( *this, pop[ it->second ], results[ it->second ] );
-
 							it = threads.erase( it );
 						}
 						else ++it;
@@ -131,9 +134,13 @@ namespace spot
 				current_best_.set_values( pop[ best_idx ].values() );
 			}
 
-			// run callbacks
+			// run callbacks (AFTER current_best is updated!)
 			for ( auto cb : reporters_ )
-				cb->evaluate( *this, pop, results, new_best );
+			{
+				cb->evaluate( *this, pop, results, best_idx, new_best );
+				if ( new_best )
+					cb->new_best( *this, current_best_, current_best_fitness_ );
+			}
 		}
 		catch ( std::exception& e )
 		{
