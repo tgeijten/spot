@@ -1212,28 +1212,12 @@ namespace spot
 		return pimpl->get_bounded( pimpl->cmaes.current_mean );
 	}
 
-	vector< double > cma_optimizer::current_std( bool use_covariance ) const
+	vector< double > cma_optimizer::current_std() const
 	{
+		// get from covariance matrix
 		vector< double > stds( dim() );
-
-		if ( use_covariance )
-		{
-			// get from covariance matrix
-			for ( index_t i = 0; i < dim(); ++i )
-				stds[ i ] = sqrt( pimpl->cmaes.C[ i ][ i ] );
-		}
-		else
-		{
-			// compute from population
-			auto m = current_mean();
-			for ( index_t pop_idx = 0; pop_idx < pimpl->bounded_pop.size(); ++pop_idx )
-			{
-				for ( index_t i = 0; i < dim(); ++i )
-					stds[ i ] += math::squared( pimpl->bounded_pop[ pop_idx ][ i ] - m[ i ] ) / pimpl->bounded_pop.size();
-			}
-			for ( index_t i = 0; i < dim(); ++i )
-				stds[ i ] = sqrt( stds[ i ] );
-		}
+		for ( index_t i = 0; i < dim(); ++i )
+			stds[ i ] = pimpl->cmaes.sigma * sqrt( pimpl->cmaes.C[ i ][ i ] );
 
 		return stds;
 	}
@@ -1251,7 +1235,7 @@ namespace spot
 	spot::objective_info cma_optimizer::make_updated_objective_info() const
 	{
 		objective_info inf( info() );
-		inf.set_mean_std( current_mean(), current_std( true ) );
+		inf.set_mean_std( current_mean(), current_std() );
 		return inf;
 	}
 

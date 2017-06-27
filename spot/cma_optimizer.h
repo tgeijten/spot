@@ -19,7 +19,7 @@ namespace spot
 
 		// analysis
 		par_vec current_mean() const;
-		par_vec current_std( bool use_covariance = true ) const;
+		par_vec current_std() const;
 		vector< par_vec > current_covariance() const;
 
 		// state
