@@ -14,7 +14,7 @@ namespace spot
 	current_step_( 0 ),
 	stop_condition_( no_stop_condition )
 	{
-		flut_error_if( o.dim() <= 0, "Error, objective has no free parameters" );
+		flut_error_if( o.dim() <= 0, "There are no parameters to optimize" );
 
 		INIT_PROP( pn, max_threads, 32 );
 		INIT_PROP( pn, max_steps, 10000 );

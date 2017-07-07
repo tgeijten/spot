@@ -11,22 +11,33 @@
 
 namespace spot
 {
-	inline par_value try_get_par( par_io& ps, const string& name, const prop_node& pn, const par_value& def )
+	template< typename T >
+	inline T try_get_par( par_io& ps, const string& name, const prop_node& pn, const T& def )
 	{
 		if ( auto* p = pn.try_get_child( name ) )
-			return ps.get( name, *p );
+			return T( ps.get( name, *p ) );
 		else if ( auto* p = pn.try_get_child_delimited( name ) )
-			return ps.get( name, *p );
+			return T( ps.get( name, *p ) );
 		else return def;
+	}
+
+	template< typename T >
+	inline T try_get_par( par_io& ps, const string& name, const prop_node& pn, const T& mean, par_value std, par_value lower, par_value upper )
+	{
+		if ( auto* p = pn.try_get_child( name ) )
+			return T( ps.get( name, *p ) );
+		else if ( auto* p = pn.try_get_child_delimited( name ) )
+			return T( ps.get( name, *p ) );
+		else return T( ps.get( name, par_value( mean ), std, lower, upper ) );
 	}
 
 	template< typename T >
 	inline math::vec3_<T> try_get_par( par_io& ps, const string& name, const prop_node& pn, const math::vec3_<T>& def )
 	{
 		math::vec3_<T> r;
-		r.x = T( try_get_par( ps, name + ".x", pn, (par_value)def.x ) );
-		r.y = T( try_get_par( ps, name + ".y", pn, (par_value)def.y ) );
-		r.z = T( try_get_par( ps, name + ".z", pn, (par_value)def.z ) );
+		r.x = try_get_par( ps, name + ".x", pn, def.x );
+		r.y = try_get_par( ps, name + ".y", pn, def.y );
+		r.z = try_get_par( ps, name + ".z", pn, def.z );
 		return r;
 	}
 
