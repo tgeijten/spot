@@ -34,6 +34,26 @@ namespace spot
 			std::ofstream str( filename.str() );
 			str << sp;
 			last_output_step = opt.current_step();
+
+			if ( new_best )
+			{
+				recent_files.push_back( std::make_pair( filename, best ) );
+				if ( recent_files.size() >= 3 )
+				{
+					// see if we should delete the second last file
+					auto testIt = recent_files.end() - 2;
+					double imp1 = testIt->second / ( testIt - 1 )->second;
+					double imp2 = ( testIt + 1 )->second / testIt->second;
+					if ( opt.info().minimize() ) { imp1 = 1.0 / imp1; imp2 = 1.0 / imp2; }
+
+					if ( imp1 < min_improvement_factor_for_file_output && imp2 < min_improvement_factor_for_file_output )
+					{
+						flut::remove( testIt->first );
+						*testIt = *recent_files.begin();
+					}
+					recent_files.pop_front();
+				}
+			}
 		}
 	}
 }

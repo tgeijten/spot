@@ -1,6 +1,7 @@
 #pragma once
 
 #include "reporter.h"
+#include "flut/circular_deque.hpp"
 
 namespace spot
 {
@@ -18,6 +19,8 @@ namespace spot
 	private:
 		path root_;
 		int max_steps_without_file_output = 500;
+		double min_improvement_factor_for_file_output = 1.05;
 		int last_output_step;
+		circular_deque< pair< path, fitness_t > > recent_files;
 	};
 }
