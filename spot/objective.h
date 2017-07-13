@@ -30,18 +30,18 @@ namespace spot
 		objective_info info_;
 	};
 
+	using objective_function_t = std::function< fitness_t( const par_vec& ) >;
+
 	class SPOT_API function_objective : public objective
 	{
 	public:
-		typedef std::function< fitness_t( const par_vec& ) > function_t;
-
-		function_objective( size_t d, function_t func, bool minimize = true,
-			const par_vec& start = par_vec(), const par_vec& start_std = par_vec(),
-			const par_vec& upper = par_vec(), const par_vec& lower = par_vec() );
+		function_objective( size_t d, objective_function_t func, const par_vec& start, const par_vec& start_std, const par_vec& lower, const par_vec& upper );
+		function_objective( size_t d, objective_function_t func, par_value start, par_value std, par_value lower, par_value upper );
 
 		virtual fitness_t evaluate( const search_point& point ) const override { return func_( point.values() ); }
 
-		function_t func_;
+	private:
+		objective_function_t func_;
 	};
 }
 

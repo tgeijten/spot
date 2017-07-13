@@ -1,5 +1,5 @@
 file (GLOB TEST_FILES "*.h" "*.cpp")
-file (GLOB CCMA_FILES "c-cmaes/src/*.h" "c-cmaes/src/*.c")
+file (GLOB CCMA_FILES "c-cmaes/cmaes*.*" "c-cmaes/boundary_transformation.*" )
 
 source_group("" FILES ${TEST_FILES})
 source_group("c-cmaes" FILES ${CCMA_FILES})

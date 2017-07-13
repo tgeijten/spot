@@ -1,39 +1,10 @@
 #include "optimizer_test.h"
+
 #include <thread>
 #include <chrono>
+#include "test_functions.h"
 
-double fitfun_c( double const *x, int N )
-{
-	/* function "cigtab" */
-	int i;
-	double sum = 1e4*x[ 0 ] * x[ 0 ] + 1e-4*x[ 1 ] * x[ 1 ];
-	for ( i = 2; i < N; ++i )
-		sum += x[ i ] * x[ i ];
-	return sum;
-}
-
-double fitfun( const std::vector< double >& x )
-{
-	/* function "cigtab" */
-	double sum = 1e4*x[ 0 ] * x[ 0 ] + 1e-4*x[ 1 ] * x[ 1 ];
-	for ( int i = 2; i < x.size(); ++i )
-		sum += x[ i ] * x[ i ];
-	return sum;
-}
-
-double slow_func( const std::vector< double >& x )
-{
-	/* function "cigtab" */
-	double sum = 1e4*x[ 0 ] * x[ 0 ] + 1e-4*x[ 1 ] * x[ 1 ];
-	for ( int i = 2; i < x.size(); ++i )
-		sum += x[ i ] * x[ i ];
-
-	std::this_thread::sleep_for( std::chrono::milliseconds( rand() % 2000 ) );
-
-	return sum;
-}
-
-namespace flut
+namespace spot
 {
 	void optimizer_test()
 	{
@@ -43,13 +14,15 @@ namespace flut
 		int lambda = 0;
 		std::vector< double > init_mean( dim, 0.0 );
 		std::vector< double > init_std( dim, 0.3 );
+		std::vector< double > lower( dim, -1e18 );
+		std::vector< double > upper( dim, -1e18 );
 
 		// init c-cmaes
 		cmaes_t evo;
 		double *arFunvals = cmaes_init( &evo, dim, &init_mean[ 0 ], &init_std[ 0 ], seed, lambda, "no" );
 
 		// init cma_optimizer
-		function_objective obj( dim, fitfun, true, init_mean, init_std );
+		function_objective obj( dim, cigtab, init_mean, init_std, lower, upper );
 		cma_optimizer cma( obj, lambda, seed );
 		cma.set_max_threads( 10 );
 
@@ -65,7 +38,7 @@ namespace flut
 
 				/* evaluate the new search points using fitfun */
 				for ( int i = 0; i < cmaes_Get( &evo, "lambda" ); ++i ) {
-					arFunvals[ i ] = fitfun_c( pop[ i ], (int)cmaes_Get( &evo, "dim" ) );
+					arFunvals[ i ] = cigtab_c( pop[ i ], (int)cmaes_Get( &evo, "dim" ) );
 					//printf( "%.2f ", arFunvals[ i ] );
 				}
 
@@ -105,7 +78,7 @@ namespace flut
 		int lambda = 0;
 
 		// init cma_optimizer
-		function_objective obj( dim, slow_func, true, par_vec( dim, 0.0 ), par_vec( dim, 0.3 ) );
+		function_objective obj( dim, cigtab, 0.0, 0.3, -1e18, 1e18 );
 		cma_optimizer cma( obj, lambda, seed );
 		cma.set_max_threads( 3 );
 

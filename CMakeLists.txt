@@ -38,7 +38,7 @@ set(LIBRARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin/${CONFIG_NAME}")
 
 # Process source code.
 add_subdirectory(spot)
+add_subdirectory(test)
 
-#add_subdirectory(test)
 #enable_testing()
 #add_test(spot_test "${CMAKE_SOURCE_DIR}/bin/${CONFIG_NAME}/spottest")
