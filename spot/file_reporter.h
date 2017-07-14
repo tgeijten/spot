@@ -3,6 +3,11 @@
 #include "reporter.h"
 #include "flut/circular_deque.hpp"
 
+#if defined(_MSC_VER)
+#	pragma warning( push )
+#	pragma warning( disable: 4251 )
+#endif
+
 namespace spot
 {
 	class SPOT_API file_reporter : public reporter
@@ -24,3 +29,7 @@ namespace spot
 		circular_deque< pair< path, fitness_t > > recent_files;
 	};
 }
+
+#if defined(_MSC_VER)
+#	pragma warning( pop )
+#endif
