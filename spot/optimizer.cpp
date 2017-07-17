@@ -9,15 +9,21 @@ namespace spot
 {
 	optimizer::optimizer( const objective& o, const prop_node& pn ) :
 	objective_( o ),
-	current_best_fitness_( o.info().worst_fitness() ),
-	current_best_( o.info() ),
+	best_fitness_( o.info().worst_fitness() ),
+	best_point_( o.info() ),
 	current_step_( 0 ),
-	stop_condition_( no_stop_condition )
+	current_step_average_( o.info().worst_fitness() ),
+	current_step_best_( o.info().worst_fitness() ),
+	current_step_mean_( o.info().worst_fitness() ),
+	flat_fitness_condition_( 0.000001 )
 	{
 		flut_error_if( o.dim() <= 0, "There are no parameters to optimize" );
 
 		INIT_PROP( pn, max_threads, 32 );
 		INIT_PROP( pn, max_steps, 10000 );
+
+		stop_conditions_.push_back( &abort_condition_ );
+		stop_conditions_.push_back( &flat_fitness_condition_ );
 	}
 
 	optimizer::~optimizer()
@@ -31,7 +37,7 @@ namespace spot
 		background_thread = std::thread( [this]() { flut::set_thread_priority( thread_priority ); this->run(); } );
 	}
 
-	optimizer::stop_condition optimizer::run( size_t number_of_steps )
+	stop_condition* optimizer::run( size_t number_of_steps )
 	{
 		if ( number_of_steps == 0 )
 			number_of_steps = max_steps;
@@ -39,17 +45,16 @@ namespace spot
 		for ( auto cb : reporters_ )
 			cb->start( *this );
 
-
 		for ( size_t n = 0; n < number_of_steps; ++n )
 		{
-			stop_condition_ = test_stop_condition();
-			if ( stop_condition_ != no_stop_condition )
-				break;
-
 			for ( auto cb : reporters_ )
 				cb->next_step( *this, current_step_ );
 
 			step();
+
+			if ( stop_condition_ = test_stop_conditions() )
+				break;
+
 			++current_step_;
 		}
 
@@ -68,19 +73,12 @@ namespace spot
 		}
 	}
 
-	optimizer::stop_condition optimizer::test_stop_condition() const
+	stop_condition* optimizer::test_stop_conditions() const
 	{
-		if ( test_abort() )
-			return user_abort;
-
-		if ( current_step() >= max_steps )
-			return max_steps_reached;
-
-		if ( target_fitness_ && objective_.info().is_better( best_fitness(), *target_fitness_ ) )
-			return target_fitness_reached;
-
-		// none of the criteria is met -> return false
-		return no_stop_condition;
+		for ( auto* sc : stop_conditions_ )
+			if ( sc->test( *this ) )
+				return sc;
+		return nullptr;
 	}
 
 	fitness_vec_t optimizer::evaluate( const search_point_vec& pop )
@@ -127,19 +125,24 @@ namespace spot
 			}
 
 			auto best_idx = objective_.info().find_best_fitness( results );
-			bool new_best = objective_.info().is_better( results[ best_idx ], current_best_fitness_ );
+			bool new_best = objective_.info().is_better( results[ best_idx ], best_fitness_ );
 			if ( new_best )
 			{
-				current_best_fitness_ = results[ best_idx ];
-				current_best_.set_values( pop[ best_idx ].values() );
+				best_fitness_ = results[ best_idx ];
+				best_point_.set_values( pop[ best_idx ].values() );
 			}
+
+			// update current mean, avg and best
+			current_step_mean_ = median( results );
+			current_step_average_ = average( results );
+			current_step_best_ = results[ best_idx ];
 
 			// run callbacks (AFTER current_best is updated!)
 			for ( auto cb : reporters_ )
 			{
 				cb->evaluate( *this, pop, results, best_idx, new_best );
 				if ( new_best )
-					cb->new_best( *this, current_best_, current_best_fitness_ );
+					cb->new_best( *this, best_point_, best_fitness_ );
 			}
 		}
 		catch ( std::exception& e )
@@ -148,21 +151,5 @@ namespace spot
 		}
 
 		return results;
-	}
-
-	void optimizer::set_min_progress( fitness_t relative_improvement_per_step, size_t window )
-	{
-		min_progress_ = relative_improvement_per_step;
-		progress_window.reserve( window );
-	}
-
-	void optimizer::update_progress( fitness_t current_median )
-	{
-		if ( progress_window.capacity() > 0 )
-		{
-			if ( progress_window.size() == progress_window.capacity() )
-				progress_window.pop_front();
-			progress_window.push_back( current_median );
-		}
 	}
 }

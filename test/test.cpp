@@ -2,6 +2,8 @@
 #include "flut/system/types.hpp"
 #include "flut/system/log_sink.hpp"
 #include "flut/system/test_framework.hpp"
+#include "test_functions.h"
+#include "optimization_test.h"
 
 using flut::string;
 
@@ -12,11 +14,16 @@ int main( int argc, char* argv[] )
 
 	try
 	{
+		spot::optimization_test();
 	}
 	catch ( std::exception& e )
 	{
 		std::cout << e.what();				
 	}
+
+#ifdef _DEBUG
+	flut::wait_for_key();
+#endif
 
 	return flut::test_framework::get_instance().report();
 }

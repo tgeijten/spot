@@ -14,6 +14,7 @@
 #include <atomic>
 #include <functional>
 #include <thread>
+#include "stop_condition.h"
 
 #if defined(_MSC_VER)
 #	pragma warning( push )
@@ -25,15 +26,15 @@ namespace spot
 	class SPOT_API optimizer
 	{
 	public:
-		enum stop_condition { no_stop_condition, max_steps_reached, min_progress_reached, target_fitness_reached, user_abort };
-
 		optimizer( const objective& o, const prop_node& pn = prop_node() );
 		virtual ~optimizer();
 
 		void run_threaded();
-		virtual stop_condition run( size_t number_of_steps = 0 );
+		virtual stop_condition* run( size_t number_of_steps = 0 );
+		virtual stop_condition* test_stop_conditions() const;
 		virtual void step() { FLUT_NOT_IMPLEMENTED; }
 
+		void add_stop_condition( stop_condition* cb ) { stop_conditions_.push_back( cb ); }
 		void add_reporter( reporter* cb ) { reporters_.push_back( cb ); }
 
 		void signal_abort() { abort_flag_ = true; }
@@ -41,7 +42,6 @@ namespace spot
 
 		bool test_abort() const { return abort_flag_; }
 
-		virtual stop_condition test_stop_condition() const;
 		fitness_vec_t evaluate( const search_point_vec& pop );
 		
 		void set_max_threads( int val ) { max_threads = val; }
@@ -49,8 +49,12 @@ namespace spot
 		void set_min_progress( fitness_t relative_improvement_per_step, size_t window );
 
 		int current_step() const { return current_step_; }
-		fitness_t best_fitness() const { return current_best_fitness_; }
-		const search_point& best() const { return current_best_; }
+		fitness_t current_step_median() const { return current_step_mean_; }
+		fitness_t current_step_average() const { return current_step_average_; }
+		fitness_t current_step_best() const { return current_step_best_; }
+
+		fitness_t best_fitness() const { return best_fitness_; }
+		const search_point& best() const { return best_point_; }
 
 		const objective_info& info() const { return objective_.info(); }
 		const objective& obj() const { return objective_; }
@@ -64,27 +68,28 @@ namespace spot
 		int max_threads = 1;
 		size_t max_steps = 10000;
 
+		stop_condition* stop_condition_;
+		abort_condition abort_condition_;
+		flat_fitness_condition flat_fitness_condition_;
+
 	protected:
 		// evaluation settings
 		std::atomic_bool abort_flag_ = false;
-		stop_condition stop_condition_;
 
 		std::thread background_thread;
 		flut::thread_priority thread_priority;
 
 		int current_step_;
-		fitness_t current_best_fitness_;
-		search_point current_best_;
+		fitness_t current_step_mean_;
+		fitness_t current_step_average_;
+		fitness_t current_step_best_;
+
+		fitness_t best_fitness_;
+		search_point best_point_;
 
 		const objective& objective_;
 		vector< reporter* > reporters_;
-
-		// stop conditions
-		fitness_t min_progress_ = 0;
-		circular_deque< fitness_t > progress_window;
-		optional< fitness_t > target_fitness_;
-
-		void update_progress( fitness_t current_median );
+		vector< stop_condition* > stop_conditions_;
 	};
 }
 

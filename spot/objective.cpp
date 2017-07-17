@@ -11,7 +11,8 @@ namespace spot
 			info_.add( stringf( "%d", i ), start[ i ], start_std[ i ], lower[ i ], upper[ i ] );
 	}
 
-	function_objective::function_objective( size_t d, objective_function_t func, par_value start, par_value start_std, par_value lower, par_value upper )
+	function_objective::function_objective( size_t d, objective_function_t func, par_value start, par_value start_std, par_value lower, par_value upper ) :
+	func_( func )
 	{
 		for ( size_t i = 0; i < d; ++i )
 			info_.add( stringf( "%d", i ), start, start_std, lower, upper );
