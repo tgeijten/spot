@@ -1264,7 +1264,7 @@ namespace spot
 		return pimpl->cmaes.sigma;
 	}
 
-	void cma_optimizer::step()
+	void cma_optimizer::internal_step()
 	{
 		auto& pop = sample_population();
 		auto results = evaluate( pop );

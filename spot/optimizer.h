@@ -29,9 +29,9 @@ namespace spot
 		optimizer( const objective& o, const prop_node& pn = prop_node() );
 		virtual ~optimizer();
 
-		void run_threaded();
-		virtual const stop_condition* run( size_t number_of_steps = 0 );
-		virtual void step() { FLUT_NOT_IMPLEMENTED; }
+		const stop_condition* step();
+		const stop_condition* run( size_t number_of_steps = 0 );
+		void run_threaded(); // TODO: use future / promise
 
 		void add_stop_condition( u_ptr< stop_condition > cb ) { stop_conditions_.push_back( std::move( cb ) ); }
 		template< typename T > T* find_stop_condition() const
@@ -41,7 +41,6 @@ namespace spot
 
 		void signal_abort() { abort_flag_ = true; }
 		void abort_and_wait();
-
 		bool test_abort() const { return abort_flag_; }
 
 		fitness_vec_t evaluate( const search_point_vec& pop );
@@ -66,9 +65,10 @@ namespace spot
 
 		// properties
 		int max_threads = 1;
-		stop_condition* stop_condition_;
 
 	protected:
+		virtual void internal_step() = 0;
+
 		// evaluation settings
 		std::atomic_bool abort_flag_ = false;
 

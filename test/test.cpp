@@ -14,7 +14,7 @@ int main( int argc, char* argv[] )
 
 	try
 	{
-		spot::optimization_test();
+		spot::multimodal_test();
 	}
 	catch ( std::exception& e )
 	{

@@ -15,7 +15,6 @@ namespace spot
 		// optimization
 		const search_point_vec& sample_population();
 		void update_distribution( const fitness_vec_t& results );
-		virtual void step() override;
 
 		// analysis
 		par_vec current_mean() const;
@@ -34,6 +33,7 @@ namespace spot
 		double sigma() const;
 
 	protected:
+		virtual void internal_step() override;
 		struct pimpl_t* pimpl;
 	};
 }

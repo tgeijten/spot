@@ -14,8 +14,7 @@ namespace spot
 	iteration_count_( 0 ),
 	current_step_average_( o.info().worst_fitness() ),
 	current_step_best_( o.info().worst_fitness() ),
-	current_step_mean_( o.info().worst_fitness() ),
-	stop_condition_( nullptr )
+	current_step_mean_( o.info().worst_fitness() )
 	{
 		flut_error_if( o.dim() <= 0, "There are no parameters to optimize" );
 
@@ -36,37 +35,41 @@ namespace spot
 		background_thread = std::thread( [this]() { flut::set_thread_priority( thread_priority ); this->run(); } );
 	}
 
+	const spot::stop_condition* optimizer::step()
+	{
+		// signal reporters
+		for ( auto& cb : reporters_ )
+			cb->next_step( *this, iteration_count_ );
+
+		// perform actual step
+		internal_step();
+		++iteration_count_;
+
+		// test stop conditions
+		for ( auto& sc : stop_conditions_ )
+		{
+			if ( sc->test( *this ) )
+				return sc.get();
+		}
+		return nullptr;
+	}
+
 	const stop_condition* optimizer::run( size_t number_of_steps )
 	{
-		stop_condition_ = nullptr;
+		const stop_condition* sc = nullptr;
 		if ( number_of_steps == 0 )
 			number_of_steps = num_const< size_t >::max();
 
 		for ( auto& cb : reporters_ )
 			cb->start( *this );
 
-		for ( size_t n = 0; n < number_of_steps && !stop_condition_; ++n )
-		{
-			// signal reporters
-			for ( auto& cb : reporters_ )
-				cb->next_step( *this, iteration_count_ );
-
-			// perform actual step
-			step();
-			++iteration_count_;
-
-			// test stop conditions
-			for ( auto& sc : stop_conditions_ )
-			{
-				if ( sc->test( *this ) )
-					stop_condition_ = sc.get();
-			}
-		}
+		for ( size_t n = 0; n < number_of_steps && !sc; ++n )
+			sc = step();
 
 		for ( auto& cb : reporters_ )
 			cb->finish( *this );
 
-		return stop_condition_;
+		return sc;
 	}
 
 	void optimizer::abort_and_wait()
