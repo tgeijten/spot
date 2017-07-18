@@ -30,12 +30,14 @@ namespace spot
 		virtual ~optimizer();
 
 		void run_threaded();
-		virtual stop_condition* run( size_t number_of_steps = 0 );
-		virtual stop_condition* test_stop_conditions() const;
+		virtual const stop_condition* run( size_t number_of_steps = 0 );
 		virtual void step() { FLUT_NOT_IMPLEMENTED; }
 
-		void add_stop_condition( stop_condition* cb ) { stop_conditions_.push_back( cb ); }
-		void add_reporter( reporter* cb ) { reporters_.push_back( cb ); }
+		void add_stop_condition( u_ptr< stop_condition > cb ) { stop_conditions_.push_back( std::move( cb ) ); }
+		template< typename T > T* find_stop_condition() const
+		{ for ( auto& sc : stop_conditions_ ) { T* p = dynamic_cast< T* >( sc.get() ); if ( p ) return p; } return nullptr; }
+
+		void add_reporter( u_ptr< reporter > cb ) { reporters_.push_back( std::move( cb ) ); }
 
 		void signal_abort() { abort_flag_ = true; }
 		void abort_and_wait();
@@ -45,10 +47,8 @@ namespace spot
 		fitness_vec_t evaluate( const search_point_vec& pop );
 		
 		void set_max_threads( int val ) { max_threads = val; }
-		void set_max_steps( size_t gen ) { max_steps = gen; }
-		void set_min_progress( fitness_t relative_improvement_per_step, size_t window );
 
-		int current_step() const { return current_step_; }
+		int current_step() const { return iteration_count_; }
 		fitness_t current_step_median() const { return current_step_mean_; }
 		fitness_t current_step_average() const { return current_step_average_; }
 		fitness_t current_step_best() const { return current_step_best_; }
@@ -66,11 +66,7 @@ namespace spot
 
 		// properties
 		int max_threads = 1;
-		size_t max_steps = 10000;
-
 		stop_condition* stop_condition_;
-		abort_condition abort_condition_;
-		flat_fitness_condition flat_fitness_condition_;
 
 	protected:
 		// evaluation settings
@@ -79,7 +75,7 @@ namespace spot
 		std::thread background_thread;
 		flut::thread_priority thread_priority;
 
-		int current_step_;
+		int iteration_count_;
 		fitness_t current_step_mean_;
 		fitness_t current_step_average_;
 		fitness_t current_step_best_;
@@ -88,8 +84,8 @@ namespace spot
 		search_point best_point_;
 
 		const objective& objective_;
-		vector< reporter* > reporters_;
-		vector< stop_condition* > stop_conditions_;
+		vector< u_ptr< reporter > > reporters_;
+		vector< u_ptr< stop_condition > > stop_conditions_;
 	};
 }
 

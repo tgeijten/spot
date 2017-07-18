@@ -24,19 +24,19 @@ namespace spot
 	{
 		if ( progress_window_.full() )
 			progress_window_.pop_front();
+		progress_window_.push_back( float( opt.current_step_best() ) );
+		if ( progress_window_.size() < 2 )
+			return false;
 
-		progress_window_.push_back( opt.current_step_median() );
+		float window = static_cast< float >( progress_window_.size() );
+		float start = static_cast< float >( opt.current_step() ) - window;
+
+		progress_regression_ = linear_regression( start, 1.0f, progress_window_ );
+		auto scale = progress_regression_( start + 0.5f * window );
+		progress_ = opt.info().minimize() ? -progress_regression_.slope() / scale : progress_regression_.slope() / scale;
+
 		if ( progress_window_.full() )
-		{
-			double window = static_cast< double >( progress_window_.size() );
-			double start = static_cast< double >( opt.current_step() ) - window;
-			progress_regression_ = linear_regression( fitness_t( start ), fitness_t( 1 ), progress_window_ );
-			auto scale = progress_regression_( start + 0.5 * window );
-
-			progress_ = opt.info().minimize() ? -progress_regression_.slope() / scale : progress_regression_.slope() / scale;
-			//printf( " progress=%f\n", progress_ );
 			return progress_ < min_progress_;
-		}
 		else return false;
 	}
 }

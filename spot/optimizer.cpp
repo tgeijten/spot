@@ -11,19 +11,18 @@ namespace spot
 	objective_( o ),
 	best_fitness_( o.info().worst_fitness() ),
 	best_point_( o.info() ),
-	current_step_( 0 ),
+	iteration_count_( 0 ),
 	current_step_average_( o.info().worst_fitness() ),
 	current_step_best_( o.info().worst_fitness() ),
 	current_step_mean_( o.info().worst_fitness() ),
-	flat_fitness_condition_( 0.000001 )
+	stop_condition_( nullptr )
 	{
 		flut_error_if( o.dim() <= 0, "There are no parameters to optimize" );
 
 		INIT_PROP( pn, max_threads, 32 );
-		INIT_PROP( pn, max_steps, 10000 );
 
-		stop_conditions_.push_back( &abort_condition_ );
-		stop_conditions_.push_back( &flat_fitness_condition_ );
+		stop_conditions_.push_back( std::make_unique< abort_condition >() );
+		stop_conditions_.push_back( std::make_unique< flat_fitness_condition >( 1e-6 ) );
 	}
 
 	optimizer::~optimizer()
@@ -37,28 +36,34 @@ namespace spot
 		background_thread = std::thread( [this]() { flut::set_thread_priority( thread_priority ); this->run(); } );
 	}
 
-	stop_condition* optimizer::run( size_t number_of_steps )
+	const stop_condition* optimizer::run( size_t number_of_steps )
 	{
+		stop_condition_ = nullptr;
 		if ( number_of_steps == 0 )
-			number_of_steps = max_steps;
+			number_of_steps = num_const< size_t >::max();
 
-		for ( auto cb : reporters_ )
+		for ( auto& cb : reporters_ )
 			cb->start( *this );
 
-		for ( size_t n = 0; n < number_of_steps; ++n )
+		for ( size_t n = 0; n < number_of_steps && !stop_condition_; ++n )
 		{
-			for ( auto cb : reporters_ )
-				cb->next_step( *this, current_step_ );
+			// signal reporters
+			for ( auto& cb : reporters_ )
+				cb->next_step( *this, iteration_count_ );
 
+			// perform actual step
 			step();
+			++iteration_count_;
 
-			if ( stop_condition_ = test_stop_conditions() )
-				break;
-
-			++current_step_;
+			// test stop conditions
+			for ( auto& sc : stop_conditions_ )
+			{
+				if ( sc->test( *this ) )
+					stop_condition_ = sc.get();
+			}
 		}
 
-		for ( auto cb : reporters_ )
+		for ( auto& cb : reporters_ )
 			cb->finish( *this );
 
 		return stop_condition_;
@@ -71,14 +76,6 @@ namespace spot
 			signal_abort();
 			background_thread.join();
 		}
-	}
-
-	stop_condition* optimizer::test_stop_conditions() const
-	{
-		for ( auto* sc : stop_conditions_ )
-			if ( sc->test( *this ) )
-				return sc;
-		return nullptr;
 	}
 
 	fitness_vec_t optimizer::evaluate( const search_point_vec& pop )
@@ -102,7 +99,7 @@ namespace spot
 						{
 							// a thread is finished, add it to the results and make room for a new thread
 							results[ it->second ] = it->first.get();
-							for ( auto cb : reporters_ )
+							for ( auto& cb : reporters_ )
 								cb->evaluate( *this, pop[ it->second ], results[ it->second ] );
 							it = threads.erase( it );
 						}
@@ -120,7 +117,7 @@ namespace spot
 				results[ f.second ] = f.first.valid() ? f.first.get() : objective_.info().worst_fitness();
 
 				// run callbacks
-				for ( auto cb : reporters_ )
+				for ( auto& cb : reporters_ )
 					cb->evaluate( *this, pop[ f.second ], results[ f.second ] );
 			}
 
@@ -138,7 +135,7 @@ namespace spot
 			current_step_best_ = results[ best_idx ];
 
 			// run callbacks (AFTER current_best is updated!)
-			for ( auto cb : reporters_ )
+			for ( auto& cb : reporters_ )
 			{
 				cb->evaluate( *this, pop, results, best_idx, new_best );
 				if ( new_best )

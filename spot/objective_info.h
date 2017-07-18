@@ -34,6 +34,7 @@ namespace spot
 		virtual par_value add( const string& name, par_value mean, par_value std, par_value min = -1e15, par_value max = 1e15 ) override;
 		virtual optional_par_value try_get( const string& name ) const override;
 		optional_par_value try_get_fixed( const string& name ) const;
+		const string& name() const { return name_; }
 
 		/// minimize / maximize
 		bool minimize() const { return minimize_; }
@@ -63,7 +64,6 @@ namespace spot
 		void set_global_std( double factor, double offset );
 		void set_mean_std( const vector< par_value >& mean, const vector< par_value >& std );
 		void set_name( const string& name ) { name_ = name; }
-		const string& name() { return name_; }
 
 	private:
 		par_info_vec par_infos_;
