@@ -10,6 +10,7 @@ namespace spot
 	{
 	public:
 		cma_optimizer( const objective& obj, int lambda = 0, int seed = 123, cma_weights weights = cma_weights::log );
+		cma_optimizer( cma_optimizer&& other );
 		virtual ~cma_optimizer();
 
 		// optimization

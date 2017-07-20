@@ -11,13 +11,14 @@ namespace spot
 	objective_( o ),
 	best_fitness_( o.info().worst_fitness() ),
 	best_point_( o.info() ),
-	iteration_count_( 0 ),
+	current_step_best_point_( o.info() ),
+	step_count_( 0 ),
 	current_step_average_( o.info().worst_fitness() ),
 	current_step_best_( o.info().worst_fitness() ),
-	current_step_mean_( o.info().worst_fitness() )
+	current_step_median_( o.info().worst_fitness() ),
+	stop_condition_( nullptr )
 	{
 		flut_error_if( o.dim() <= 0, "There are no parameters to optimize" );
-
 		INIT_PROP( pn, max_threads, 32 );
 
 		stop_conditions_.push_back( std::make_unique< abort_condition >() );
@@ -37,19 +38,23 @@ namespace spot
 
 	const spot::stop_condition* optimizer::step()
 	{
+		// there is already a stop condition
+		if ( stop_condition_ )
+			return stop_condition_;
+
 		// signal reporters
 		for ( auto& cb : reporters_ )
-			cb->next_step( *this, iteration_count_ );
+			cb->next_step( *this, step_count_ );
 
 		// perform actual step
 		internal_step();
-		++iteration_count_;
+		++step_count_;
 
 		// test stop conditions
 		for ( auto& sc : stop_conditions_ )
 		{
 			if ( sc->test( *this ) )
-				return sc.get();
+				return stop_condition_ = sc.get();
 		}
 		return nullptr;
 	}
@@ -60,16 +65,22 @@ namespace spot
 		if ( number_of_steps == 0 )
 			number_of_steps = num_const< size_t >::max();
 
-		for ( auto& cb : reporters_ )
-			cb->start( *this );
+		if ( step_count_ == 0 )
+		{
+			for ( auto& cb : reporters_ )
+				cb->start( *this );
+		}
 
 		for ( size_t n = 0; n < number_of_steps && !sc; ++n )
 			sc = step();
 
-		for ( auto& cb : reporters_ )
-			cb->finish( *this );
+		if ( stop_condition_ )
+		{
+			for ( auto& cb : reporters_ )
+				cb->finish( *this );
+		}
 
-		return sc;
+		return stop_condition_;
 	}
 
 	void optimizer::abort_and_wait()
@@ -133,9 +144,10 @@ namespace spot
 			}
 
 			// update current mean, avg and best
-			current_step_mean_ = median( results );
+			current_step_median_ = median( results );
 			current_step_average_ = average( results );
 			current_step_best_ = results[ best_idx ];
+			current_step_best_point_ = pop[ best_idx ];
 
 			// run callbacks (AFTER current_best is updated!)
 			for ( auto& cb : reporters_ )

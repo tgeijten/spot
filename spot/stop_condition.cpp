@@ -1,5 +1,6 @@
 #include "stop_condition.h"
 #include "optimizer.h"
+#include "cma_optimizer.h"
 
 namespace spot
 {
@@ -39,4 +40,25 @@ namespace spot
 			return progress_ < min_progress_;
 		else return false;
 	}
+
+	bool similarity_condition::test( const optimizer& opt )
+	{
+		if ( opt.current_step() >= min_steps_ )
+		{
+			auto& cma = dynamic_cast< const cma_optimizer& >( opt );
+			for ( index_t i = 0; i < similarity_points.size(); ++i )
+			{
+				auto std = cma.current_std();
+				auto point = cma.current_step_best_point().values();
+				auto dist = normalized_distance( point, similarity_points[ i ], std );
+				if ( dist < min_distance_ )
+				{
+					similarity_index = i;
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 }

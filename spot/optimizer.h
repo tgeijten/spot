@@ -33,11 +33,13 @@ namespace spot
 		const stop_condition* run( size_t number_of_steps = 0 );
 		void run_threaded(); // TODO: use future / promise
 
-		void add_stop_condition( u_ptr< stop_condition > cb ) { stop_conditions_.push_back( std::move( cb ) ); }
+		void add_stop_condition( s_ptr< stop_condition > cb ) { stop_conditions_.emplace_back( std::move( cb ) ); }
+		stop_condition* current_stop_condition() const { return stop_condition_; }
+		bool is_active() const { return stop_condition_ == nullptr; }
 		template< typename T > T* find_stop_condition() const
 		{ for ( auto& sc : stop_conditions_ ) { T* p = dynamic_cast< T* >( sc.get() ); if ( p ) return p; } return nullptr; }
 
-		void add_reporter( u_ptr< reporter > cb ) { reporters_.push_back( std::move( cb ) ); }
+		void add_reporter( s_ptr< reporter > cb ) { reporters_.emplace_back( std::move( cb ) ); }
 
 		void signal_abort() { abort_flag_ = true; }
 		void abort_and_wait();
@@ -47,13 +49,14 @@ namespace spot
 		
 		void set_max_threads( int val ) { max_threads = val; }
 
-		int current_step() const { return iteration_count_; }
-		fitness_t current_step_median() const { return current_step_mean_; }
+		int current_step() const { return step_count_; }
+		fitness_t current_step_median() const { return current_step_median_; }
 		fitness_t current_step_average() const { return current_step_average_; }
 		fitness_t current_step_best() const { return current_step_best_; }
+		const search_point& current_step_best_point() const { return current_step_best_point_; }
 
 		fitness_t best_fitness() const { return best_fitness_; }
-		const search_point& best() const { return best_point_; }
+		const search_point& best_point() const { return best_point_; }
 
 		const objective_info& info() const { return objective_.info(); }
 		const objective& obj() const { return objective_; }
@@ -74,18 +77,20 @@ namespace spot
 
 		std::thread background_thread;
 		flut::thread_priority thread_priority;
+		stop_condition* stop_condition_;
 
-		int iteration_count_;
-		fitness_t current_step_mean_;
+		int step_count_;
+		fitness_t current_step_median_;
 		fitness_t current_step_average_;
 		fitness_t current_step_best_;
+		search_point current_step_best_point_;
 
 		fitness_t best_fitness_;
 		search_point best_point_;
 
 		const objective& objective_;
-		vector< u_ptr< reporter > > reporters_;
-		vector< u_ptr< stop_condition > > stop_conditions_;
+		vector< s_ptr< reporter > > reporters_;
+		vector< s_ptr< stop_condition > > stop_conditions_;
 	};
 }
 

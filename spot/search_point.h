@@ -22,6 +22,8 @@ namespace spot
 		search_point( const objective_info& inf, par_vec&& values );
 		search_point( const objective_info& inf, const path& filename );
 
+		search_point& operator=( const search_point& other ) { flut_assert( info_.dim() == other.info_.dim() ); values_ = other.values_; return *this; }
+
 		virtual size_t dim() const override { return info_.dim(); }
 		virtual optional_par_value try_get( const string& full_name ) const override;
 		virtual par_value add( const string& name, par_value mean, par_value std, par_value min, par_value max ) override;

@@ -1167,6 +1167,13 @@ namespace spot
 		cmaes_boundary_trans_init( &pimpl->bounds, lb, ub );
 	}
 
+	cma_optimizer::cma_optimizer( cma_optimizer&& other ) :
+	optimizer( other.objective_ )
+	{
+		pimpl = other.pimpl;
+		other.pimpl = nullptr;
+	}
+
 	cma_optimizer::~cma_optimizer()
 	{
 		abort_and_wait();
