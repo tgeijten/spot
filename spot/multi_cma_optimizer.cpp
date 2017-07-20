@@ -14,6 +14,7 @@ namespace spot
 		similarity_stop_ = std::make_shared< similarity_condition >( min_distance );
 		stop_conditions_.clear();
 		stop_conditions_.push_back( std::make_shared< multi_stop_condition >() );
+		name = obj.name();
 	}
 
 	void multi_cma_optimizer::signal_abort()
@@ -40,6 +41,7 @@ namespace spot
 			opt->add_stop_condition( std::make_unique< min_progress_condition >( 100, 1e-3 ) );
 			opt->add_stop_condition( std::make_unique< max_steps_condition >( 1000 ) );
 			opt->add_stop_condition( similarity_stop_ );
+			opt->name = name + "/" + opt->name;
 
 			// add reporters
 			for ( auto& r : reporters_ )

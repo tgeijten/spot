@@ -32,6 +32,7 @@ namespace spot
 
 	void multimodal_test()
 	{
+#if 0
 		auto obj = make_schwefel_objective( 2 );
 		int opt_count = 10;
 		storage< float > sto( 1000, opt_count * 2 );
@@ -71,6 +72,7 @@ namespace spot
 		}
 
 		std::ofstream( "X:/opt_output.txt" ) << sto;
+#endif
 	}
 
 	void multi_optimizer_test()
