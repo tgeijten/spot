@@ -42,6 +42,11 @@ namespace spot
 		if ( stop_condition_ )
 			return stop_condition_;
 
+		// send out start callback if this is the first step
+		if ( step_count_ == 0 )
+			for ( auto& cb : reporters_ )
+				cb->start( *this );
+
 		// signal reporters
 		for ( auto& cb : reporters_ )
 			cb->next_step( *this, step_count_ );
@@ -50,35 +55,27 @@ namespace spot
 		internal_step();
 		++step_count_;
 
-		// test stop conditions
+		// test stop conditions and report finish
 		for ( auto& sc : stop_conditions_ )
 		{
 			if ( sc->test( *this ) )
-				return stop_condition_ = sc.get();
+			{
+				stop_condition_ = sc.get();
+				for ( auto& cb : reporters_ )
+					cb->finish( *this );
+			}
 		}
-		return nullptr;
+
+		return stop_condition_;
 	}
 
 	const stop_condition* optimizer::run( size_t number_of_steps )
 	{
-		const stop_condition* sc = nullptr;
 		if ( number_of_steps == 0 )
 			number_of_steps = num_const< size_t >::max();
 
-		if ( step_count_ == 0 )
-		{
-			for ( auto& cb : reporters_ )
-				cb->start( *this );
-		}
-
-		for ( size_t n = 0; n < number_of_steps && !sc; ++n )
-			sc = step();
-
-		if ( stop_condition_ )
-		{
-			for ( auto& cb : reporters_ )
-				cb->finish( *this );
-		}
+		for ( size_t n = 0; n < number_of_steps && is_active(); ++n )
+			step();
 
 		return stop_condition_;
 	}

@@ -26,6 +26,9 @@ namespace spot
 			}
 		};
 
+		virtual void signal_abort();
+		virtual void abort_and_wait();
+
 	protected:
 		virtual void internal_step() override;
 

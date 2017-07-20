@@ -41,8 +41,8 @@ namespace spot
 
 		void add_reporter( s_ptr< reporter > cb ) { reporters_.emplace_back( std::move( cb ) ); }
 
-		void signal_abort() { abort_flag_ = true; }
-		void abort_and_wait();
+		virtual void signal_abort() { abort_flag_ = true; }
+		virtual void abort_and_wait();
 		bool test_abort() const { return abort_flag_; }
 
 		fitness_vec_t evaluate( const search_point_vec& pop );
@@ -68,6 +68,7 @@ namespace spot
 
 		// properties
 		int max_threads = 1;
+		string name;
 
 	protected:
 		virtual void internal_step() = 0;

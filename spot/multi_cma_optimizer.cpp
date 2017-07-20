@@ -16,15 +16,36 @@ namespace spot
 		stop_conditions_.push_back( std::make_shared< multi_stop_condition >() );
 	}
 
+	void multi_cma_optimizer::signal_abort()
+	{
+		abort_flag_ = true;
+		for ( auto& o : optimizers_ )
+			o->signal_abort();
+	}
+
+	void multi_cma_optimizer::abort_and_wait()
+	{
+		for ( auto& o : optimizers_ )
+			o->signal_abort();
+		for ( auto& o : optimizers_ )
+			o->abort_and_wait();
+	}
+
 	void multi_cma_optimizer::internal_step()
 	{
 		if ( optimizers_.empty() || !optimizers_.back()->is_active() )
 		{
 			// add a new optimizer
-			optimizers_.emplace_back( std::make_unique< cma_optimizer >( objective_, 0, seed_ == 0 ? 0 : seed_ + (int)search_count_ ) );
-			optimizers_.back()->add_stop_condition( std::make_unique< min_progress_condition >( 100, 1e-6 ) );
-			optimizers_.back()->add_stop_condition( std::make_unique< max_steps_condition >( 1000 ) );
-			optimizers_.back()->add_stop_condition( similarity_stop_ );
+			auto opt = std::make_unique< cma_optimizer >( objective_, 0, seed_ == 0 ? 0 : seed_ + ( int )search_count_ );
+			opt->add_stop_condition( std::make_unique< min_progress_condition >( 100, 1e-3 ) );
+			opt->add_stop_condition( std::make_unique< max_steps_condition >( 1000 ) );
+			opt->add_stop_condition( similarity_stop_ );
+
+			// add reporters
+			for ( auto& r : reporters_ )
+				opt->add_reporter( r );
+
+			optimizers_.emplace_back( std::move( opt ) );
 			++search_count_;
 		}
 

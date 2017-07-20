@@ -50,7 +50,7 @@ namespace spot
 
 	struct SPOT_API min_progress_condition : public stop_condition
 	{
-		min_progress_condition( size_t window_size, double min_progress ) : progress_window_( window_size ), min_progress_( min_progress ) {}
+		min_progress_condition( size_t window_size, double min_progress ) : progress_window_( window_size ), min_progress_( min_progress ), progress_( 0 ) {}
 		virtual string what() const override { return stringf( "minimum progress reached (%f)", progress_ ); }
 		virtual bool test( const optimizer& opt ) override;
 

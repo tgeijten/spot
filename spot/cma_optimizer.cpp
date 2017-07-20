@@ -1163,15 +1163,9 @@ namespace spot
 		cmaes_init_final( &pimpl->cmaes );
 
 		pimpl->bounded_pop.resize( lambda(), search_point( objective_.info() ) );
-
 		cmaes_boundary_trans_init( &pimpl->bounds, lb, ub );
-	}
 
-	cma_optimizer::cma_optimizer( cma_optimizer&& other ) :
-	optimizer( other.objective_ )
-	{
-		pimpl = other.pimpl;
-		other.pimpl = nullptr;
+		name = obj.name() + stringf( ".R%d", random_seed() );
 	}
 
 	cma_optimizer::~cma_optimizer()
