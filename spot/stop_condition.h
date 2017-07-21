@@ -63,11 +63,13 @@ namespace spot
 	struct SPOT_API similarity_condition : public stop_condition
 	{
 		similarity_condition( par_value min_distance = 1.0, int min_steps = 10 ) : min_distance_( min_distance ), min_steps_( min_steps ) {}
-		virtual string what() const override { return stringf( "search point is similar to point %d", similarity_index ); }
+		virtual string what() const override { return stringf( "search point is similar to point %d", similar_idx ); }
 		virtual bool test( const optimizer& opt ) override;
 
 		vector< par_vec > similarity_points;
-		index_t similarity_index;
+		vector< double > similarities;
+		index_t similar_idx;
+
 		int min_steps_;
 		par_value min_distance_;
 	};

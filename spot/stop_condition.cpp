@@ -45,15 +45,19 @@ namespace spot
 	{
 		if ( opt.current_step() >= min_steps_ )
 		{
+			similarities.resize( similarity_points.size() );
 			auto& cma = dynamic_cast< const cma_optimizer& >( opt );
 			for ( index_t i = 0; i < similarity_points.size(); ++i )
 			{
-				auto std = cma.current_std();
+				vector< double > std;
+				std.reserve( opt.info().dim() );
+				for ( auto& p : cma.info() ) std.push_back( p.std );
+				//auto std = cma.info().begin();
 				auto point = cma.current_step_best_point().values();
-				auto dist = normalized_distance( point, similarity_points[ i ], std );
-				if ( dist < min_distance_ )
+				similarities[ i ] = normalized_distance( point, similarity_points[ i ], std );
+				if ( similarities[ i ] < min_distance_ )
 				{
-					similarity_index = i;
+					similar_idx = i;
 					return true;
 				}
 			}
