@@ -12,24 +12,23 @@ namespace spot
 	search_count_( 0 )
 	{
 		similarity_stop_ = std::make_shared< similarity_condition >( min_distance );
-		stop_conditions_.clear();
 		stop_conditions_.push_back( std::make_shared< multi_stop_condition >() );
 		name = obj.name();
 	}
 
 	void multi_cma_optimizer::signal_abort()
 	{
-		abort_flag_ = true;
 		for ( auto& o : optimizers_ )
 			o->signal_abort();
+		optimizer::signal_abort();
 	}
 
 	void multi_cma_optimizer::abort_and_wait()
 	{
-		for ( auto& o : optimizers_ )
-			o->signal_abort();
+		signal_abort();
 		for ( auto& o : optimizers_ )
 			o->abort_and_wait();
+		optimizer::abort_and_wait();
 	}
 
 	void multi_cma_optimizer::internal_step()
@@ -63,7 +62,6 @@ namespace spot
 					similarity_stop_->similarity_points.push_back( optimizers_.back()->current_step_best_point().values() );
 			}
 			else optimizers_.pop_back();
-
 		}
 	}
 }
