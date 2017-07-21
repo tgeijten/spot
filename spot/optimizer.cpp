@@ -22,7 +22,6 @@ namespace spot
 		INIT_PROP( pn, max_threads, 32 );
 
 		stop_conditions_.push_back( std::make_unique< abort_condition >() );
-		stop_conditions_.push_back( std::make_unique< flat_fitness_condition >( 1e-6 ) );
 	}
 
 	optimizer::~optimizer()
