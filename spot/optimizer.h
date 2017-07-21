@@ -23,6 +23,9 @@
 
 namespace spot
 {
+	// TODO: this class is a bit of mess and should be cleaned up
+	// Perhaps take step / threading out of this class?
+	// make interface for stop conditions cleaner
 	class SPOT_API optimizer
 	{
 	public:
@@ -38,12 +41,11 @@ namespace spot
 		bool is_active() const { return stop_condition_ == nullptr; }
 		template< typename T > T* find_stop_condition() const
 		{ for ( auto& sc : stop_conditions_ ) { T* p = dynamic_cast< T* >( sc.get() ); if ( p ) return p; } return nullptr; }
-
-		void add_reporter( s_ptr< reporter > cb ) { reporters_.emplace_back( std::move( cb ) ); }
-
 		virtual void signal_abort() { abort_flag_ = true; }
 		virtual void abort_and_wait();
 		bool test_abort() const { return abort_flag_; }
+
+		void add_reporter( s_ptr< reporter > cb ) { reporters_.emplace_back( std::move( cb ) ); }
 
 		fitness_vec_t evaluate( const search_point_vec& pop );
 		
@@ -68,7 +70,7 @@ namespace spot
 
 		// properties
 		int max_threads = 1;
-		string name;
+		mutable string name; // TODO: not this, name should be const
 
 	protected:
 		virtual void internal_step() = 0;
