@@ -1257,7 +1257,7 @@ namespace spot
 
 	int cma_optimizer::random_seed() const
 	{
-		return pimpl->cmaes.rand.aktseed;
+		return pimpl->cmaes.sp.seed;
 	}
 
 	double cma_optimizer::sigma() const
