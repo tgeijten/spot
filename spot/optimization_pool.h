@@ -31,7 +31,7 @@ namespace spot
 	private:
 		struct fitness_tracker
 		{
-			fitness_tracker( size_t s ) : promise_( 0 ), progress_( 1 ), history_( s ) {}
+			fitness_tracker( size_t s ) : promise_( 1 ), progress_( 1 ), history_( s ) {}
 			void update( const optimizer& opt );
 			float promise() const { return promise_; }
 			bool operator<( const fitness_tracker& other ) const { return promise() < other.promise(); }

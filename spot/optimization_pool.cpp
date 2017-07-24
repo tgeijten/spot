@@ -25,11 +25,12 @@ namespace spot
 		// log promises
 		string str = "promises: ";
 		for ( auto& p : fitness_trackers_ )
-			str += stringf( "\t%.0f/%.3f", p.promise_, p.progress_ );
+			str += stringf( "\t%.4f/%.4f", p.promise_, p.progress_ );
 		log::info( str );
 
 		// choose best optimizer and update promise
-		index_t idx = min_element( fitness_trackers_ ) - fitness_trackers_.begin();
+		// TODO: give equal promises equal chances (especially when promise = 0)
+		index_t idx = max_element( fitness_trackers_ ) - fitness_trackers_.begin();
 		if ( optimizers_[ idx ]->is_active() )
 		{
 			optimizers_[ idx ]->step();
@@ -56,10 +57,14 @@ namespace spot
 			float start = static_cast< float >( opt.current_step() ) - window;
 
 			regression_ = flut::linear_regression( start, 1.0f, history_ );
-			auto scale = regression_( start + 0.5f * window );
 
+			// compute progress
+			auto scale = regression_( start + 0.5f * window );
 			progress_ = opt.info().minimize() ? -regression_.slope() / scale : regression_.slope() / scale;
-			promise_ = intersect_y( regression_, static_cast< float >( opt.info().target_fitness() ) );
+
+			// compute promise
+			auto steps = intersect_y( regression_, static_cast< float >( opt.info().target_fitness() ) ) - opt.current_step();
+			promise_ = steps > 0 ? 1.0f / steps : 0.0f;
 		}
 	}
 }
