@@ -6,7 +6,7 @@ namespace spot
 {
 	bool abort_condition::test( const optimizer& opt )
 	{
-		return opt.test_abort();
+		return opt.test_interrupt_flag();
 	}
 
 	bool flat_fitness_condition::test( const optimizer& opt )

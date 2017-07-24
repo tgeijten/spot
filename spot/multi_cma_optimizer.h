@@ -14,7 +14,7 @@ namespace spot
 	{
 	public:
 		multi_cma_optimizer( const objective& obj, size_t max_solutions, size_t max_searches, double min_distance = 0.0, int seed = 123 );
-		virtual ~multi_cma_optimizer() { abort_and_wait(); }
+		virtual ~multi_cma_optimizer() {}
 
 		// inherited from stop_condition
 		struct multi_stop_condition : public stop_condition
@@ -25,9 +25,6 @@ namespace spot
 				return ( ( o.optimizers_.size() >= o.max_solutions_ || o.search_count_ == o.max_searches_ ) && !o.optimizers_.back()->is_active() );
 			}
 		};
-
-		virtual void signal_abort() override;
-		virtual void abort_and_wait() override;
 
 	protected:
 		virtual void internal_step() override;

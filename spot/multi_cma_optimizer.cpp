@@ -16,21 +16,6 @@ namespace spot
 		name = obj.name();
 	}
 
-	void multi_cma_optimizer::signal_abort()
-	{
-		for ( auto& o : optimizers_ )
-			o->signal_abort();
-		optimizer::signal_abort();
-	}
-
-	void multi_cma_optimizer::abort_and_wait()
-	{
-		signal_abort();
-		for ( auto& o : optimizers_ )
-			o->abort_and_wait();
-		optimizer::abort_and_wait();
-	}
-
 	void multi_cma_optimizer::internal_step()
 	{
 		if ( optimizers_.empty() || !optimizers_.back()->is_active() )

@@ -18,7 +18,7 @@ namespace spot
 	class SPOT_API objective_info : public par_io
 	{
 	public:
-		objective_info( bool min = true ) : minimize_( min ) {}
+		objective_info( bool min = true ) : minimize_( min ), target_fitness_( 0 ) {}
 
 		struct par_info
 		{
@@ -35,6 +35,9 @@ namespace spot
 		virtual optional_par_value try_get( const string& name ) const override;
 		optional_par_value try_get_fixed( const string& name ) const;
 		const string& name() const { return name_; }
+
+		fitness_t target_fitness() const { return target_fitness_; }
+		void set_target_fitness( fitness_t f ) { target_fitness_ = f; }
 
 		/// minimize / maximize
 		bool minimize() const { return minimize_; }
@@ -69,6 +72,7 @@ namespace spot
 		par_info_vec par_infos_;
 		flat_map< string, par_value > fixed_pars_;
 		bool minimize_;
+		fitness_t target_fitness_;
 		string name_;
 
 		par_info_vec::const_iterator find( const string& name ) const;

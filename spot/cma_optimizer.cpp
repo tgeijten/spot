@@ -1170,7 +1170,6 @@ namespace spot
 
 	cma_optimizer::~cma_optimizer()
 	{
-		abort_and_wait();
 		delete pimpl;
 	}
 

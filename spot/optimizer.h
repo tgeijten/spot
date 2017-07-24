@@ -15,6 +15,7 @@
 #include <functional>
 #include <thread>
 #include "stop_condition.h"
+#include "flut/interruptible.h"
 
 #if defined(_MSC_VER)
 #	pragma warning( push )
@@ -26,7 +27,7 @@ namespace spot
 	// TODO: this class is a bit of mess and should be cleaned up
 	// Perhaps take step / threading out of this class?
 	// make interface for stop conditions cleaner
-	class SPOT_API optimizer
+	class SPOT_API optimizer : public flut::interruptible
 	{
 	public:
 		optimizer( const objective& o, const prop_node& pn = prop_node() );
@@ -34,16 +35,15 @@ namespace spot
 
 		const stop_condition* step();
 		const stop_condition* run( size_t number_of_steps = 0 );
-		void run_threaded(); // TODO: use future / promise
 
 		void add_stop_condition( s_ptr< stop_condition > cb ) { stop_conditions_.emplace_back( std::move( cb ) ); }
 		stop_condition* current_stop_condition() const { return stop_condition_; }
-		bool is_active() const { return stop_condition_ == nullptr; }
 		template< typename T > T* find_stop_condition() const
-		{ for ( auto& sc : stop_conditions_ ) { T* p = dynamic_cast< T* >( sc.get() ); if ( p ) return p; } return nullptr; }
-		virtual void signal_abort() { abort_flag_ = true; }
-		virtual void abort_and_wait();
-		bool test_abort() const { return abort_flag_; }
+		{
+			for ( auto& sc : stop_conditions_ ) { T* p = dynamic_cast< T* >( sc.get() ); if ( p ) return p; } return nullptr;
+		}
+
+		bool is_active() const { return stop_condition_ == nullptr; }
 
 		void add_reporter( s_ptr< reporter > cb ) { reporters_.emplace_back( std::move( cb ) ); }
 

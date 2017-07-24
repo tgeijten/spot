@@ -26,13 +26,6 @@ namespace spot
 
 	optimizer::~optimizer()
 	{
-		abort_and_wait();
-	}
-
-	void optimizer::run_threaded()
-	{
-		abort_flag_ = false;
-		background_thread = std::thread( [this]() { flut::set_thread_priority( thread_priority ); this->run(); } );
 	}
 
 	const spot::stop_condition* optimizer::step()
@@ -77,15 +70,6 @@ namespace spot
 			step();
 
 		return stop_condition_;
-	}
-
-	void optimizer::abort_and_wait()
-	{
-		if ( background_thread.joinable() )
-		{
-			signal_abort();
-			background_thread.join();
-		}
 	}
 
 	fitness_vec_t optimizer::evaluate( const search_point_vec& pop )
