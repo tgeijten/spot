@@ -18,7 +18,7 @@ namespace spot
 	current_step_median_( o.info().worst_fitness() ),
 	stop_condition_( nullptr )
 	{
-		flut_error_if( o.dim() <= 0, "There are no parameters to optimize" );
+		flut_error_if( o.dim() <= 0, "Objective has no free parameters" );
 		INIT_PROP( pn, max_threads, 32 );
 
 		stop_conditions_.push_back( std::make_unique< abort_condition >() );

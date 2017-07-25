@@ -15,7 +15,7 @@ namespace spot
 	class SPOT_API optimization_pool : interruptible
 	{
 	public:
-		optimization_pool( size_t fitness_tracking_window = 100 );
+		optimization_pool( size_t fitness_tracking_window = 100, size_t min_window_size = 0 );
 		optimization_pool( const optimization_pool& ) = delete;
 		optimization_pool& operator=( const optimization_pool& ) = delete;
 		virtual ~optimization_pool() {}
@@ -26,26 +26,28 @@ namespace spot
 		size_t size() const { return optimizers_.size(); }
 
 		void run( int max_steps = num_const< int >::max() );
-		void step();
+		bool step();
 		virtual void interrupt() const override;
 
 	private:
 		struct fitness_tracker
 		{
-			fitness_tracker( size_t s ) : promise_( 1 ), progress_( 1 ), history_( s ) {}
+			fitness_tracker( size_t s, size_t min_s ) : promise_( 1 ), progress_( 1 ), history_( s ), min_window_size_( min_s ) {}
 			void update( const optimizer& opt );
 			float promise() const { return promise_; }
-			bool operator<( const fitness_tracker& other ) const { return promise() < other.promise(); }
+			bool operator<( const fitness_tracker& other ) const { return promise() > other.promise(); }
 			float progress_;
 			float promise_;
 
 		private:
+			size_t min_window_size_;
 			flut::circular_deque< float > history_;
 			flut::linear_function< float > regression_;
 		};
 
 		vector< fitness_tracker > fitness_trackers_;
-		size_t promise_window_;
+		size_t max_window_size_;
+		size_t min_window_size_;
 		vector< u_ptr< optimizer > > optimizers_;
 		std::deque< index_t > step_queue_;
 	};
