@@ -22,20 +22,25 @@ namespace spot
 
 	void optimization_pool::step()
 	{
-		// log promises
-		string str = "promises: ";
-		for ( auto& p : fitness_trackers_ )
-			str += stringf( "\t%.4f/%.4f", p.promise_, p.progress_ );
-		log::info( str );
+		flut_assert( optimizers_.size() > 0 && fitness_trackers_.size() > 0 );
 
-		// choose best optimizer and update promise
-		// TODO: give equal promises equal chances (especially when promise = 0)
-		index_t idx = max_element( fitness_trackers_ ) - fitness_trackers_.begin();
-		if ( optimizers_[ idx ]->is_active() )
+		while ( step_queue_.size() < 1 )
 		{
-			optimizers_[ idx ]->step();
-			fitness_trackers_[ idx ].update( *optimizers_[ idx ] );
+			// choose best active optimizer
+			auto best_indices = sort_indices( fitness_trackers_ );
+			for ( auto it = best_indices.begin(); it != best_indices.end() && optimizers_[ *it ]->is_active(); ++it )
+			{
+				step_queue_.push_back( *it );
+				if ( ( it < best_indices.end() - 1 ) && fitness_trackers_[ *it ] < fitness_trackers_[ *( it + 1 ) ] )
+					break; // stop if the next one is worse
+			}
 		}
+
+		// process a single optimizer from the step queue
+		auto idx = step_queue_.front();
+		optimizers_[ idx ]->step();
+		fitness_trackers_[ idx ].update( *optimizers_[ idx ] );
+		step_queue_.pop_front();
 	}
 
 	void optimization_pool::interrupt() const

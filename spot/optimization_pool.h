@@ -3,6 +3,7 @@
 #include "optimizer.h"
 #include "types.h"
 #include "flut/interruptible.h"
+#include <deque>
 
 #if defined(_MSC_VER)
 #	pragma warning( push )
@@ -46,6 +47,7 @@ namespace spot
 		vector< fitness_tracker > fitness_trackers_;
 		size_t promise_window_;
 		vector< u_ptr< optimizer > > optimizers_;
+		std::deque< index_t > step_queue_;
 	};
 }
 
