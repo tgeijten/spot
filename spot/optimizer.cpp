@@ -64,7 +64,7 @@ namespace spot
 	const stop_condition* optimizer::run( size_t number_of_steps )
 	{
 		if ( number_of_steps == 0 )
-			number_of_steps = num_const< size_t >::max();
+			number_of_steps = constants< size_t >::max();
 
 		for ( size_t n = 0; n < number_of_steps && is_active(); ++n )
 			step();
