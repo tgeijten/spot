@@ -5,7 +5,7 @@
 #include <memory>
 #include "flut/storage.hpp"
 #include "spot/tools.h"
-#include "spot/multi_cma_optimizer.h"
+#include "spot/optimization_pool.h"
 
 namespace spot
 {
@@ -78,8 +78,11 @@ namespace spot
 	void multi_optimizer_test()
 	{
 		auto obj = make_rastrigin_objective( 5 );
-		multi_cma_optimizer opt( obj, 1000, 10000, 0.1 );
+		optimization_pool pool;
 
-		opt.run();
+		for ( int i = 0; i < 10; ++i )
+			pool.push_back( std::make_unique< cma_optimizer >( obj, 0, i + 1 ) );
+
+		pool.run( 10000 );
 	}
 }

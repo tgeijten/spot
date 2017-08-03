@@ -30,22 +30,6 @@ namespace spot
 		virtual void interrupt() const override;
 
 	private:
-		struct fitness_tracker
-		{
-			fitness_tracker( size_t s, size_t min_s ) : promise_( 1 ), progress_( 1 ), history_( s ), min_window_size_( min_s ) {}
-			void update( const optimizer& opt );
-			float promise() const { return promise_; }
-			bool operator<( const fitness_tracker& other ) const { return promise() > other.promise(); }
-			float progress_;
-			float promise_;
-
-		private:
-			size_t min_window_size_;
-			flut::circular_deque< float > history_;
-			flut::linear_function< float > regression_;
-		};
-
-		vector< fitness_tracker > fitness_trackers_;
 		size_t max_window_size_;
 		size_t min_window_size_;
 		vector< u_ptr< optimizer > > optimizers_;

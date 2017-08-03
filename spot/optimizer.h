@@ -36,21 +36,12 @@ namespace spot
 		const stop_condition* step();
 		const stop_condition* run( size_t number_of_steps = 0 );
 
-		void add_stop_condition( s_ptr< stop_condition > cb ) { stop_conditions_.emplace_back( std::move( cb ) ); }
-		stop_condition* current_stop_condition() const { return stop_condition_; }
-		template< typename T > T* find_stop_condition() const
-		{
-			for ( auto& sc : stop_conditions_ ) { T* p = dynamic_cast< T* >( sc.get() ); if ( p ) return p; } return nullptr;
-		}
-
-		bool is_active() const { return stop_condition_ == nullptr; }
+		void add_stop_condition( s_ptr< stop_condition > cb );
+		stop_condition* test_stop_conditions();
 
 		void add_reporter( s_ptr< reporter > cb ) { reporters_.emplace_back( std::move( cb ) ); }
-
 		fitness_vec_t evaluate( const search_point_vec& pop );
-		
 		void set_max_threads( int val ) { max_threads = val; }
-
 		int current_step() const { return step_count_; }
 		fitness_t current_step_median() const { return current_step_median_; }
 		fitness_t current_step_average() const { return current_step_average_; }
@@ -64,6 +55,11 @@ namespace spot
 		const objective& obj() const { return objective_; }
 		bool is_better( fitness_t a, fitness_t b ) const { return objective_.info().is_better( a, b ); }
 
+		// more statistics
+		void enable_fitness_tracking( size_t window_size ) { fitness_history_.reserve( window_size ); }
+		float progress() const;
+		float promise() const;
+
 		// state
 		virtual void save_state( const path& filename ) const { FLUT_NOT_IMPLEMENTED; }
 		virtual objective_info make_updated_objective_info() const { FLUT_NOT_IMPLEMENTED; }
@@ -75,13 +71,6 @@ namespace spot
 	protected:
 		virtual void internal_step() = 0;
 
-		// evaluation settings
-		std::atomic_bool abort_flag_ = false;
-
-		std::thread background_thread;
-		flut::thread_priority thread_priority;
-		stop_condition* stop_condition_;
-
 		int step_count_;
 		fitness_t current_step_median_;
 		fitness_t current_step_average_;
@@ -90,6 +79,9 @@ namespace spot
 
 		fitness_t best_fitness_;
 		search_point best_point_;
+
+		circular_deque< float > fitness_history_;
+		linear_function< float > fitness_regression_;
 
 		const objective& objective_;
 		vector< s_ptr< reporter > > reporters_;

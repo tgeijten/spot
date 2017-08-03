@@ -11,9 +11,7 @@ namespace spot
 
 	bool flat_fitness_condition::test( const optimizer& opt )
 	{
-		best_ = opt.current_step_best();
-		median_ = opt.current_step_median();
-		return flut::math::equals( best_, median_, epsilon_ );
+		return opt.current_step() > 0 && flut::math::equals( opt.current_step_best(), opt.current_step_median(), epsilon_ );
 	}
 
 	bool max_steps_condition::test( const optimizer& opt )
@@ -23,21 +21,8 @@ namespace spot
 
 	bool min_progress_condition::test( const optimizer& opt )
 	{
-		if ( progress_window_.full() )
-			progress_window_.pop_front();
-		progress_window_.push_back( float( opt.current_step_best() ) );
-		if ( progress_window_.size() < 2 )
-			return false;
-
-		float window = static_cast< float >( progress_window_.size() );
-		float start = static_cast< float >( opt.current_step() ) - window;
-
-		progress_regression_ = linear_regression( start, 1.0f, progress_window_ );
-		auto scale = progress_regression_( start + 0.5f * window );
-		progress_ = opt.info().minimize() ? -progress_regression_.slope() / scale : progress_regression_.slope() / scale;
-
-		if ( progress_window_.full() )
-			return progress_ < min_progress_;
+		if ( opt.current_step() >= progress_window_ )
+			return opt.progress() < min_progress_;
 		else return false;
 	}
 

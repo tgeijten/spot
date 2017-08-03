@@ -1166,6 +1166,8 @@ namespace spot
 		cmaes_boundary_trans_init( &pimpl->bounds, lb, ub );
 
 		name = obj.name() + stringf( ".R%d", random_seed() );
+
+		add_stop_condition( std::make_shared< flat_fitness_condition >( 1e-6 ) );
 	}
 
 	cma_optimizer::~cma_optimizer()

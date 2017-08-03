@@ -4,6 +4,9 @@
 #include <cmath>
 #include "flut/system_tools.hpp"
 #include "flut/prop_node_tools.hpp"
+#include "flut/system/assert.hpp"
+#include "flut/math/linear_regression.hpp"
+#include "flut/math/polynomial.hpp"
 
 namespace spot
 {
@@ -15,8 +18,7 @@ namespace spot
 	step_count_( 0 ),
 	current_step_average_( o.info().worst_fitness() ),
 	current_step_best_( o.info().worst_fitness() ),
-	current_step_median_( o.info().worst_fitness() ),
-	stop_condition_( nullptr )
+	current_step_median_( o.info().worst_fitness() )
 	{
 		flut_error_if( o.dim() <= 0, "Objective has no free parameters" );
 		INIT_PROP( pn, max_threads, 32 );
@@ -30,9 +32,9 @@ namespace spot
 
 	const spot::stop_condition* optimizer::step()
 	{
-		// there is already a stop condition
-		if ( stop_condition_ )
-			return stop_condition_;
+		// test stop conditions and report finish
+		if ( auto* sc = test_stop_conditions() )
+			return sc;
 
 		// send out start callback if this is the first step
 		if ( step_count_ == 0 )
@@ -47,18 +49,15 @@ namespace spot
 		internal_step();
 		++step_count_;
 
-		// test stop conditions and report finish
-		for ( auto& sc : stop_conditions_ )
+		// update fitness history
+		if ( fitness_history_.capacity() > 0 )
 		{
-			if ( sc->test( *this ) )
-			{
-				stop_condition_ = sc.get();
-				for ( auto& cb : reporters_ )
-					cb->finish( *this );
-			}
+			if ( fitness_history_.full() )
+				fitness_history_.pop_front();
+			fitness_history_.push_back( static_cast< float >( current_step_best_ ) );
 		}
 
-		return stop_condition_;
+		return nullptr;
 	}
 
 	const stop_condition* optimizer::run( size_t number_of_steps )
@@ -66,10 +65,32 @@ namespace spot
 		if ( number_of_steps == 0 )
 			number_of_steps = constants< size_t >::max();
 
-		for ( size_t n = 0; n < number_of_steps && is_active(); ++n )
-			step();
+		const stop_condition* sc = nullptr;
+		for ( size_t n = 0; n < number_of_steps && !sc; ++n )
+			sc = step();
+		return sc;
+	}
 
-		return stop_condition_;
+	void optimizer::add_stop_condition( s_ptr< stop_condition > cb )
+	{
+		for ( auto& sc : stop_conditions_ )
+			flut_error_if( sc->what() == cb->what(), "there already is a stop_condition of the same type" );
+
+		stop_conditions_.emplace_back( cb );
+	}
+
+	spot::stop_condition* optimizer::test_stop_conditions()
+	{
+		for ( auto& sc : stop_conditions_ )
+		{
+			if ( sc->test( *this ) )
+			{
+				for ( auto& cb : reporters_ )
+					cb->finish( *this );
+				return sc.get();
+			}
+		}
+		return nullptr;
 	}
 
 	fitness_vec_t optimizer::evaluate( const search_point_vec& pop )
@@ -81,7 +102,7 @@ namespace spot
 
 			for ( index_t eval_idx = 0; eval_idx < pop.size(); ++eval_idx )
 			{
-				if ( abort_flag_.load() )
+				if ( test_interrupt_flag() )
 					break;
 
 				// wait for threads to finish
@@ -143,5 +164,30 @@ namespace spot
 		}
 
 		return results;
+	}
+
+	float optimizer::progress() const
+	{
+		flut_error_if( fitness_history_.capacity() == 0, "fitness tracking must be enabled for this method" );
+		if ( fitness_history_.size() >= 2 )
+		{
+			auto reg = flut::linear_regression( static_cast< float >( step_count_ - fitness_history_.size() ), 1.0f, fitness_history_ );
+			auto slope = reg.slope() / reg( step_count_ - 0.5f * fitness_history_.size() );
+			return info().minimize() ? -slope : slope;
+		}
+		else return 1.0f;
+	}
+
+	float optimizer::promise() const
+	{
+		flut_error_if( fitness_history_.capacity() == 0, "fitness tracking must be enabled for this method" );
+
+		if ( fitness_history_.size() >= 2 )
+		{
+			auto reg = flut::linear_regression( static_cast< float >( step_count_ - fitness_history_.size() ), 1.0f, fitness_history_ );
+			auto steps_to_target = flut::intersect_y( reg, float( info().target_fitness() ) ) - step_count_;
+			return steps_to_target > 0 ? 1.0f / steps_to_target : 0.0f;
+		}
+		else return 1.0f;
 	}
 }
