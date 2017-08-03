@@ -18,7 +18,8 @@ namespace spot
 	step_count_( 0 ),
 	current_step_average_( o.info().worst_fitness() ),
 	current_step_best_( o.info().worst_fitness() ),
-	current_step_median_( o.info().worst_fitness() )
+	current_step_median_( o.info().worst_fitness() ),
+	fitness_history_samples_( 0 )
 	{
 		flut_error_if( o.dim() <= 0, "Objective has no free parameters" );
 		INIT_PROP( pn, max_threads, 32 );
