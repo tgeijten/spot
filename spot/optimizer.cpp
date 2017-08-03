@@ -49,14 +49,6 @@ namespace spot
 		internal_step();
 		++step_count_;
 
-		// update fitness history
-		if ( fitness_history_.capacity() > 0 )
-		{
-			if ( fitness_history_.full() )
-				fitness_history_.pop_front();
-			fitness_history_.push_back( static_cast< float >( current_step_best_ ) );
-		}
-
 		return nullptr;
 	}
 
@@ -149,6 +141,14 @@ namespace spot
 			current_step_average_ = average( results );
 			current_step_best_ = results[ best_idx ];
 			current_step_best_point_ = pop[ best_idx ];
+
+			// update fitness history
+			if ( fitness_history_.capacity() > 0 )
+			{
+				if ( fitness_history_.full() )
+					fitness_history_.pop_front();
+				fitness_history_.push_back( static_cast< float >( current_step_best_ ) );
+			}
 
 			// run callbacks (AFTER current_best is updated!)
 			for ( auto& cb : reporters_ )
