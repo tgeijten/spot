@@ -173,8 +173,8 @@ namespace spot
 		flut_error_if( fitness_history_.capacity() == 0, "fitness tracking must be enabled for this method" );
 		if ( fitness_history_.size() >= 2 )
 		{
-			auto reg = flut::linear_regression( static_cast< float >( step_count_ - fitness_history_.size() ), 1.0f, fitness_history_ );
-			auto slope = reg.slope() / reg( step_count_ - 0.5f * fitness_history_.size() );
+			auto reg = flut::linear_regression( static_cast< float >( fitness_history_samples_ - fitness_history_.size() ), 1.0f, fitness_history_ );
+			auto slope = reg.slope() / reg( fitness_history_samples_  - 0.5f * fitness_history_.size() );
 			return info().minimize() ? -slope : slope;
 		}
 		else return 1.0f;
@@ -187,8 +187,13 @@ namespace spot
 		if ( fitness_history_.size() >= 2 )
 		{
 			auto reg = flut::linear_regression( float( fitness_history_samples_ - fitness_history_.size() ), 1.0f, fitness_history_ );
-			auto steps_to_target = flut::intersect_y( reg, float( info().target_fitness() ) ) - step_count_;
-			return steps_to_target > 0 ? 1.0f / steps_to_target : 0.0f;
+			auto steps_to_target = flut::intersect_y( reg, float( info().target_fitness() ) ) - fitness_history_samples_ ;
+
+			//if ( steps_to_target <= 0 )
+			//	log::infof( "steps_to_target < 0, slope=%.6f offset=%.6f samples=%d hist=%d", reg.slope(), reg.offset(), fitness_history_samples_, fitness_history_.size() );
+			if ( steps_to_target >= 1.0f )
+				return 1.0f / steps_to_target;
+			else return info().minimize() == ( reg.slope() < 0 ) ? 1.0f : 0.0f; // return 0 or 1 depending on slope sign
 		}
 		else return 1.0f;
 	}

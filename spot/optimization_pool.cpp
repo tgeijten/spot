@@ -40,6 +40,11 @@ namespace spot
 				if ( ( it < best_indices.end() - 1 ) && promises[ *it ] != promises[ *( it + 1 ) ] )
 					break; // stop if the next one is worse
 			}
+
+			//string str = "Promises:";
+			//for ( int i = 0; i < optimizers_.size(); ++i )
+			//	str += stringf( "\t%d=%.5f", best_indices[ i ], promises[ best_indices[ i ] ] );
+			//log::info( str );
 		}
 
 		// process a single optimizer from the step queue
