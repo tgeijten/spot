@@ -148,6 +148,7 @@ namespace spot
 				if ( fitness_history_.full() )
 					fitness_history_.pop_front();
 				fitness_history_.push_back( static_cast< float >( current_step_best_ ) );
+				++fitness_history_samples_;
 			}
 
 			// run callbacks (AFTER current_best is updated!)
@@ -184,7 +185,7 @@ namespace spot
 
 		if ( fitness_history_.size() >= 2 )
 		{
-			auto reg = flut::linear_regression( static_cast< float >( step_count_ - fitness_history_.size() ), 1.0f, fitness_history_ );
+			auto reg = flut::linear_regression( float( fitness_history_samples_ - fitness_history_.size() ), 1.0f, fitness_history_ );
 			auto steps_to_target = flut::intersect_y( reg, float( info().target_fitness() ) ) - step_count_;
 			return steps_to_target > 0 ? 1.0f / steps_to_target : 0.0f;
 		}

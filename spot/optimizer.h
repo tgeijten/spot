@@ -80,8 +80,8 @@ namespace spot
 		fitness_t best_fitness_;
 		search_point best_point_;
 
+		size_t fitness_history_samples_;
 		circular_deque< float > fitness_history_;
-		linear_function< float > fitness_regression_;
 
 		const objective& objective_;
 		vector< s_ptr< reporter > > reporters_;
