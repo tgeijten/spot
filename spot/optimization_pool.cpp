@@ -33,6 +33,7 @@ namespace spot
 				promises.push_back( o->current_step() < min_window_size_ ? 1.0f : o->promise() );
 
 			auto best_indices = sort_indices( promises );
+			std::reverse( best_indices.begin(), best_indices.end() );
 			for ( auto it = best_indices.begin(); it != best_indices.end() && !optimizers_[ *it ]->test_stop_conditions(); ++it )
 			{
 				step_queue_.push_back( *it );
