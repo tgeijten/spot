@@ -180,21 +180,22 @@ namespace spot
 		else return 1.0f;
 	}
 
-	float optimizer::promise() const
+	float optimizer::promise( size_t steps ) const
 	{
 		flut_error_if( fitness_history_.capacity() == 0, "fitness tracking must be enabled for this method" );
 
 		if ( fitness_history_.size() >= 2 )
 		{
-			auto reg = flut::linear_regression( float( fitness_history_samples_ - fitness_history_.size() ), 1.0f, fitness_history_ );
-			auto steps_to_target = flut::intersect_y( reg, float( info().target_fitness() ) ) - fitness_history_samples_ ;
+			auto reg = flut::linear_regression( 0.0f, 1.0f, fitness_history_ );
+			return reg( float( fitness_history_.size() + steps ) );
 
-			//if ( steps_to_target <= 0 )
-			//	log::infof( "steps_to_target < 0, slope=%.6f offset=%.6f samples=%d hist=%d", reg.slope(), reg.offset(), fitness_history_samples_, fitness_history_.size() );
+#if 0
+			auto steps_to_target = flut::intersect_y( reg, float( info().target_fitness() ) ) - fitness_history_samples_ ;
 			if ( steps_to_target >= 1.0f )
 				return 1.0f / steps_to_target;
 			else return info().minimize() == ( reg.slope() < 0 ) ? 1.0f : 0.0f; // return 0 or 1 depending on slope sign
+#endif
 		}
-		else return 1.0f;
+		else return 0.0f;
 	}
 }

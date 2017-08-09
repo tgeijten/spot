@@ -58,7 +58,7 @@ namespace spot
 		// more statistics
 		void enable_fitness_tracking( size_t window_size ) { fitness_history_.reserve( window_size ); }
 		float progress() const;
-		float promise() const;
+		float promise( size_t steps ) const;
 
 		// state
 		virtual void save_state( const path& filename ) const { FLUT_NOT_IMPLEMENTED; }
