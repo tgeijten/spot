@@ -45,6 +45,16 @@ namespace spot
 	private:
 		par_io& ps_;
 	};
+
+	struct scoped_prefix_setter
+	{
+		scoped_prefix_setter( par_io& ps, const string& prefix ) : ps_( ps ), previous_( ps_.prefix() ) { ps_.set_prefix( prefix ); }
+		operator par_io&() { return ps_; }
+		~scoped_prefix_setter() { ps_.set_prefix( previous_ ); }
+	private:
+		par_io& ps_;
+		string previous_;
+	};
 }
 
 #if defined(_MSC_VER)
