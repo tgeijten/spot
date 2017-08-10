@@ -12,7 +12,7 @@
 namespace spot
 {
 	template< typename T >
-	inline T try_get_par( par_io& ps, const string& name, const prop_node& pn, const T& def )
+	inline T try_get_par( par_io& ps, const string& name, const prop_node& pn, T def )
 	{
 		if ( auto* p = pn.try_get_child( name ) )
 			return T( ps.get( name, *p ) );
@@ -22,7 +22,7 @@ namespace spot
 	}
 
 	template< typename T >
-	inline T try_get_par( par_io& ps, const string& name, const prop_node& pn, const T& mean, par_value std, par_value lower, par_value upper )
+	inline T try_get_par( par_io& ps, const string& name, const prop_node& pn, T mean, T std, T lower, T upper )
 	{
 		if ( auto* p = pn.try_get_child( name ) )
 			return T( ps.get( name, *p ) );
