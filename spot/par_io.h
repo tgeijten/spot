@@ -34,7 +34,6 @@ namespace spot
 	private:
 		string prefix_;
 		std::vector< size_t > prefixes_sizes;
-	public:
 	};
 
 	struct scoped_prefix
