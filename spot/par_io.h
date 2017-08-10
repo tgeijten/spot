@@ -26,6 +26,7 @@ namespace spot
 		par_value get( const string& name, const prop_node& prop );
 		par_value get_or( const string& name, const prop_node* prop, const par_value& default_value );
 
+		void set_prefix( const string& s ) { prefixes_sizes.clear(); prefix_ = s; }
 		void push_prefix( const string& s ) { prefixes_sizes.push_back( prefix_.size() ); prefix_ += s; }
 		void pop_prefix() { prefix_.resize( prefixes_sizes.back() ); prefixes_sizes.pop_back(); }
 		const string& prefix() const { return prefix_; }
@@ -33,6 +34,7 @@ namespace spot
 	private:
 		string prefix_;
 		std::vector< size_t > prefixes_sizes;
+	public:
 	};
 
 	struct scoped_prefix
