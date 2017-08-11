@@ -1,4 +1,5 @@
 #include "par_io.h"
+#include "flut/math/bounds.hpp"
 
 namespace spot
 {
@@ -22,23 +23,59 @@ namespace spot
 		if ( auto val = try_get( full_name ) )
 			return *val;
 
-		// interpret the struct
-		auto vec = str_to_vec< par_value >( pn.get_value(), 4, " \t," );
-		switch ( vec.size() )
-		{
-		case 0:
+		// check if the prop_node has children
+		optional< par_value > mean, std, min, max;
+		if ( pn.size() > 0 )
 		{
 			if ( pn.get< bool >( "is_free", true ) )
-				return add( full_name, pn.get_any< par_value >( { "mean", "init_mean" } ),
-					pn.get_any< par_value >( { "std", "init_std" } ),
-					pn.get< par_value >( "min", -1e18 ), pn.get< par_value >( "max", 1e18 ) );
+			{
+				mean = pn.get_any< par_value >( { "mean", "init_mean" } );
+				std = pn.get_any< par_value >( { "std", "init_std" } );
+				min = pn.get< par_value >( "min", -1e18 );
+				max = pn.get< par_value >( "max", 1e18 );
+			}
 			else return pn.get_any< par_value >( { "mean", "init_mean" } ); // is_free = 0, return mean
 		}
-		case 1: return vec[ 0 ]; // we have only a value, this is no parameter
-		case 2: return add( full_name, vec[ 0 ], vec[ 1 ], vec[ 0 ] - 2 * vec[ 1 ], vec[ 0 ] + 2 * vec[ 1 ] ); // use -2 STD / +2 STD as min / max
-		case 4: return add( full_name, vec[ 0 ], vec[ 1 ], vec[ 2 ], vec[ 3 ] );
-		default: flut_error( "Invalid number of values" );
+
+		// parse the string
+		char_stream str( pn.get_value().c_str() );
+		while ( str.good() )
+		{
+			char c = str.peekc();
+			if ( c == '~' )
+			{
+				str.getc();
+				str >> std;
+			}
+			else if ( c == '[' )
+			{
+				str.getc();
+				str >> min;
+				flut_error_if( str.getc() != ',', "Error parsing parameter '" + name + "': expected ','" );
+				str >> max;
+				flut_error_if( str.getc() != ']', "Error parsing parameter '" + name + "': expected ']'" );
+			}
+			else // just a value, interpret as mean
+			{
+				flut_error_if( mean, "Error parsing parameter '" + name + "': mean already defined" );
+				str >> mean;
+			}
 		}
+
+		// do some sanity checking and fixing
+		flut_error_if( !mean && std, "Error parsing parameter '" + name + "': std without mean" );
+		flut_error_if( min && max && ( *min > *max ), "Error parsing parameter '" + name + "': min > max" );
+		flut_error_if( !mean && !min && !max, "Error parsing parameter '" + name + "': no parameter defined" );
+		if ( mean && !std && !min && !max )
+			return *mean; // just a value
+		if ( !std && min && max )
+			std = ( *max - *min ) / 4;
+		if ( !mean && min && max )
+			mean = *min + ( *max - *min ) / 2;
+		if ( !min ) min = -1e18;
+		if ( !max ) max = 1e18;
+
+		return add( full_name, *mean, *std, *min, *max );
 	}
 
 	par_value par_io::get_or( const string& name, const prop_node* prop, const par_value& default_value )

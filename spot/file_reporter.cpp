@@ -1,6 +1,7 @@
 #include "file_reporter.h"
 
 #include "flut/system_tools.hpp"
+#include "flut/filesystem.hpp"
 #include "optimizer.h"
 #include "flut/container_tools.hpp"
 #include <fstream>
@@ -8,9 +9,7 @@
 namespace spot
 {
 	file_reporter::file_reporter( const path& root_folder ) : root_( root_folder ), last_output_step( -1 )
-	{
-
-	}
+	{}
 
 	void file_reporter::start( const optimizer& opt )
 	{
@@ -18,9 +17,7 @@ namespace spot
 	}
 
 	void file_reporter::finish( const optimizer& opt )
-	{
-
-	}
+	{}
 
 	void file_reporter::evaluate( const optimizer& opt, const search_point_vec& pop, const fitness_vec_t& fitnesses, index_t best_idx, bool new_best )
 	{
