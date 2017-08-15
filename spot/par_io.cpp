@@ -48,6 +48,8 @@ namespace spot
 			{
 				str.getc();
 				str >> std;
+				if ( str.fail() && mean )
+					std = default_std_factor * *mean;
 			}
 			else if ( c == '[' )
 			{
@@ -65,13 +67,12 @@ namespace spot
 		}
 
 		// do some sanity checking and fixing
+		flut_error_if( !mean && std, "Error parsing parameter '" + name + "': std without mean" );
 		flut_error_if( min && max && ( *min > *max ), "Error parsing parameter '" + name + "': min > max" );
 		flut_error_if( !mean && !std && !min && !max, "Error parsing parameter '" + name + "': no parameter defined" );
 		if ( mean && !std && !min && !max )
 			return *mean; // just a value
 
-		if ( std && !mean )
-		{ mean = std; std = default_std_factor * *mean; }
 		if ( !std && min && max )
 			std = ( *max - *min ) / 4;
 		if ( !mean && min && max )
