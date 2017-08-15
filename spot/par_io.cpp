@@ -3,6 +3,8 @@
 
 namespace spot
 {
+	const par_value default_std_factor = 0.1;
+
 	par_value par_io::get( const string& name, par_value mean, par_value std, par_value min, par_value max )
 	{
 		auto full_name = prefix() + name;
@@ -63,11 +65,13 @@ namespace spot
 		}
 
 		// do some sanity checking and fixing
-		flut_error_if( !mean && std, "Error parsing parameter '" + name + "': std without mean" );
 		flut_error_if( min && max && ( *min > *max ), "Error parsing parameter '" + name + "': min > max" );
-		flut_error_if( !mean && !min && !max, "Error parsing parameter '" + name + "': no parameter defined" );
+		flut_error_if( !mean && !std && !min && !max, "Error parsing parameter '" + name + "': no parameter defined" );
 		if ( mean && !std && !min && !max )
 			return *mean; // just a value
+
+		if ( std && !mean )
+		{ mean = std; std = default_std_factor * *mean; }
 		if ( !std && min && max )
 			std = ( *max - *min ) / 4;
 		if ( !mean && min && max )
