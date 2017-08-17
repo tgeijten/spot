@@ -71,7 +71,7 @@ namespace spot
 			return *mean; // just a value
 
 		if ( std && !mean )
-		{ mean = std; std = default_std_factor * *mean; }
+		{ mean = std; std = default_std_factor * abs( *mean ); }
 		if ( !std && min && max )
 			std = ( *max - *min ) / 4;
 		if ( !mean && min && max )
