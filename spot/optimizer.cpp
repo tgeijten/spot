@@ -22,7 +22,7 @@ namespace spot
 	fitness_history_samples_( 0 )
 	{
 		flut_error_if( o.dim() <= 0, "Objective has no free parameters" );
-		INIT_PROP( pn, max_threads, 32 );
+		INIT_PROP( pn, max_threads, FLUT_IS_DEBUG_BUILD ? 1 : 32 );
 
 		stop_conditions_.push_back( std::make_unique< abort_condition >() );
 	}
