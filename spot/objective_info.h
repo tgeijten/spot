@@ -62,7 +62,7 @@ namespace spot
 		bool empty() const { return par_infos_.empty(); }
 
 		/// import / export
-		size_t import_mean_std( const path& filename, bool import_std );
+		size_t import_mean_std( const path& filename, bool import_std, double std_factor = 1.0, double std_offset = 0.0 );
 		size_t import_fixed( const path& filename );
 		void set_global_std( double factor, double offset );
 		void set_mean_std( const vector< par_value >& mean, const vector< par_value >& std );

@@ -42,7 +42,7 @@ namespace spot
 		return it != par_infos_.end() ? it - par_infos_.begin() : no_index;
 	}
 
-	size_t objective_info::import_mean_std( const path& filename, bool import_std )
+	size_t objective_info::import_mean_std( const path& filename, bool import_std, double std_factor, double std_offset )
 	{
 		size_t params_set = 0;
 		size_t params_not_found = 0;
@@ -61,7 +61,10 @@ namespace spot
 				// read existing parameter, updating mean / std
 				iter->mean = mean;
 				if ( import_std )
-					iter->std = std;
+					iter->std = std_offset + std_factor * std;
+				else if ( std_factor != 1.0 ) // set std to factor of mean
+					iter->std = std_offset + std_factor * iter->mean;
+
 				++params_set;
 			}
 			else ++params_not_found;
