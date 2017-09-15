@@ -23,8 +23,8 @@ namespace spot
 		virtual par_value add( const string& name, par_value mean, par_value std, par_value min = -1e15, par_value max = 1e15 ) = 0;
 
 		par_value get( const string& name, par_value mean, par_value std, par_value min = -1e15, par_value max = 1e15 );
-		par_value get( const string& name, const prop_node& prop );
-		par_value get_or( const string& name, const prop_node* prop, const par_value& default_value );
+		par_value get( const string& name, const prop_node& pn );
+		par_value try_get( const string& name, const prop_node& parent_pn, const string& key, const par_value& default_value );
 
 		void set_prefix( const string& s ) { prefixes_sizes.clear(); prefix_ = s; }
 		void push_prefix( const string& s ) { prefixes_sizes.push_back( prefix_.size() ); prefix_ += s; }

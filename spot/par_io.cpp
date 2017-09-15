@@ -82,10 +82,10 @@ namespace spot
 		return add( full_name, *mean, *std, *min, *max );
 	}
 
-	par_value par_io::get_or( const string& name, const prop_node* prop, const par_value& default_value )
+	spot::par_value par_io::try_get( const string& name, const prop_node& parent_pn, const string& key, const par_value& default_value )
 	{
-		if ( prop )
-			return get( name, *prop );
+		if ( auto* pn = parent_pn.try_get_child( key ) )
+			return get( name, *pn );
 		else return default_value;
 	}
 }
