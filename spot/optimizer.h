@@ -66,6 +66,7 @@ namespace spot
 
 		// properties
 		int max_threads = 1;
+		thread_priority thread_priority_;
 		mutable string name; // TODO: not this, name should be const
 
 	protected:

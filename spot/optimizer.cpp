@@ -19,10 +19,12 @@ namespace spot
 	current_step_average_( o.info().worst_fitness() ),
 	current_step_best_( o.info().worst_fitness() ),
 	current_step_median_( o.info().worst_fitness() ),
-	fitness_history_samples_( 0 )
+	fitness_history_samples_( 0 ),
+	thread_priority_( thread_priority::lowest )
 	{
 		flut_error_if( o.dim() <= 0, "Objective has no free parameters" );
 		INIT_PROP( pn, max_threads, FLUT_IS_DEBUG_BUILD ? 1 : 32 );
+		INIT_PROP( pn, thread_priority_, thread_priority::lowest );
 
 		stop_conditions_.push_back( std::make_unique< abort_condition >() );
 	}
@@ -116,7 +118,7 @@ namespace spot
 				}
 
 				// add new thread
-				threads.push_back( std::make_pair( std::async( std::launch::async, [&]( const search_point& p ) { return objective_.evaluate( p ); }, pop[ eval_idx ] ), eval_idx ) );
+				threads.push_back( std::make_pair( std::async( std::launch::async, [&]( const search_point& p ) { set_thread_priority( thread_priority_ ); return objective_.evaluate( p ); }, pop[ eval_idx ] ), eval_idx ) );
 			}
 
 			// wait for remaining threads
