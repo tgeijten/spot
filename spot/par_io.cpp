@@ -39,7 +39,7 @@ namespace spot
 			else return pn.get_any< par_value >( { "mean", "init_mean" } ); // is_free = 0, return mean
 		}
 
-		// parse the string
+		// parse the string, format mean~std[min,max]
 		char_stream str( pn.get_value().c_str() );
 		while ( str.good() )
 		{
