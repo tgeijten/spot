@@ -37,7 +37,7 @@ namespace spot
 		auto idx = info_.find_index( full_name );
 		if ( idx != no_index )
 			return values_[ idx ];
-		else return info_.try_get_fixed( full_name );
+		else return info_.try_get_locked( full_name );
 	}
 
 	par_value search_point::add( const string& full_name, par_value mean, par_value std, par_value min, par_value max )

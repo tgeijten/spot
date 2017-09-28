@@ -11,13 +11,13 @@ namespace spot
 		auto it = find( name );
 		if ( it != par_infos_.end() )
 			return it->mean;
-		else return try_get_fixed( name );
+		else return try_get_locked( name );
 	}
 
-	optional_par_value objective_info::try_get_fixed( const string& name ) const
+	optional_par_value objective_info::try_get_locked( const string& name ) const
 	{
-		auto it = fixed_pars_.find( name );
-		if ( it != fixed_pars_.end() )
+		auto it = locked_pars_.find( name );
+		if ( it != locked_pars_.end() )
 			return it->second;
 		else return optional_par_value();
 	}
@@ -42,7 +42,7 @@ namespace spot
 		return it != par_infos_.end() ? it - par_infos_.begin() : no_index;
 	}
 
-	size_t objective_info::import_mean_std( const path& filename, bool import_std, double std_factor, double std_offset )
+	pair< size_t, size_t > objective_info::import_mean_std( const path& filename, bool import_std, double std_factor, double std_offset )
 	{
 		size_t params_set = 0;
 		size_t params_not_found = 0;
@@ -64,17 +64,18 @@ namespace spot
 					iter->std = std_offset + std_factor * std;
 				else if ( std_factor != 1.0 ) // set std to factor of mean
 					iter->std = std_offset + std_factor * iter->mean;
-
 				++params_set;
 			}
 			else ++params_not_found;
 		}
-		return params_set;
+
+		return { params_set, params_not_found };
 	}
 
-	size_t objective_info::import_fixed( const path& filename )
+	pair< size_t, size_t > objective_info::import_locked( const path& filename )
 	{
-		fixed_pars_.clear();
+		size_t params_locked = 0;
+		size_t params_not_found = 0;
 
 		flut::char_stream str( filename );
 		while ( str.good() )
@@ -84,11 +85,12 @@ namespace spot
 			str >> name >> value >> mean >> std;
 			if ( !str.fail() )
 			{
-				if ( find( name ) == par_infos_.end() )
-					fixed_pars_[ name ] = value;
+				if ( lock_parameter( name, value ) )
+					++params_locked;
+				else ++params_not_found;
 			}
 		}
-		return fixed_pars_.size();
+		return { params_locked, params_not_found };
 	}
 
 	void objective_info::set_global_std( double factor, double offset )
@@ -107,13 +109,36 @@ namespace spot
 		}
 	}
 
-	objective_info::par_info_vec::const_iterator objective_info::find( const string& name ) const
+	vector< objective_info::par_info >::const_iterator objective_info::find( const string& name ) const
 	{
 		return flut::find_if( par_infos_, [&]( const par_info& p ) { return p.name == name; } );
 	}
 
-	objective_info::par_info_vec::iterator objective_info::find( const string& name )
+	vector< objective_info::par_info >::iterator objective_info::find( const string& name )
 	{
 		return flut::find_if( par_infos_, [&]( par_info& p ) { return p.name == name; } );
 	}
+
+	bool objective_info::lock_parameter( const string& name, par_value value )
+	{
+		auto iter = find( name );
+		if ( iter != par_infos_.end() )
+		{
+			// convert parameter to locked
+			locked_pars_[ iter->name ] = value;
+			par_infos_.erase( iter ); // remove existing parameter
+			return true;
+		}
+		else
+		{
+			// see if it's already a locked parameter
+			auto it2 = locked_pars_.find( name );
+			if ( it2 != locked_pars_.end() )
+			{
+				it2->second = value; // overwrite value
+				return true;
+			}
+		}
+		return false;
+ 	}
 }

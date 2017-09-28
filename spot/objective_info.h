@@ -28,12 +28,11 @@ namespace spot
 			par_value min;
 			par_value max;
 		};
-		using par_info_vec = vector< par_info >;
 
 		virtual size_t dim() const override { return par_infos_.size(); }
 		virtual par_value add( const string& name, par_value mean, par_value std, par_value min = -1e15, par_value max = 1e15 ) override;
 		virtual optional_par_value try_get( const string& name ) const override;
-		optional_par_value try_get_fixed( const string& name ) const;
+		optional_par_value try_get_locked( const string& name ) const;
 		const string& name() const { return name_; }
 
 		fitness_t target_fitness() const { return target_fitness_; }
@@ -54,29 +53,30 @@ namespace spot
 		index_t find_index( const string& name ) const;
 
 		/// iterator access
-		par_info_vec::const_iterator begin() const { return par_infos_.begin(); }
-		par_info_vec::const_iterator end() const { return par_infos_.end(); }
+		vector< par_info >::const_iterator begin() const { return par_infos_.begin(); }
+		vector< par_info >::const_iterator end() const { return par_infos_.end(); }
 
 		/// properties
 		size_t size() const { return par_infos_.size(); }
 		bool empty() const { return par_infos_.empty(); }
 
 		/// import / export
-		size_t import_mean_std( const path& filename, bool import_std, double std_factor = 1.0, double std_offset = 0.0 );
-		size_t import_fixed( const path& filename );
+		pair< size_t, size_t > import_mean_std( const path& filename, bool import_std, double std_factor = 1.0, double std_offset = 0.0 );
+		pair< size_t, size_t > import_locked( const path& filename );
 		void set_global_std( double factor, double offset );
 		void set_mean_std( const vector< par_value >& mean, const vector< par_value >& std );
 		void set_name( const string& name ) { name_ = name; }
 
 	private:
-		par_info_vec par_infos_;
-		flat_map< string, par_value > fixed_pars_;
+		vector< par_info > par_infos_;
+		flat_map< string, par_value > locked_pars_;
 		bool minimize_;
 		fitness_t target_fitness_;
 		string name_;
 
-		par_info_vec::const_iterator find( const string& name ) const;
-		par_info_vec::iterator find( const string& name );
+		vector< par_info >::const_iterator find( const string& name ) const;
+		vector< par_info >::iterator find( const string& name );
+		bool lock_parameter( const string& name, par_value value );
 	};
 }
 
