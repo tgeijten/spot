@@ -2,7 +2,7 @@
 
 #include "optimizer.h"
 #include "types.h"
-#include "flut/interruptible.h"
+#include "flut/interruptible.hpp"
 #include <deque>
 
 #if defined(_MSC_VER)

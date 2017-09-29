@@ -15,7 +15,7 @@
 #include <functional>
 #include <thread>
 #include "stop_condition.h"
-#include "flut/interruptible.h"
+#include "flut/interruptible.hpp"
 
 #if defined(_MSC_VER)
 #	pragma warning( push )
