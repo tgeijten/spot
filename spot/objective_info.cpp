@@ -55,18 +55,21 @@ namespace spot
 			double value, mean, std;
 			str >> name >> value >> mean >> std;
 
-			auto iter = find( name );
-			if ( iter != end() )
+			if ( !str.fail() )
 			{
-				// read existing parameter, updating mean / std
-				iter->mean = mean;
-				if ( import_std )
-					iter->std = std_offset + std_factor * std;
-				else if ( std_factor != 1.0 ) // set std to factor of mean
-					iter->std = std_offset + std_factor * iter->mean;
-				++params_set;
+				auto iter = find( name );
+				if ( iter != end() )
+				{
+					// read existing parameter, updating mean / std
+					iter->mean = mean;
+					if ( import_std )
+						iter->std = std_offset + std_factor * std;
+					else if ( std_factor != 1.0 ) // set std to factor of mean
+						iter->std = std_offset + std_factor * iter->mean;
+					++params_set;
+				}
+				else ++params_not_found;
 			}
-			else ++params_not_found;
 		}
 
 		return { params_set, params_not_found };
