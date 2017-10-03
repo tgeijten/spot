@@ -38,14 +38,17 @@ namespace spot
 		const stop_condition* step();
 		const stop_condition* run( size_t number_of_steps = 0 );
 
-		stop_condition& add_stop_condition( u_ptr< stop_condition > cb );
 		stop_condition* test_stop_conditions();
 
-		template< typename T > T& get_stop_condition() { 
+		template< typename T, typename... Args > T& add_stop_condition( Args&&... args ) { 
+			stop_conditions_.emplace_back( new T( std::forward<Args>( args )... ) );
+			return dynamic_cast<T&>( *stop_conditions_.back() );
+		}
+
+		template< typename T > T* try_find_stop_condition() {
 			for ( auto& c : stop_conditions_ )
-				if ( auto* p = dynamic_cast<T*>( c.get() ) )
-					return *p;
-			return dynamic_cast<T&>( add_stop_condition( u_ptr< stop_condition >( new T() ) ) );
+				if ( auto* p = dynamic_cast<T*>( c.get() ) ) return *p;
+			return nullptr;
 		}
 
 		void add_reporter( s_ptr< reporter > cb ) { reporters_.emplace_back( std::move( cb ) ); }

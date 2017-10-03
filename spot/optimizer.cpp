@@ -26,7 +26,7 @@ namespace spot
 		INIT_PROP( pn, max_threads, FLUT_IS_DEBUG_BUILD ? 1 : 32 );
 		INIT_PROP( pn, thread_priority_, thread_priority::lowest );
 
-		stop_conditions_.push_back( std::make_unique< abort_condition >() );
+		add_stop_condition< abort_condition >();
 	}
 
 	optimizer::~optimizer()
@@ -64,14 +64,6 @@ namespace spot
 		for ( size_t n = 0; n < number_of_steps && !sc; ++n )
 			sc = step();
 		return sc;
-	}
-
-	stop_condition& optimizer::add_stop_condition( u_ptr< stop_condition > cb )
-	{
-		for ( auto& sc : stop_conditions_ )
-			flut_error_if( sc->what() == cb->what(), "there already is a stop_condition of the same type" );
-		stop_conditions_.emplace_back( std::move( cb ) );
-		return *stop_conditions_.back();
 	}
 
 	spot::stop_condition* optimizer::test_stop_conditions()
@@ -151,6 +143,7 @@ namespace spot
 				if ( fitness_history_.full() )
 					fitness_history_.pop_front();
 				fitness_history_.push_back( static_cast< float >( current_step_average_ ) );
+				++fitness_history_samples_;
 			}
 
 			// run callbacks (AFTER current_best is updated!)
@@ -171,7 +164,7 @@ namespace spot
 
 	flut::linear_function< float > optimizer::fitness_trend() const
 	{
-		float start = std::max( 0.0f, float( 1 + current_step() ) - float( fitness_history_.size() ) );
+		float start = float( fitness_history_samples_ - fitness_history_.size() );
 		return flut::linear_regression( start, 1.0f, fitness_history_ );
 	}
 
