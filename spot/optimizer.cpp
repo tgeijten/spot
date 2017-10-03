@@ -66,12 +66,12 @@ namespace spot
 		return sc;
 	}
 
-	void optimizer::add_stop_condition( s_ptr< stop_condition > cb )
+	stop_condition& optimizer::add_stop_condition( u_ptr< stop_condition > cb )
 	{
 		for ( auto& sc : stop_conditions_ )
 			flut_error_if( sc->what() == cb->what(), "there already is a stop_condition of the same type" );
-
-		stop_conditions_.emplace_back( cb );
+		stop_conditions_.emplace_back( std::move( cb ) );
+		return *stop_conditions_.back();
 	}
 
 	spot::stop_condition* optimizer::test_stop_conditions()
@@ -141,7 +141,7 @@ namespace spot
 
 			// update current mean, avg and best
 			current_step_median_ = median( results );
-			current_step_average_ = average( results );
+			current_step_average_ = top_average( results, pop.size() / 2 );
 			current_step_best_ = results[ best_idx ];
 			current_step_best_point_ = pop[ best_idx ];
 
@@ -150,8 +150,7 @@ namespace spot
 			{
 				if ( fitness_history_.full() )
 					fitness_history_.pop_front();
-				fitness_history_.push_back( static_cast< float >( current_step_best_ ) );
-				++fitness_history_samples_;
+				fitness_history_.push_back( static_cast< float >( current_step_average_ ) );
 			}
 
 			// run callbacks (AFTER current_best is updated!)
@@ -170,34 +169,30 @@ namespace spot
 		return results;
 	}
 
+	flut::linear_function< float > optimizer::fitness_trend() const
+	{
+		float start = std::max( 0.0f, float( 1 + current_step() ) - float( fitness_history_.size() ) );
+		return flut::linear_regression( start, 1.0f, fitness_history_ );
+	}
+
 	float optimizer::progress() const
 	{
 		flut_error_if( fitness_history_.capacity() == 0, "fitness tracking must be enabled for this method" );
 		if ( fitness_history_.size() >= 2 )
 		{
-			auto reg = flut::linear_regression( static_cast< float >( fitness_history_samples_ - fitness_history_.size() ), 1.0f, fitness_history_ );
-			auto slope = reg.slope() / reg( fitness_history_samples_  - 0.5f * fitness_history_.size() );
+			auto& reg = fitness_trend();
+			auto slope = reg.slope() / reg( fitness_history_samples_ - 0.5f * fitness_history_.size() );
 			return info().minimize() ? -slope : slope;
 		}
-		else return 1.0f;
+		else return 0.0f;
 	}
 
-	float optimizer::promise( size_t steps ) const
+	float optimizer::predicted_fitness( size_t step ) const
 	{
 		flut_error_if( fitness_history_.capacity() == 0, "fitness tracking must be enabled for this method" );
 
 		if ( fitness_history_.size() >= 2 )
-		{
-			auto reg = flut::linear_regression( 0.0f, 1.0f, fitness_history_ );
-			return reg( float( fitness_history_.size() + steps ) );
-
-#if 0
-			auto steps_to_target = flut::intersect_y( reg, float( info().target_fitness() ) ) - fitness_history_samples_ ;
-			if ( steps_to_target >= 1.0f )
-				return 1.0f / steps_to_target;
-			else return info().minimize() == ( reg.slope() < 0 ) ? 1.0f : 0.0f; // return 0 or 1 depending on slope sign
-#endif
-		}
+			return fitness_trend()( static_cast< float >( step ) );
 		else return 0.0f;
 	}
 }

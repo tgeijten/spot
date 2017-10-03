@@ -31,18 +31,27 @@ namespace spot
 	{
 	public:
 		optimizer( const objective& o, const prop_node& pn = prop_node() );
+		optimizer( const optimizer& ) = delete;
+		optimizer& operator=( const optimizer& ) = delete;
 		virtual ~optimizer();
 
 		const stop_condition* step();
 		const stop_condition* run( size_t number_of_steps = 0 );
 
-		void add_stop_condition( s_ptr< stop_condition > cb );
+		stop_condition& add_stop_condition( u_ptr< stop_condition > cb );
 		stop_condition* test_stop_conditions();
+
+		template< typename T > T& get_stop_condition() { 
+			for ( auto& c : stop_conditions_ )
+				if ( auto* p = dynamic_cast<T*>( c.get() ) )
+					return *p;
+			return dynamic_cast<T&>( add_stop_condition( u_ptr< stop_condition >( new T() ) ) );
+		}
 
 		void add_reporter( s_ptr< reporter > cb ) { reporters_.emplace_back( std::move( cb ) ); }
 		fitness_vec_t evaluate( const search_point_vec& pop );
 		void set_max_threads( int val ) { max_threads = val; }
-		int current_step() const { return step_count_; }
+		index_t current_step() const { return step_count_; }
 		fitness_t current_step_median() const { return current_step_median_; }
 		fitness_t current_step_average() const { return current_step_average_; }
 		fitness_t current_step_best() const { return current_step_best_; }
@@ -57,8 +66,9 @@ namespace spot
 
 		// more statistics
 		void enable_fitness_tracking( size_t window_size ) { fitness_history_.reserve( window_size ); }
+		linear_function< float > fitness_trend() const;
 		float progress() const;
-		float promise( size_t steps ) const;
+		float predicted_fitness( size_t step ) const;
 
 		// state
 		virtual void save_state( const path& filename ) const { FLUT_NOT_IMPLEMENTED; }
@@ -72,7 +82,7 @@ namespace spot
 	protected:
 		virtual void internal_step() = 0;
 
-		int step_count_;
+		index_t step_count_;
 		fitness_t current_step_median_;
 		fitness_t current_step_average_;
 		fitness_t current_step_best_;
@@ -86,7 +96,7 @@ namespace spot
 
 		const objective& objective_;
 		vector< s_ptr< reporter > > reporters_;
-		vector< s_ptr< stop_condition > > stop_conditions_;
+		vector< u_ptr< stop_condition > > stop_conditions_;
 	};
 }
 

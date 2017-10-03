@@ -30,7 +30,7 @@ namespace spot
 			// choose best active optimizer
 			vector< float > promises;
 			for ( auto& o : optimizers_ )
-				promises.push_back( o->current_step() < min_window_size_ ? 1.0f : o->promise( 1000 ) );
+				promises.push_back( o->current_step() < min_window_size_ ? 1.0f : o->predicted_fitness( 1000 ) );
 
 			auto best_indices = sort_indices( promises );
 			std::reverse( best_indices.begin(), best_indices.end() );
