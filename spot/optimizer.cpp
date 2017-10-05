@@ -25,7 +25,7 @@ namespace spot
 		flut_error_if( o.dim() <= 0, "Objective has no free parameters" );
 		INIT_PROP( pn, max_threads, FLUT_IS_DEBUG_BUILD ? 1 : 32 );
 		INIT_PROP( pn, thread_priority_, thread_priority::lowest );
-		INIT_PROP( pn, fitness_history_bin_size_, 4 );
+		INIT_PROP( pn, fitness_history_bin_size_, 10 );
 
 		add_stop_condition< abort_condition >();
 	}
