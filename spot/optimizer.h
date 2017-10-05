@@ -95,6 +95,7 @@ namespace spot
 		search_point best_point_;
 
 		size_t fitness_history_samples_;
+		size_t fitness_history_bin_size_;
 		circular_deque< float > fitness_history_;
 
 		const objective& objective_;

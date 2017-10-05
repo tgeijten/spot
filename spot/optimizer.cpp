@@ -25,6 +25,7 @@ namespace spot
 		flut_error_if( o.dim() <= 0, "Objective has no free parameters" );
 		INIT_PROP( pn, max_threads, FLUT_IS_DEBUG_BUILD ? 1 : 32 );
 		INIT_PROP( pn, thread_priority_, thread_priority::lowest );
+		INIT_PROP( pn, fitness_history_bin_size_, 4 );
 
 		add_stop_condition< abort_condition >();
 	}
@@ -142,7 +143,7 @@ namespace spot
 			{
 				if ( fitness_history_.full() )
 					fitness_history_.pop_front();
-				fitness_history_.push_back( static_cast< float >( current_step_average_ ) );
+				fitness_history_.push_back( static_cast< float >( current_step_best_ ) );
 				++fitness_history_samples_;
 			}
 
@@ -164,8 +165,22 @@ namespace spot
 
 	flut::linear_function< float > optimizer::fitness_trend() const
 	{
-		float start = float( fitness_history_samples_ - fitness_history_.size() );
-		return flut::linear_regression( start, 1.0f, fitness_history_ );
+		if ( fitness_history_.size() >= 2 * fitness_history_bin_size_ )
+		{
+			std::vector< float > values( fitness_history_.size() / fitness_history_bin_size_, objective().info().worst< float >() );
+			index_t start_idx = fitness_history_.size() % fitness_history_bin_size_;
+
+			for ( index_t i = start_idx; i < fitness_history_.size(); ++i )
+			{
+				auto& cur_best = values[ ( i - start_idx ) / fitness_history_bin_size_ ];
+				if ( info().is_better( fitness_history_[ i ], cur_best ) )
+					cur_best = fitness_history_[ i ];
+			}
+
+			auto start = start_idx + ( fitness_history_samples_ - fitness_history_.size() ) + fitness_history_bin_size_ / 2;
+			return flut::linear_regression( float( start ), float( fitness_history_bin_size_ ), values );
+		}
+		else return flut::linear_function< float >();
 	}
 
 	float optimizer::progress() const

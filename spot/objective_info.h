@@ -43,8 +43,10 @@ namespace spot
 		bool maximize() const { return !minimize_; }
 		bool is_better( fitness_t a, fitness_t b ) const { return minimize() ? a < b : a > b; }
 		index_t find_best_fitness( const fitness_vec_t& f ) const;
-		fitness_t worst_fitness() const { return minimize() ? constants< fitness_t >::max() : constants< fitness_t >::lowest(); }
-		fitness_t best_fitness() const { return minimize() ? constants< fitness_t >::lowest() : constants< fitness_t >::max(); }
+		template< typename T > T worst() const { return minimize() ? constants< T >::max() : constants< T >::lowest(); }
+		template< typename T > T best() const { return minimize() ? constants< T >::lowest() : constants< T >::max(); }
+		fitness_t worst_fitness() const { return worst< fitness_t >(); }
+		fitness_t best_fitness() const { return best< fitness_t >(); }
 		void set_minimize( bool m ) { minimize_ = m; }
 
 		/// access by index
