@@ -90,10 +90,14 @@ namespace spot
 
 	std::ostream& operator<<( std::ostream& str, const search_point& ps )
 	{
+		size_t max_width = 0;
+		for ( auto& inf : ps.info() )
+			max_width = std::max( max_width, inf.name.size() );
+
 		for ( index_t idx = 0; idx < ps.size(); ++idx )
 		{
 			auto& inf = ps.info()[ idx ];
-			str << std::left << std::setw( 20 ) << inf.name << "\t";
+			str << std::left << std::setw( max_width ) << inf.name << "\t";
 			str << std::setprecision( 8 ) << ps[ idx ] << "\t" << inf.mean << "\t" << inf.std << "\t" << std::endl;
 		}
 		return str;

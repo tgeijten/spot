@@ -36,8 +36,6 @@ namespace spot
 		size_t size() const { return info_.size(); }
 		size_t import_values( const path& filename );
 
-		friend SPOT_API std::ostream& operator<<( std::ostream& str, const search_point& ps );
-
 		void set_values( const par_vec& values );
 		const par_vec& values() const { return values_; }
 
@@ -50,7 +48,9 @@ namespace spot
 	};
 
 	using search_point_vec = vector< search_point >;
-	pair< par_vec, par_vec > SPOT_API compute_mean_std( const search_point_vec& pop );
+
+	SPOT_API pair< par_vec, par_vec > compute_mean_std( const search_point_vec& pop );
+	SPOT_API std::ostream& operator<<( std::ostream& str, const search_point& ps );
 }
 
 #if defined(_MSC_VER)
