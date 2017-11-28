@@ -26,9 +26,9 @@ namespace spot
 		par_value get( const string& name, const prop_node& pn );
 		par_value try_get( const string& name, const prop_node& parent_pn, const string& key, const par_value& default_value );
 
-		void set_prefix( const string& s ) { prefixes_sizes.clear(); prefix_ = s; }
-		void push_prefix( const string& s ) { prefixes_sizes.push_back( prefix_.size() ); prefix_ += s; }
-		void pop_prefix() { prefix_.resize( prefixes_sizes.back() ); prefixes_sizes.pop_back(); }
+		void set_prefix( const string& s );
+		void push_prefix( const string& s );
+		string pop_prefix();
 		const string& prefix() const { return prefix_; }
 
 	private:
