@@ -49,6 +49,7 @@ namespace spot
 	{
 		size_t params_read = 0;
 		std::ifstream str( filename.str() );
+		flut_error_if( !str.good(), "Could not open " + filename.string() );
 		while ( str.good() )
 		{
 			string name;
