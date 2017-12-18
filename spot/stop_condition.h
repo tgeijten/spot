@@ -1,9 +1,9 @@
 #pragma once
 
-#include "flut/container_tools.hpp"
-#include "flut/math/linear_regression.hpp"
-#include "flut/math/polynomial.hpp"
-#include "flut/circular_deque.hpp"
+#include "xo/container/container_tools.h"
+#include "xo/numerical/linear_regression.h"
+#include "xo/numerical/polynomial.h"
+#include "xo/container/circular_deque.h"
 #include "search_point.h"
 #include "tools.h"
 

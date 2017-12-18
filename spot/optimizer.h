@@ -3,19 +3,20 @@
 #include "objective.h"
 #include "reporter.h"
 
-#include "flut/prop_node.hpp"
-#include "flut/system/types.hpp"
+#include "xo/container/prop_node.h"
+#include "xo/utility/types.h"
 
-#include "flut/math/math.hpp"
-#include "flut/math/optional.hpp"
-#include "flut/system_tools.hpp"
-#include "flut/circular_deque.hpp"
+#include "xo/numerical/math.h"
+#include "xo/utility/optional.h"
+#include "xo/system/system_tools.h"
+#include "xo/container/circular_deque.h"
 
 #include <atomic>
 #include <functional>
 #include <thread>
 #include "stop_condition.h"
-#include "flut/interruptible.hpp"
+#include "xo/utility/interruptible.h"
+#include "xo/numerical/polynomial.h"
 
 #if defined(_MSC_VER)
 #	pragma warning( push )
@@ -27,7 +28,7 @@ namespace spot
 	// TODO: this class is a bit of mess and should be cleaned up
 	// Perhaps take step / threading out of this class?
 	// make interface for stop conditions cleaner
-	class SPOT_API optimizer : public flut::interruptible
+	class SPOT_API optimizer : public xo::interruptible
 	{
 	public:
 		optimizer( const objective& o, const prop_node& pn = prop_node() );
@@ -74,8 +75,8 @@ namespace spot
 		float predicted_fitness( size_t step ) const;
 
 		// state
-		virtual void save_state( const path& filename ) const { FLUT_NOT_IMPLEMENTED; }
-		virtual objective_info make_updated_objective_info() const { FLUT_NOT_IMPLEMENTED; }
+		virtual void save_state( const path& filename ) const { XO_NOT_IMPLEMENTED; }
+		virtual objective_info make_updated_objective_info() const { XO_NOT_IMPLEMENTED; }
 
 		// properties
 		int max_threads = 1;

@@ -6,7 +6,7 @@ project(spot)
 # To create a folder hierarchy within Visual Studio.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-find_package(Flut REQUIRED)
+find_package(Xo REQUIRED)
 include_directories( ${FLUT_INCLUDE_DIR} )
 
 # Compiler flags.

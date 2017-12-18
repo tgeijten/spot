@@ -2,7 +2,7 @@
 
 #include "search_point.h"
 
-#include "flut/system/platform.hpp"
+#include "xo/system/platform.h"
 
 namespace spot
 {

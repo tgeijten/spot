@@ -1,6 +1,6 @@
 #include "search_point.h"
 
-#include "flut/container_tools.hpp"
+#include "xo/container/container_tools.h"
 #include <fstream>
 
 namespace spot
@@ -16,13 +16,13 @@ namespace spot
 
 	search_point::search_point( const objective_info& inf, const par_vec& values ) : info_( inf ), values_( values )
 	{
-		flut_assert( info_.size() == values_.size() );
+		xo_assert( info_.size() == values_.size() );
 		round_values();
 	}
 
 	search_point::search_point( const objective_info& inf, par_vec&& values ) : info_( inf ), values_( std::move( values ) )
 	{
-		flut_assert( info_.size() == values_.size() );
+		xo_assert( info_.size() == values_.size() );
 		round_values();
 	}
 
@@ -42,14 +42,14 @@ namespace spot
 
 	par_value search_point::add( const string& full_name, par_value mean, par_value std, par_value min, par_value max )
 	{
-		flut_error( "Previously undefined parameter: " + full_name );
+		xo_error( "Previously undefined parameter: " + full_name );
 	}
 
 	size_t search_point::import_values( const path& filename )
 	{
 		size_t params_read = 0;
 		std::ifstream str( filename.str() );
-		flut_error_if( !str.good(), "Could not open " + filename.string() );
+		xo_error_if( !str.good(), "Could not open " + filename.string() );
 		while ( str.good() )
 		{
 			string name;
@@ -70,7 +70,7 @@ namespace spot
 
 	void search_point::set_values( const par_vec& values )
 	{
-		flut_assert( values_.size() == values.size() );
+		xo_assert( values_.size() == values.size() );
 		for ( size_t idx = 0; idx < values.size(); ++idx )
 			values_[ idx ] = rounded( values[ idx ] );
 	}
@@ -119,7 +119,7 @@ namespace spot
 		for ( index_t pop_idx = 0; pop_idx < pop.size(); ++pop_idx )
 		{
 			for ( index_t i = 0; i < info.dim(); ++i )
-				stds[ i ] += math::squared( pop[ pop_idx ][ i ] - mean[ i ] ) / pop.size();
+				stds[ i ] += squared( pop[ pop_idx ][ i ] - mean[ i ] ) / pop.size();
 		}
 		for ( index_t i = 0; i < info.dim(); ++i )
 			stds[ i ] = sqrt( stds[ i ] );

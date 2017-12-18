@@ -1,12 +1,12 @@
 #pragma once
 
 #include "spot/types.h"
-#include "flut/math/math.hpp"
+#include "xo/numerical/math.h"
 #include "spot/objective.h"
 
 namespace spot
 {
-	using flut::math::squared;
+	using xo::squared;
 
 	double cigtab_c( double const *x, int N );
 	double cigtab( const par_vec& x );

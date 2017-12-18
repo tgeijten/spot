@@ -1,6 +1,6 @@
 #include "objective.h"
 
-#include "flut/math/math.hpp"
+#include "xo/numerical/math.h"
 
 namespace spot
 {

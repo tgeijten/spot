@@ -1,12 +1,12 @@
 #include "optimizer.h"
 #include <future>
-#include "flut/system/log.hpp"
+#include "xo/system/log.h"
 #include <cmath>
-#include "flut/system_tools.hpp"
-#include "flut/prop_node_tools.hpp"
-#include "flut/system/assert.hpp"
-#include "flut/math/linear_regression.hpp"
-#include "flut/math/polynomial.hpp"
+#include "xo/system/system_tools.h"
+#include "xo/stream/prop_node_tools.h"
+#include "xo/system/assert.h"
+#include "xo/numerical/linear_regression.h"
+#include "xo/numerical/polynomial.h"
 
 namespace spot
 {
@@ -22,8 +22,8 @@ namespace spot
 	fitness_history_samples_( 0 ),
 	thread_priority_( thread_priority::lowest )
 	{
-		flut_error_if( o.dim() <= 0, "Objective has no free parameters" );
-		INIT_PROP( pn, max_threads, FLUT_IS_DEBUG_BUILD ? 1 : 32 );
+		xo_error_if( o.dim() <= 0, "Objective has no free parameters" );
+		INIT_PROP( pn, max_threads, XO_IS_DEBUG_BUILD ? 1 : 32 );
 		INIT_PROP( pn, thread_priority_, thread_priority::lowest );
 		INIT_PROP( pn, fitness_history_bin_size_, 10 );
 
@@ -163,7 +163,7 @@ namespace spot
 		return results;
 	}
 
-	flut::linear_function< float > optimizer::fitness_trend() const
+	xo::linear_function< float > optimizer::fitness_trend() const
 	{
 		if ( fitness_history_.size() >= 2 * fitness_history_bin_size_ )
 		{
@@ -178,14 +178,14 @@ namespace spot
 			}
 
 			auto start = start_idx + ( fitness_history_samples_ - fitness_history_.size() ) + fitness_history_bin_size_ / 2;
-			return flut::linear_regression( float( start ), float( fitness_history_bin_size_ ), values );
+			return xo::linear_regression( float( start ), float( fitness_history_bin_size_ ), values );
 		}
-		else return flut::linear_function< float >();
+		else return xo::linear_function< float >();
 	}
 
 	float optimizer::progress() const
 	{
-		flut_error_if( fitness_history_.capacity() == 0, "fitness tracking must be enabled for this method" );
+		xo_error_if( fitness_history_.capacity() == 0, "fitness tracking must be enabled for this method" );
 		if ( fitness_history_.size() >= 2 )
 		{
 			auto& reg = fitness_trend();
@@ -197,7 +197,7 @@ namespace spot
 
 	float optimizer::predicted_fitness( size_t step ) const
 	{
-		flut_error_if( fitness_history_.capacity() == 0, "fitness tracking must be enabled for this method" );
+		xo_error_if( fitness_history_.capacity() == 0, "fitness tracking must be enabled for this method" );
 
 		if ( fitness_history_.size() >= 2 )
 			return fitness_trend()( static_cast< float >( step ) );

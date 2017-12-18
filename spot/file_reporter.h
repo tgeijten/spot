@@ -1,7 +1,7 @@
 #pragma once
 
 #include "reporter.h"
-#include "flut/circular_deque.hpp"
+#include "xo/container/circular_deque.h"
 
 #if defined(_MSC_VER)
 #	pragma warning( push )

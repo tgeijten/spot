@@ -1,7 +1,7 @@
 #include "objective_info.h"
 
-#include "flut/container_tools.hpp"
-#include "flut/system/assert.hpp"
+#include "xo/container/container_tools.h"
+#include "xo/system/assert.h"
 #include <fstream>
 
 namespace spot
@@ -22,7 +22,7 @@ namespace spot
 		else return optional_par_value();
 	}
 
-	flut::index_t objective_info::find_best_fitness( const fitness_vec_t& f ) const
+	xo::index_t objective_info::find_best_fitness( const fitness_vec_t& f ) const
 	{
 		if ( minimize() )
 			return std::min_element( f.begin(), f.end() ) - f.begin();
@@ -31,7 +31,7 @@ namespace spot
 
 	par_value objective_info::add( const string& name, par_value mean, par_value std, par_value min, par_value max )
 	{
-		flut_assert( find( name ) == par_infos_.end() );
+		xo_assert( find( name ) == par_infos_.end() );
 		par_infos_.emplace_back( par_info{ name, mean, std, min, max } );
 		return par_infos_.back().mean;
 	}
@@ -48,7 +48,7 @@ namespace spot
 		size_t params_not_found = 0;
 
 		std::ifstream str( filename.str() );
-		flut_error_if( !str.good(), "Error opening file: " + filename.str() );
+		xo_error_if( !str.good(), "Error opening file: " + filename.str() );
 		while ( str.good() )
 		{
 			std::string name;
@@ -80,7 +80,7 @@ namespace spot
 		size_t params_locked = 0;
 		size_t params_not_found = 0;
 
-		flut::char_stream str( filename );
+		xo::char_stream str( filename );
 		while ( str.good() )
 		{
 			string name;
@@ -104,7 +104,7 @@ namespace spot
 
 	void objective_info::set_mean_std( const vector< par_value >& mean, const vector< par_value >& std )
 	{
-		flut_assert( mean.size() == size() && std.size() == size() );
+		xo_assert( mean.size() == size() && std.size() == size() );
 		for ( index_t i = 0; i < size(); ++i )
 		{
 			par_infos_[ i ].mean = mean[ i ];
@@ -114,12 +114,12 @@ namespace spot
 
 	vector< objective_info::par_info >::const_iterator objective_info::find( const string& name ) const
 	{
-		return flut::find_if( par_infos_, [&]( const par_info& p ) { return p.name == name; } );
+		return xo::find_if( par_infos_, [&]( const par_info& p ) { return p.name == name; } );
 	}
 
 	vector< objective_info::par_info >::iterator objective_info::find( const string& name )
 	{
-		return flut::find_if( par_infos_, [&]( par_info& p ) { return p.name == name; } );
+		return xo::find_if( par_infos_, [&]( par_info& p ) { return p.name == name; } );
 	}
 
 	bool objective_info::lock_parameter( const string& name, par_value value )

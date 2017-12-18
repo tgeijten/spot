@@ -3,7 +3,7 @@
 #include "spot/cma_optimizer.h"
 #include "spot/console_reporter.h"
 #include <memory>
-#include "flut/storage.hpp"
+#include "xo/container/storage.h"
 #include "spot/tools.h"
 #include "spot/optimization_pool.h"
 

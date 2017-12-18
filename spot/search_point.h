@@ -1,8 +1,8 @@
 #pragma once
 
-#include "flut/system/types.hpp"
-#include "flut/flat_map.hpp"
-#include "flut/prop_node.hpp"
+#include "xo/utility/types.h"
+#include "xo/container/flat_map.h"
+#include "xo/container/prop_node.h"
 #include "objective_info.h"
 #include "par_io.h"
 #include "types.h"
@@ -22,7 +22,7 @@ namespace spot
 		search_point( const objective_info& inf, par_vec&& values );
 		search_point( const objective_info& inf, const path& filename );
 
-		search_point& operator=( const search_point& other ) { flut_assert( info_.dim() == other.info_.dim() ); values_ = other.values_; return *this; }
+		search_point& operator=( const search_point& other ) { xo_assert( info_.dim() == other.info_.dim() ); values_ = other.values_; return *this; }
 
 		virtual size_t dim() const override { return info_.dim(); }
 		virtual optional_par_value try_get( const string& full_name ) const override;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "flut/system/test_framework.hpp"
+#include "xo/diagnose/test_framework.h"
 #include "c-cmaes/cmaes_interface.h"
 #include "spot/cma_optimizer.h"
 

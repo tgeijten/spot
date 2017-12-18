@@ -2,11 +2,11 @@
 
 #include "par_io.h"
 
-#include "flut/system/platform.hpp"
-#include "flut/system/types.hpp"
-#include "flut/flat_map.hpp"
-#include "flut/system/path.hpp"
-#include "flut/math/math.hpp"
+#include "xo/system/platform.h"
+#include "xo/utility/types.h"
+#include "xo/container/flat_map.h"
+#include "xo/filesystem/path.h"
+#include "xo/numerical/math.h"
 
 #if defined(_MSC_VER)
 #	pragma warning( push )

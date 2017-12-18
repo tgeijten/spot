@@ -1,5 +1,5 @@
 #include "par_io.h"
-#include "flut/math/bounds.hpp"
+#include "xo/numerical/bounds.h"
 
 namespace spot
 {
@@ -53,20 +53,20 @@ namespace spot
 			{
 				str.getc();
 				str >> min;
-				flut_error_if( str.getc() != ',', "Error parsing parameter '" + name + "': expected ','" );
+				xo_error_if( str.getc() != ',', "Error parsing parameter '" + name + "': expected ','" );
 				str >> max;
-				flut_error_if( str.getc() != ']', "Error parsing parameter '" + name + "': expected ']'" );
+				xo_error_if( str.getc() != ']', "Error parsing parameter '" + name + "': expected ']'" );
 			}
 			else // just a value, interpret as mean
 			{
-				flut_error_if( mean, "Error parsing parameter '" + name + "': mean already defined" );
+				xo_error_if( mean, "Error parsing parameter '" + name + "': mean already defined" );
 				str >> mean;
 			}
 		}
 
 		// do some sanity checking and fixing
-		flut_error_if( min && max && ( *min > *max ), "Error parsing parameter '" + name + "': min > max" );
-		flut_error_if( !mean && !std && !min && !max, "Error parsing parameter '" + name + "': no parameter defined" );
+		xo_error_if( min && max && ( *min > *max ), "Error parsing parameter '" + name + "': min > max" );
+		xo_error_if( !mean && !std && !min && !max, "Error parsing parameter '" + name + "': no parameter defined" );
 		if ( mean && !std && !min && !max )
 			return *mean; // just a value
 
@@ -103,7 +103,7 @@ namespace spot
 
 	string par_io::pop_prefix()
 	{
-		flut_assert( prefixes_sizes.size() > 0 );
+		xo_assert( prefixes_sizes.size() > 0 );
 		string r = mid_str( prefix_, prefixes_sizes.back() );
 		prefix_.resize( prefixes_sizes.back() );
 		prefixes_sizes.pop_back();
