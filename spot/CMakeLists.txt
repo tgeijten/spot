@@ -7,6 +7,7 @@ if (MSVC)
 source_group("spot" FILES ${SPOT_SOURCES})
 endif()
 
+include_directories(${XO_INCLUDE_DIR})
 include_directories(${SPOT_INCLUDE_DIR})
 
 target_compile_definitions( spot PRIVATE SPOT_EXPORTS )

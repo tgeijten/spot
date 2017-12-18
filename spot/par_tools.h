@@ -34,7 +34,7 @@ namespace spot
 	template< typename T >
 	inline vec3_<T> try_get_par( par_io& ps, const string& name, const prop_node& pn, const vec3_<T>& def )
 	{
-		math::vec3_<T> r;
+		vec3_<T> r;
 		r.x = try_get_par( ps, name + ".x", pn, def.x );
 		r.y = try_get_par( ps, name + ".y", pn, def.y );
 		r.z = try_get_par( ps, name + ".z", pn, def.z );
