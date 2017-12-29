@@ -1,8 +1,8 @@
 #pragma once
 
-#include "flut/string_tools.hpp"
-#include "flut/prop_node.hpp"
-#include "flut/math/optional.hpp"
+#include "xo/string/string_tools.h"
+#include "xo/container/prop_node.h"
+#include "xo/utility/optional.h"
 #include "types.h"
 
 #if defined(_MSC_VER)

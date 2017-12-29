@@ -1,6 +1,6 @@
 #include "optimization_pool.h"
-#include "flut/math/linear_regression.hpp"
-#include "flut/system/log.hpp"
+#include "xo/numerical/linear_regression.h"
+#include "xo/system/log.h"
 
 namespace spot
 {
@@ -24,7 +24,7 @@ namespace spot
 
 	bool optimization_pool::step()
 	{
-		flut_assert( optimizers_.size() > 0 );
+		xo_assert( optimizers_.size() > 0 );
 		if ( step_queue_.size() < 1 )
 		{
 			// choose best active optimizer

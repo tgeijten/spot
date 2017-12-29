@@ -1,9 +1,9 @@
 #include "file_reporter.h"
 
-#include "flut/system_tools.hpp"
-#include "flut/filesystem.hpp"
+#include "xo/system/system_tools.h"
+#include "xo/filesystem/filesystem.h"
 #include "optimizer.h"
-#include "flut/container_tools.hpp"
+#include "xo/container/container_tools.h"
 #include <fstream>
 
 namespace spot
@@ -13,7 +13,7 @@ namespace spot
 
 	void file_reporter::start( const optimizer& opt )
 	{
-		root_ = flut::create_unique_folder( root_ );
+		root_ = xo::create_unique_folder( root_ );
 	}
 
 	void file_reporter::finish( const optimizer& opt )
@@ -26,8 +26,8 @@ namespace spot
 			objective_info updated_info = opt.make_updated_objective_info();
 			search_point sp( updated_info, pop[ best_idx ].values() );
 			auto best = fitnesses[ best_idx ];
-			auto avg = flut::median( fitnesses );
-			path filename = root_ / flut::stringf( "%04d_%.3f_%.3f.par", opt.current_step(), avg, best );
+			auto avg = xo::median( fitnesses );
+			path filename = root_ / xo::stringf( "%04d_%.3f_%.3f.par", opt.current_step(), avg, best );
 			std::ofstream str( filename.str() );
 			str << sp;
 			last_output_step = opt.current_step();
@@ -45,7 +45,7 @@ namespace spot
 
 					if ( imp1 < min_improvement_factor_for_file_output && imp2 < min_improvement_factor_for_file_output )
 					{
-						flut::remove( testIt->first );
+						xo::remove( testIt->first );
 						*testIt = *recent_files.begin();
 					}
 					recent_files.pop_front();

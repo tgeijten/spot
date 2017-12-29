@@ -1,7 +1,7 @@
 #pragma once
 
-#include "flut/system/types.hpp"
-#include "flut/system/assert.hpp"
+#include "xo/utility/types.h"
+#include "xo/system/assert.h"
 #include "search_point.h"
 #include <functional>
 
@@ -23,7 +23,7 @@ namespace spot
 		size_t dim() const { return info_.dim(); }
 
 		virtual string name() const { return string( "" ); }
-		virtual fitness_t evaluate( const search_point& point ) const { flut_error( "Cannot evaluate undefined objective" ); }
+		virtual fitness_t evaluate( const search_point& point ) const { xo_error( "Cannot evaluate undefined objective" ); }
 		virtual prop_node to_prop_node() const { return prop_node(); }
 
 	protected:

@@ -4,7 +4,9 @@ file (GLOB CCMA_FILES "c-cmaes/cmaes*.*" "c-cmaes/boundary_transformation.*" )
 source_group("" FILES ${TEST_FILES})
 source_group("c-cmaes" FILES ${CCMA_FILES})
 
+include_directories(${XO_INCLUDE_DIR})
 include_directories(${SPOT_INCLUDE_DIR})
+
 add_executable(spot_test ${TEST_FILES} ${CCMA_FILES})
 
 target_link_libraries(spot_test spot)

@@ -1,16 +1,15 @@
 #include "test.h"
-#include "flut/system/types.hpp"
-#include "flut/system/log_sink.hpp"
-#include "flut/system/test_framework.hpp"
+#include "xo/system/log_sink.h"
+#include "xo/diagnose/test_framework.h"
 #include "test_functions.h"
 #include "optimization_test.h"
 
-using flut::string;
+using xo::string;
 
 int main( int argc, char* argv[] )
 {
-	flut::log::stream_sink str( flut::log::info_level, std::cout );
-	flut::log::add_sink( &str );
+	xo::log::stream_sink str( xo::log::info_level, std::cout );
+	xo::log::add_sink( &str );
 
 	try
 	{
@@ -22,8 +21,8 @@ int main( int argc, char* argv[] )
 	}
 
 #ifdef _DEBUG
-	flut::wait_for_key();
+	xo::wait_for_key();
 #endif
 
-	return flut::test_framework::get_instance().report();
+	return xo::test_framework::get_instance().report();
 }

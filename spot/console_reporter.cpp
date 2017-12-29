@@ -15,8 +15,8 @@ namespace spot
 
 	void console_reporter::evaluate( const optimizer& opt, const search_point_vec& pop, const fitness_vec_t& fitnesses, index_t best_idx, bool new_best )
 	{
-		auto avg = flut::average( fitnesses );
-		auto med = flut::median( fitnesses );
+		auto avg = xo::average( fitnesses );
+		auto med = xo::median( fitnesses );
 		printf( " A=%.*f M=%.*f", summary_precision_, avg, summary_precision_, med );
 		if ( new_best )
 			printf( " B=%.*f\n", summary_precision_, opt.best_fitness() );

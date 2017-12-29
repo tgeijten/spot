@@ -2,11 +2,11 @@
 
 #include "cma_optimizer.h"
 
-#include "flut/system/assert.hpp"
+#include "xo/system/assert.h"
 #include <algorithm>
-#include "flut/container_tools.hpp"
-#include "flut/math/math.hpp"
-#include "flut/system/log.hpp"
+#include "xo/container/container_tools.h"
+#include "xo/numerical/math.h"
+#include "xo/system/log.h"
 
 #include <cmath>
 #include <cstring>
@@ -165,7 +165,7 @@ namespace spot
 				t->weights[ i ] = std::log( t->mu + 1. ) - std::log( i + 1. );
 			break;
 		default:
-			flut_error( "Invalid weighting mode " + to_str( t->weigh_mode ) );
+			xo_error( "Invalid weighting mode " + to_str( t->weigh_mode ) );
 			break;
 		}
 
@@ -180,7 +180,7 @@ namespace spot
 
 		if ( t->mu < 1 || t->mu > t->lambda ||
 			( t->mu == t->lambda && t->weights[ 0 ] == t->weights[ t->mu - 1 ] ) )
-			flut_error( "cmaes_readpara_SetWeights(): invalid setting of mu or lambda" );
+			xo_error( "cmaes_readpara_SetWeights(): invalid setting of mu or lambda" );
 	} /* cmaes_readpara_SetWeights() */
 
 
@@ -785,8 +785,8 @@ namespace spot
 		Eigen( N, t->C, t->rgD, t->B, t->rgdTmp );
 
 		/* find largest and smallest eigenvalue, they are supposed to be sorted anyway */
-		t->minEW = *flut::min_element( t->rgD );
-		t->maxEW = *flut::max_element( t->rgD );
+		t->minEW = *xo::min_element( t->rgD );
+		t->maxEW = *xo::max_element( t->rgD );
 
 		if ( t->flgCheckEigen )
 			/* needs O(n^3)! writes, in case, error message in error file */
@@ -828,8 +828,8 @@ namespace spot
 			else {
 				for ( i = 0; i < N; ++i )
 					t->rgD[ i ] = sqrt( t->C[ i ][ i ] );
-				t->minEW = flut::math::squared( *flut::min_element( t->rgD ) );
-				t->maxEW = flut::math::squared( *flut::max_element( t->rgD ) );
+				t->minEW = xo::squared( *xo::min_element( t->rgD ) );
+				t->maxEW = xo::squared( *xo::max_element( t->rgD ) );
 				t->flgEigensysIsUptodate = 1;
 			}
 		}
@@ -921,14 +921,14 @@ namespace spot
 		double psxps;
 
 		if ( t->state == 3 )
-			flut_error( "cmaes_UpdateDistribution(): You need to call SamplePopulation() before update can take place." );
+			xo_error( "cmaes_UpdateDistribution(): You need to call SamplePopulation() before update can take place." );
 		if ( rgFunVal.size() != t->sp.lambda )
-			flut_error( "cmaes_UpdateDistribution(): Fitness function value array input is missing." );
+			xo_error( "cmaes_UpdateDistribution(): Fitness function value array input is missing." );
 
 		if ( t->state == 1 )  /* function values are delivered here */
 			t->countevals += t->sp.lambda;
 		else
-			flut_error( "cmaes_UpdateDistribution(): unexpected state" );
+			xo_error( "cmaes_UpdateDistribution(): unexpected state" );
 
 		/* assign function values */
 		for ( i = 0; i < t->sp.lambda; ++i )
@@ -1033,7 +1033,7 @@ namespace spot
 
 	void cmaes_boundary_trans_init( cmaes_boundary_trans_t *t, const dbl_vec& lower, const dbl_vec& upper )
 	{
-		flut_assert( upper.size() == lower.size() );
+		xo_assert( upper.size() == lower.size() );
 		auto l = lower.size();
 
 		t->lower_bounds = lower;
@@ -1047,7 +1047,7 @@ namespace spot
 		auto& ub = t->upper_bounds;
 		for ( int i = 0; i < l; ++i ) {
 			if ( lb[ i ] == ub[ i ] )
-				flut_error( "Lower and upper bounds must be different in all variables" );
+				xo_error( "Lower and upper bounds must be different in all variables" );
 			/* between lb+al and ub-au transformation is the identity */
 			t->al[ i ] = fmin( ( ub[ i ] - lb[ i ] ) / 2., ( 1. + fabs( lb[ i ] ) ) / 20. );
 			t->au[ i ] = fmin( ( ub[ i ] - lb[ i ] ) / 2., ( 1. + fabs( ub[ i ] ) ) / 20. );
@@ -1082,7 +1082,7 @@ namespace spot
 				y[ i ] -= 2 * ( y[ i ] - ub - au );
 
 			if ( ( y[ i ] < lb - al - 1e-15 ) || ( y[ i ] > ub + au + 1e-15 ) ) {
-				flut_error( stringf( "BUG in cmaes_boundary_transformation_shift_into_feasible_preimage: lb=%f, ub=%f, al=%f au=%f, y=%f\n", lb, ub, al, au, y[ i ] ) );
+				xo_error( stringf( "BUG in cmaes_boundary_transformation_shift_into_feasible_preimage: lb=%f, ub=%f, al=%f au=%f, y=%f\n", lb, ub, al, au, y[ i ] ) );
 			}
 		}
 	}
@@ -1131,7 +1131,7 @@ namespace spot
 
 		vector< double > get_bounded( const vector< double >& params )
 		{
-			flut_assert( cmaes.sp.N == params.size() );
+			xo_assert( cmaes.sp.N == params.size() );
 			if ( !bounds.lower_bounds.empty() )
 			{
 				vector< double > bounded_pars( params.size() );
@@ -1230,7 +1230,7 @@ namespace spot
 
 	void cma_optimizer::save_state( const path& filename ) const
 	{
-		FLUT_NOT_IMPLEMENTED;
+		XO_NOT_IMPLEMENTED;
 	}
 
 	spot::objective_info cma_optimizer::make_updated_objective_info() const

@@ -10,12 +10,12 @@
 #	define SPOT_API
 #endif
 
-#include "flut/system/types.hpp"
-#include "flut/math/optional.hpp"
+#include "xo/utility/types.h"
+#include "xo/utility/optional.h"
 
 namespace spot
 {
-	using namespace flut;
+	using namespace xo;
 
 	using fitness_t = double;
 	using fitness_vec_t = vector< fitness_t >;

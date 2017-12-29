@@ -1,13 +1,13 @@
 #include "static_par_set.h"
 
-#include "flut/char_stream.hpp"
-#include "flut/system/types.hpp"
+#include "xo/stream/char_stream.h"
+#include "xo/utility/types.h"
 
 namespace spot
 {
 	size_t static_par_set::load( const path& filename )
 	{
-		flut::char_stream str( filename );
+		xo::char_stream str( filename );
 		while ( str.good() )
 		{
 			string name;
@@ -23,7 +23,7 @@ namespace spot
 	size_t static_par_set::merge( const path& filename, bool overwrite )
 	{
 		size_t read = 0;
-		flut::char_stream str( filename );
+		xo::char_stream str( filename );
 		while ( str.good() )
 		{
 			string name;
