@@ -83,9 +83,12 @@ namespace spot
 
 	fitness_vec_t optimizer::evaluate( const search_point_vec& pop )
 	{
-		vector< double > results( pop.size(), objective_.info().worst_fitness() );
 		try
 		{
+			for ( auto& cb : reporters_ )
+				cb->evaluate_population_start( *this, pop );
+
+			vector< double > results( pop.size(), objective_.info().worst_fitness() );
 			vector< std::pair< std::future< double >, index_t > > threads;
 
 			for ( index_t eval_idx = 0; eval_idx < pop.size(); ++eval_idx )
@@ -103,7 +106,7 @@ namespace spot
 							// a thread is finished, add it to the results and make room for a new thread
 							results[ it->second ] = it->first.get();
 							for ( auto& cb : reporters_ )
-								cb->evaluate( *this, pop[ it->second ], results[ it->second ] );
+								cb->evaluate_point_finish( *this, pop[ it->second ], results[ it->second ] );
 							it = threads.erase( it );
 						}
 						else ++it;
@@ -121,7 +124,7 @@ namespace spot
 
 				// run callbacks
 				for ( auto& cb : reporters_ )
-					cb->evaluate( *this, pop[ f.second ], results[ f.second ] );
+					cb->evaluate_point_finish( *this, pop[ f.second ], results[ f.second ] );
 			}
 
 			auto best_idx = objective_.info().find_best_fitness( results );
@@ -150,17 +153,18 @@ namespace spot
 			// run callbacks (AFTER current_best is updated!)
 			for ( auto& cb : reporters_ )
 			{
-				cb->evaluate( *this, pop, results, best_idx, new_best );
+				cb->evaluate_population_finish( *this, pop, results, best_idx, new_best );
 				if ( new_best )
 					cb->new_best( *this, best_point_, best_fitness_ );
 			}
+
+			return results;
 		}
 		catch ( std::exception& e )
 		{
 			log::critical( "Error during multi-threaded evaluation: ", e.what() );
+			return vector< double >( pop.size(), objective_.info().worst_fitness() );
 		}
-
-		return results;
 	}
 
 	xo::linear_function< float > optimizer::fitness_trend() const

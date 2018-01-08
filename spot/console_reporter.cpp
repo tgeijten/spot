@@ -8,12 +8,12 @@ namespace spot
 
 	}
 
-	void console_reporter::evaluate( const optimizer& opt, const search_point& point, fitness_t fitness )
+	void console_reporter::evaluate_point_finish( const optimizer& opt, const search_point& point, fitness_t fitness )
 	{
 		printf( "%.*f ", individual_precision_, fitness );
 	}
 
-	void console_reporter::evaluate( const optimizer& opt, const search_point_vec& pop, const fitness_vec_t& fitnesses, index_t best_idx, bool new_best )
+	void console_reporter::evaluate_population_finish( const optimizer& opt, const search_point_vec& pop, const fitness_vec_t& fitnesses, index_t best_idx, bool new_best )
 	{
 		auto avg = xo::average( fitnesses );
 		auto med = xo::median( fitnesses );
