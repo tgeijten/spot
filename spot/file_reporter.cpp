@@ -35,7 +35,7 @@ namespace spot
 		for ( index_t i = 0; i < pop.size(); ++i )
 		{
 			path p = root_ / stringf( "%04d_%02d.tmp", opt.current_step(), i );
-			//remove( p );
+			remove( p );
 		}
 
 		if ( new_best || ( opt.current_step() - last_output_step > max_steps_without_file_output ) )
