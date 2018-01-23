@@ -1,7 +1,9 @@
 #include "search_point.h"
 
 #include "xo/container/container_tools.h"
+
 #include <fstream>
+#include <iomanip>
 
 namespace spot
 {
