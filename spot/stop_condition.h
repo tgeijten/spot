@@ -62,8 +62,8 @@ namespace spot
 		virtual const char* what() const override { return "similar search point detected"; }
 		virtual bool test( const optimizer& opt ) override;
 
-		vector< par_vec > similarity_points;
-		vector< double > similarities;
+		std::vector< par_vec > similarity_points;
+		std::vector< double > similarities;
 		index_t similar_idx;
 
 		int min_steps_ = 10;

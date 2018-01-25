@@ -106,18 +106,18 @@ namespace spot
 		return str;
 	}
 
-	pair< par_vec, par_vec > SPOT_API compute_mean_std( const search_point_vec& pop )
+	std::pair< par_vec, par_vec > SPOT_API compute_mean_std( const search_point_vec& pop )
 	{
 		const auto& info = pop.front().info();
 
-		vector< par_value > mean( info.dim() );
+		std::vector< par_value > mean( info.dim() );
 		for ( auto& ind : pop )
 		{
 			for ( index_t i = 0; i < info.dim(); ++i )
 				mean[ i ] += ind[ i ] / pop.size();
 		}
 
-		vector< par_value > stds( info.dim() );
+		std::vector< par_value > stds( info.dim() );
 		for ( index_t pop_idx = 0; pop_idx < pop.size(); ++pop_idx )
 		{
 			for ( index_t i = 0; i < info.dim(); ++i )

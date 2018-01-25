@@ -42,7 +42,7 @@ namespace spot
 		return it != par_infos_.end() ? it - par_infos_.begin() : no_index;
 	}
 
-	pair< size_t, size_t > objective_info::import_mean_std( const path& filename, bool import_std, double std_factor, double std_offset )
+	std::pair< size_t, size_t > objective_info::import_mean_std( const path& filename, bool import_std, double std_factor, double std_offset )
 	{
 		size_t params_set = 0;
 		size_t params_not_found = 0;
@@ -75,7 +75,7 @@ namespace spot
 		return { params_set, params_not_found };
 	}
 
-	pair< size_t, size_t > objective_info::import_locked( const path& filename )
+	std::pair< size_t, size_t > objective_info::import_locked( const path& filename )
 	{
 		size_t params_locked = 0;
 		size_t params_not_found = 0;
@@ -102,7 +102,7 @@ namespace spot
 			p.std = factor * fabs( p.mean ) + offset;
 	}
 
-	void objective_info::set_mean_std( const vector< par_value >& mean, const vector< par_value >& std )
+	void objective_info::set_mean_std( const std::vector< par_value >& mean, const std::vector< par_value >& std )
 	{
 		xo_assert( mean.size() == size() && std.size() == size() );
 		for ( index_t i = 0; i < size(); ++i )
@@ -112,12 +112,12 @@ namespace spot
 		}
 	}
 
-	vector< objective_info::par_info >::const_iterator objective_info::find( const string& name ) const
+	std::vector< objective_info::par_info >::const_iterator objective_info::find( const string& name ) const
 	{
 		return xo::find_if( par_infos_, [&]( const par_info& p ) { return p.name == name; } );
 	}
 
-	vector< objective_info::par_info >::iterator objective_info::find( const string& name )
+	std::vector< objective_info::par_info >::iterator objective_info::find( const string& name )
 	{
 		return xo::find_if( par_infos_, [&]( par_info& p ) { return p.name == name; } );
 	}

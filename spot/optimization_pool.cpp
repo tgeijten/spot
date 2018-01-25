@@ -28,7 +28,7 @@ namespace spot
 		if ( step_queue_.size() < 1 )
 		{
 			// choose best active optimizer
-			vector< float > promises;
+			std::vector< float > promises;
 			for ( auto& o : optimizers_ )
 				promises.push_back( o->current_step() < min_window_size_ ? 1.0f : o->predicted_fitness( 1000 ) );
 

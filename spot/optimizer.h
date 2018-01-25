@@ -17,6 +17,7 @@
 #include "stop_condition.h"
 #include "xo/utility/interruptible.h"
 #include "xo/numerical/polynomial.h"
+#include "xo/utility/memory_tools.h"
 
 #if defined(_MSC_VER)
 #	pragma warning( push )
@@ -100,8 +101,8 @@ namespace spot
 		circular_deque< float > fitness_history_;
 
 		const objective& objective_;
-		vector< s_ptr< reporter > > reporters_;
-		vector< u_ptr< stop_condition > > stop_conditions_;
+		std::vector< s_ptr< reporter > > reporters_;
+		std::vector< u_ptr< stop_condition > > stop_conditions_;
 	};
 }
 

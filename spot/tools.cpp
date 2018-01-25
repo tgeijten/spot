@@ -4,7 +4,7 @@
 
 namespace spot
 {
-	par_value mahalanobis_distance( const par_vec& a, const par_vec& b, const vector< par_vec >& covariance )
+	par_value mahalanobis_distance( const par_vec& a, const par_vec& b, const std::vector< par_vec >& covariance )
 	{
 		xo_assert( a.size() == b.size() && b.size() == covariance.size() );
 		par_value dist = 0;

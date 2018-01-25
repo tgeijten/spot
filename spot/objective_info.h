@@ -7,6 +7,7 @@
 #include "xo/container/flat_map.h"
 #include "xo/filesystem/path.h"
 #include "xo/numerical/math.h"
+#include <vector>
 
 #if defined(_MSC_VER)
 #	pragma warning( push )
@@ -56,29 +57,29 @@ namespace spot
 		index_t find_index( const string& name ) const;
 
 		/// iterator access
-		vector< par_info >::const_iterator begin() const { return par_infos_.begin(); }
-		vector< par_info >::const_iterator end() const { return par_infos_.end(); }
+		std::vector< par_info >::const_iterator begin() const { return par_infos_.begin(); }
+		std::vector< par_info >::const_iterator end() const { return par_infos_.end(); }
 
 		/// properties
 		size_t size() const { return par_infos_.size(); }
 		bool empty() const { return par_infos_.empty(); }
 
 		/// import / export
-		pair< size_t, size_t > import_mean_std( const path& filename, bool import_std, double std_factor = 1.0, double std_offset = 0.0 );
-		pair< size_t, size_t > import_locked( const path& filename );
+		std::pair< size_t, size_t > import_mean_std( const path& filename, bool import_std, double std_factor = 1.0, double std_offset = 0.0 );
+		std::pair< size_t, size_t > import_locked( const path& filename );
 		void set_global_std( double factor, double offset );
-		void set_mean_std( const vector< par_value >& mean, const vector< par_value >& std );
+		void set_mean_std( const std::vector< par_value >& mean, const std::vector< par_value >& std );
 		void set_name( const string& name ) { name_ = name; }
 
 	private:
-		vector< par_info > par_infos_;
+		std::vector< par_info > par_infos_;
 		flat_map< string, par_value > locked_pars_;
 		bool minimize_;
 		fitness_t target_fitness_;
 		string name_;
 
-		vector< par_info >::const_iterator find( const string& name ) const;
-		vector< par_info >::iterator find( const string& name );
+		std::vector< par_info >::const_iterator find( const string& name ) const;
+		std::vector< par_info >::iterator find( const string& name );
 		bool lock_parameter( const string& name, par_value value );
 	};
 }

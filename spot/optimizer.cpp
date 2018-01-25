@@ -88,8 +88,8 @@ namespace spot
 			for ( auto& cb : reporters_ )
 				cb->evaluate_population_start( *this, pop );
 
-			vector< double > results( pop.size(), objective_.info().worst_fitness() );
-			vector< std::pair< std::future< double >, index_t > > threads;
+			std::vector< double > results( pop.size(), objective_.info().worst_fitness() );
+			std::vector< std::pair< std::future< double >, index_t > > threads;
 
 			for ( index_t eval_idx = 0; eval_idx < pop.size(); ++eval_idx )
 			{
@@ -163,7 +163,7 @@ namespace spot
 		catch ( std::exception& e )
 		{
 			log::critical( "Error during multi-threaded evaluation: ", e.what() );
-			return vector< double >( pop.size(), objective_.info().worst_fitness() );
+			return std::vector< double >( pop.size(), objective_.info().worst_fitness() );
 		}
 	}
 

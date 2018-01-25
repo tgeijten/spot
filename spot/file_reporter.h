@@ -1,7 +1,10 @@
 #pragma once
 
-#include "reporter.h"
+#include <utility>
+
 #include "xo/container/circular_deque.h"
+
+#include "reporter.h"
 
 #if defined(_MSC_VER)
 #	pragma warning( push )
@@ -26,7 +29,7 @@ namespace spot
 		size_t max_steps_without_file_output = 500;
 		double min_improvement_factor_for_file_output = 1.05;
 		index_t last_output_step;
-		circular_deque< pair< path, fitness_t > > recent_files;
+		circular_deque< std::pair< path, fitness_t > > recent_files;
 	};
 }
 

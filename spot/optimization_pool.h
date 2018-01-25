@@ -32,7 +32,7 @@ namespace spot
 	private:
 		size_t max_window_size_;
 		size_t min_window_size_;
-		vector< u_ptr< optimizer > > optimizers_;
+		std::vector< u_ptr< optimizer > > optimizers_;
 		std::deque< index_t > step_queue_;
 	};
 }

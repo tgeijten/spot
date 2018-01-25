@@ -1,10 +1,12 @@
 #include "file_reporter.h"
 
+#include <fstream>
+
 #include "xo/system/system_tools.h"
 #include "xo/filesystem/filesystem.h"
-#include "optimizer.h"
 #include "xo/container/container_tools.h"
-#include <fstream>
+
+#include "optimizer.h"
 
 namespace spot
 {

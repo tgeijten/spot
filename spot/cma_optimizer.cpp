@@ -2,15 +2,15 @@
 
 #include "cma_optimizer.h"
 
-#include "xo/system/assert.h"
 #include <algorithm>
-#include "xo/container/container_tools.h"
-#include "xo/numerical/math.h"
-#include "xo/system/log.h"
-
 #include <cmath>
 #include <cstring>
 #include <numeric>
+
+#include "xo/system/assert.h"
+#include "xo/container/container_tools.h"
+#include "xo/numerical/math.h"
+#include "xo/system/log.h"
 
 namespace spot
 {
@@ -1129,12 +1129,12 @@ namespace spot
 		cmaes_boundary_trans_t bounds;
 		search_point_vec bounded_pop;
 
-		vector< double > get_bounded( const vector< double >& params )
+		std::vector< double > get_bounded( const std::vector< double >& params )
 		{
 			xo_assert( cmaes.sp.N == params.size() );
 			if ( !bounds.lower_bounds.empty() )
 			{
-				vector< double > bounded_pars( params.size() );
+				std::vector< double > bounded_pars( params.size() );
 				cmaes_boundary_trans( &bounds, params, bounded_pars );
 				return bounded_pars;
 			}
@@ -1201,29 +1201,29 @@ namespace spot
 		if ( objective_.info().maximize() )
 		{
 			// negate first, since c-cmaes always minimizes
-			vector< fitness_t > neg_results( results.size() );
+			fitness_vec_t neg_results( results.size() );
 			std::transform( results.begin(), results.end(), neg_results.begin(), [&]( const double& v ) { return -v; } );
 			cmaes_UpdateDistribution( &pimpl->cmaes, neg_results );
 		}
 		else cmaes_UpdateDistribution( &pimpl->cmaes, results );
 	}
 
-	vector< double > cma_optimizer::current_mean() const
+	std::vector< double > cma_optimizer::current_mean() const
 	{
 		return pimpl->get_bounded( pimpl->cmaes.current_mean );
 	}
 
-	vector< double > cma_optimizer::current_std() const
+	std::vector< double > cma_optimizer::current_std() const
 	{
 		// get from covariance matrix
-		vector< double > stds( dim() );
+		std::vector< double > stds( dim() );
 		for ( index_t i = 0; i < dim(); ++i )
 			stds[ i ] = pimpl->cmaes.sigma * sqrt( pimpl->cmaes.C[ i ][ i ] );
 
 		return stds;
 	}
 
-	vector< par_vec > cma_optimizer::current_covariance() const
+	std::vector< par_vec > cma_optimizer::current_covariance() const
 	{
 		return pimpl->cmaes.C;
 	}

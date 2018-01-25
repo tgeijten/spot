@@ -19,7 +19,7 @@ namespace spot
 		// analysis
 		par_vec current_mean() const;
 		par_vec current_std() const;
-		vector< par_vec > current_covariance() const;
+		std::vector< par_vec > current_covariance() const;
 
 		// state
 		virtual void save_state( const path& filename ) const override;

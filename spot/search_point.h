@@ -47,9 +47,9 @@ namespace spot
 		par_vec values_;
 	};
 
-	using search_point_vec = vector< search_point >;
+	using search_point_vec = std::vector< search_point >;
 
-	SPOT_API pair< par_vec, par_vec > compute_mean_std( const search_point_vec& pop );
+	SPOT_API std::pair< par_vec, par_vec > compute_mean_std( const search_point_vec& pop );
 	SPOT_API std::ostream& operator<<( std::ostream& str, const search_point& ps );
 }
 
