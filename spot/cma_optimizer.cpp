@@ -785,8 +785,8 @@ namespace spot
 		Eigen( N, t->C, t->rgD, t->B, t->rgdTmp );
 
 		/* find largest and smallest eigenvalue, they are supposed to be sorted anyway */
-		t->minEW = *xo::min_element( t->rgD );
-		t->maxEW = *xo::max_element( t->rgD );
+		t->minEW = *std::min_element( t->rgD.begin(), t->rgD.end() );
+		t->maxEW = *std::max_element( t->rgD.begin(), t->rgD.end() );
 
 		if ( t->flgCheckEigen )
 			/* needs O(n^3)! writes, in case, error message in error file */
@@ -828,8 +828,8 @@ namespace spot
 			else {
 				for ( i = 0; i < N; ++i )
 					t->rgD[ i ] = sqrt( t->C[ i ][ i ] );
-				t->minEW = xo::squared( *xo::min_element( t->rgD ) );
-				t->maxEW = xo::squared( *xo::max_element( t->rgD ) );
+				t->minEW = xo::squared( *std::min_element( t->rgD.begin(), t->rgD.end() ) );
+				t->maxEW = xo::squared( *std::max_element( t->rgD.begin(), t->rgD.end() ) );
 				t->flgEigensysIsUptodate = 1;
 			}
 		}
