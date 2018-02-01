@@ -49,13 +49,15 @@ namespace spot
 				str.getc();
 				str >> std;
 			}
-			else if ( c == '[' )
+			else if ( c == '[' || c == '<' || c == '(' )
 			{
 				str.getc();
 				str >> min;
 				xo_error_if( str.getc() != ',', "Error parsing parameter '" + name + "': expected ','" );
 				str >> max;
-				xo_error_if( str.getc() != ']', "Error parsing parameter '" + name + "': expected ']'" );
+				char c2 = str.getc();
+				if ( ( c == '[' && c2 != ']' ) || ( c == '<' && c2 != '>' ) || ( c == '(' && c2 != ')' ) )
+					xo_error( "Error parsing parameter '" + name + "': opening bracket " + c + " does not match closing bracket " + c2 );
 			}
 			else // just a value, interpret as mean
 			{
