@@ -86,6 +86,7 @@ namespace spot
 
 	protected:
 		virtual void internal_step() = 0;
+		virtual void apply_boundary_transform( par_vec& vec ) const;
 
 		index_t step_count_;
 		fitness_t current_step_median_;
@@ -99,6 +100,8 @@ namespace spot
 		size_t fitness_history_samples_;
 		size_t fitness_history_bin_size_;
 		circular_deque< float > fitness_history_;
+
+		par_value boundary_limit_threshold_;
 
 		const objective& objective_;
 		std::vector< s_ptr< reporter > > reporters_;
