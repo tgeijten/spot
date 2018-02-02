@@ -1185,9 +1185,10 @@ namespace spot
 				// apply transform
 				dbl_vec bounded_values( dim() );
 
-#if 0 
+#if 1
 				cmaes_boundary_trans( &pimpl->bounds, pop[ ind_idx ], bounded_values );
 #else
+				// TODO: CLEANUP!
 				std::copy_n( pop[ ind_idx ].begin(), dim(), bounded_values.begin() );
 				cmaes_boundary_transformer b( info() );
 				b.apply( bounded_values );
