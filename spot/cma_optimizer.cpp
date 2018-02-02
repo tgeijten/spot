@@ -11,6 +11,7 @@
 #include "xo/container/container_tools.h"
 #include "xo/numerical/math.h"
 #include "xo/system/log.h"
+#include "boundary_transformer.h"
 
 namespace spot
 {
@@ -1182,7 +1183,15 @@ namespace spot
 			if ( pimpl->bounds.lower_bounds.size() > 0 )
 			{
 				// apply transform
-				dbl_vec bounded_values = pimpl->get_bounded( pop[ ind_idx ] );
+				dbl_vec bounded_values( dim() );
+
+#if 0 
+				cmaes_boundary_trans( &pimpl->bounds, pop[ ind_idx ], bounded_values );
+#else
+				std::copy_n( pop[ ind_idx ].begin(), dim(), bounded_values.begin() );
+				cmaes_boundary_transformer b( info() );
+				b.apply( bounded_values );
+#endif
 				pimpl->bounded_pop[ ind_idx ].set_values( bounded_values );
 			}
 			else
