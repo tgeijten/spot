@@ -1082,7 +1082,7 @@ namespace spot
 				y[ i ] -= 2 * ( y[ i ] - ub - au );
 
 			if ( ( y[ i ] < lb - al - 1e-15 ) || ( y[ i ] > ub + au + 1e-15 ) ) {
-				xo_error( stringf( "BUG in cmaes_boundary_transformation_shift_into_feasible_preimage: lb=%f, ub=%f, al=%f au=%f, y=%f\n", lb, ub, al, au, y[ i ] ) );
+				xo_error( stringf( "BUG in cmaes_boundary_transformation_shift_into_feasible_preimage: lb=%f, ub=%f, al=%f au=%f, x=%f, y=%f, i=%d\n", lb, ub, al, au, x[ i ], y[ i ], i ) );
 			}
 		}
 	}
@@ -1177,19 +1177,18 @@ namespace spot
 	const search_point_vec& cma_optimizer::sample_population()
 	{
 		auto& pop = cmaes_SamplePopulation( &pimpl->cmaes );
-		for ( index_t pop_idx = 0; pop_idx < pop.size(); ++pop_idx )
+		for ( index_t ind_idx = 0; ind_idx < pop.size(); ++ind_idx )
 		{
 			if ( pimpl->bounds.lower_bounds.size() > 0 )
 			{
 				// apply transform
-				dbl_vec bounded_values( dim() );
-				cmaes_boundary_trans( &pimpl->bounds, pop[ pop_idx ], bounded_values );
-				pimpl->bounded_pop[ pop_idx ].set_values( bounded_values );
+				dbl_vec bounded_values = pimpl->get_bounded( pop[ ind_idx ] );
+				pimpl->bounded_pop[ ind_idx ].set_values( bounded_values );
 			}
 			else
 			{
 				// simply copy
-				pimpl->bounded_pop[ pop_idx ].set_values( pop[ pop_idx ] );
+				pimpl->bounded_pop[ ind_idx ].set_values( pop[ ind_idx ] );
 			}
 		}
 
