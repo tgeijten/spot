@@ -5,7 +5,7 @@ namespace spot
 {
 	const par_value default_std_factor = 0.1;
 	const par_value default_upper_boundaray = 1e12;
-	const par_value default_lower_boundaray = 1e12;
+	const par_value default_lower_boundaray = -1e12;
 
 	par_value par_io::get( const string& name, par_value mean, par_value std, par_value min, par_value max )
 	{

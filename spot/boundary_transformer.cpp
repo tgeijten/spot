@@ -25,8 +25,8 @@ namespace spot
 		XO_NOT_IMPLEMENTED;
 	}
 
-	cmaes_boundary_transformer::cmaes_boundary_transformer( const objective_info& i ) :
-	boundary_transformer( i )
+	cmaes_boundary_transformer::cmaes_boundary_transformer( const objective_info& info ) :
+	boundary_transformer( info )
 	{
 		auto len = info_.dim();
 		lb_.resize( len );
@@ -39,8 +39,8 @@ namespace spot
 			lb_[ i ] = info_[ i ].min;
 			ub_[ i ] = info_[ i ].max;
 
-			if ( lb_[ i ] == ub_[ i ] )
-				xo_error( "Lower and upper bounds must be different in all variables" );
+			if ( lb_[ i ] == ub_[ i ] || ub_[ i ] < lb_[ i ] )
+				xo_error( "Invalid upper and lower bounds for parameter " + info[ i ].name );
 
 			/* between lb+al and ub-au transformation is the identity */
 			al_[ i ] = fmin( ( ub_[ i ] - lb_[ i ] ) / 2., ( 1. + fabs( lb_[ i ] ) ) / 20. );

@@ -1048,7 +1048,8 @@ namespace spot
 		auto& ub = t->upper_bounds;
 		for ( int i = 0; i < l; ++i ) {
 			if ( lb[ i ] == ub[ i ] )
-				xo_error( "Lower and upper bounds must be different in all variables" );
+				xo_error( "Invalid upper and lower bounds for parameter " + to_str( i ) );
+
 			/* between lb+al and ub-au transformation is the identity */
 			t->al[ i ] = fmin( ( ub[ i ] - lb[ i ] ) / 2., ( 1. + fabs( lb[ i ] ) ) / 20. );
 			t->au[ i ] = fmin( ( ub[ i ] - lb[ i ] ) / 2., ( 1. + fabs( ub[ i ] ) ) / 20. );
