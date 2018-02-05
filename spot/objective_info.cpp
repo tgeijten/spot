@@ -102,7 +102,7 @@ namespace spot
 			p.std = factor * fabs( p.mean ) + offset;
 	}
 
-	void objective_info::set_mean_std( const std::vector< par_value >& mean, const std::vector< par_value >& std )
+	void objective_info::set_mean_std( const par_vec& mean, const par_vec& std )
 	{
 		xo_assert( mean.size() == size() && std.size() == size() );
 		for ( index_t i = 0; i < size(); ++i )
@@ -110,6 +110,20 @@ namespace spot
 			par_infos_[ i ].mean = mean[ i ];
 			par_infos_[ i ].std = std[ i ];
 		}
+	}
+
+	bool objective_info::is_feasible( const par_vec& vec ) const
+	{
+		for ( index_t i = 0; i < size(); ++i )
+			if ( vec[ i ] > par_infos_[ i ].max || vec[ i ] < par_infos_[ i ].min )
+				return false;
+		return true;
+	}
+
+	void objective_info::clamp( par_vec& vec ) const
+	{
+		for ( index_t i = 0; i < size(); ++i )
+			xo::clamp( vec[ i ], par_infos_[ i ].min, par_infos_[ i ].max );
 	}
 
 	std::vector< objective_info::par_info >::const_iterator objective_info::find( const string& name ) const

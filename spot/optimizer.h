@@ -18,6 +18,7 @@
 #include "xo/utility/interruptible.h"
 #include "xo/numerical/polynomial.h"
 #include "xo/utility/memory_tools.h"
+#include "boundary_transformer.h"
 
 #if defined(_MSC_VER)
 #	pragma warning( push )
@@ -86,7 +87,6 @@ namespace spot
 
 	protected:
 		virtual void internal_step() = 0;
-		virtual void apply_boundary_transform( par_vec& vec ) const;
 
 		index_t step_count_;
 		fitness_t current_step_median_;
@@ -101,11 +101,10 @@ namespace spot
 		size_t fitness_history_bin_size_;
 		circular_deque< float > fitness_history_;
 
-		par_value boundary_limit_threshold_;
-
 		const objective& objective_;
 		std::vector< s_ptr< reporter > > reporters_;
 		std::vector< u_ptr< stop_condition > > stop_conditions_;
+		u_ptr< boundary_transformer > boundary_transformer_;
 	};
 }
 

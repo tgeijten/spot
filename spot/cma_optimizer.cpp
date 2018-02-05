@@ -860,6 +860,25 @@ namespace spot
 		return( t->current_pop );
 	} /* SamplePopulation() */
 
+	const std::vector< dbl_vec >& cmaes_ReSampleSingle( cmaes_t *t, index_t iindex )
+	{
+		int N = t->sp.N;
+
+		for ( int i = 0; i < N; ++i )
+			t->rgdTmp[ i ] = t->rgD[ i ] * cmaes_random_Gauss( &t->rand );
+
+		/* add mutation (sigma * B * (D*z)) */
+		for ( int i = 0; i < N; ++i ) {
+			double sum = 0;
+			for ( int j = 0; j < N; ++j )
+				sum += t->B[ i ][ j ] * t->rgdTmp[ j ];
+
+			t->current_pop[ iindex ][ i ] = t->current_mean[ i ] + t->sigma * sum;
+		}
+
+		return  t->current_pop;
+	}
+
 
 
 	static void Sorted_index( const dbl_vec& rgFunVal, std::vector< int >& iindex, int n )
@@ -1145,7 +1164,8 @@ namespace spot
 	};
 
 	cma_optimizer::cma_optimizer( const objective& obj, int l, int seed, cma_weights w ) :
-	optimizer( obj )
+	optimizer( obj ),
+	max_sample_count( 100 )
 	{
 		pimpl = new pimpl_t;
 		auto n = objective_.info().dim();
@@ -1181,26 +1201,31 @@ namespace spot
 		auto& pop = cmaes_SamplePopulation( &pimpl->cmaes );
 		for ( index_t ind_idx = 0; ind_idx < pop.size(); ++ind_idx )
 		{
-			if ( pimpl->bounds.lower_bounds.size() > 0 )
-			{
-				// apply transform
-				dbl_vec bounded_values( dim() );
+			par_vec individual( pop[ ind_idx ].begin(), pop[ ind_idx ].begin() + info().dim() );
+			bool found_individual = false;
 
-#if 1
-				cmaes_boundary_trans( &pimpl->bounds, pop[ ind_idx ], bounded_values );
-#else
-				// TODO: CLEANUP!
-				std::copy_n( pop[ ind_idx ].begin(), dim(), bounded_values.begin() );
-				cmaes_boundary_transformer b( info() );
-				b.apply( bounded_values );
-#endif
-				pimpl->bounded_pop[ ind_idx ].set_values( bounded_values );
-			}
-			else
+			for ( size_t attempts = 0; !found_individual && attempts < max_sample_count; ++attempts )
 			{
-				// simply copy
-				pimpl->bounded_pop[ ind_idx ].set_values( pop[ ind_idx ] );
+				// apply boundary transformation (if any)
+				if ( boundary_transformer_ )
+					boundary_transformer_->apply( individual );
+				//cmaes_boundary_trans( &pimpl->bounds, pop[ ind_idx ], individual );
+
+				if ( !info().is_feasible( individual ) )
+				{
+					cmaes_ReSampleSingle( &pimpl->cmaes, ind_idx );
+					std::copy_n( pop[ ind_idx ].begin(), info().dim(), individual.begin() );
+				}
+				else found_individual = true;
 			}
+
+			if ( !found_individual )
+			{
+				log::warning( "cma_optimizer: could not find feasible individual after ", max_sample_count, " attempts, clamping values instead. gen=", current_step(), " ind=", ind_idx );
+				info().clamp( individual );
+			}
+
+			pimpl->bounded_pop[ ind_idx ].set_values( individual );
 		}
 
 		return pimpl->bounded_pop;

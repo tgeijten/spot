@@ -33,6 +33,7 @@ namespace spot
 		double sigma() const;
 
 	protected:
+		size_t max_sample_count;
 		virtual void internal_step() override;
 		struct pimpl_t* pimpl;
 	};

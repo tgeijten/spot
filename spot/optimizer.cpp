@@ -27,9 +27,9 @@ namespace spot
 		INIT_PROP( pn, max_threads, XO_IS_DEBUG_BUILD ? 1 : 32 );
 		INIT_PROP( pn, thread_priority_, thread_priority::lowest );
 		INIT_PROP( pn, fitness_history_bin_size_, 10 );
-		INIT_PROP( pn, boundary_limit_threshold_, 0.1 );
 
 		add_stop_condition< abort_condition >();
+		//boundary_transformer_ = std::make_unique< cmaes_boundary_transformer >( o.info() );
 	}
 
 	optimizer::~optimizer()
@@ -208,12 +208,5 @@ namespace spot
 		if ( fitness_history_.size() >= 2 )
 			return fitness_trend()( static_cast< float >( step ) );
 		else return 0.0f;
-	}
-
-	void optimizer::apply_boundary_transform( par_vec& vec ) const
-	{
-		xo_assert( vec.size() == info().dim() );
-		for ( index_t i = 0; i < vec.size(); ++i )
-			xo::soft_clamp( vec[ i ], info()[ i ].min, info()[ i ].max, boundary_limit_threshold_ );
 	}
 }
