@@ -2,6 +2,7 @@
 
 #include "xo/system/assert.h"
 #include "xo/numerical/math.h"
+#include "xo/system/log.h"
 
 namespace spot
 {
@@ -77,7 +78,7 @@ namespace spot
 				y -= 2 * ( y - ub - au );
 
 			if ( ( y < lb - al - 1e-15 ) || ( y > ub + au + 1e-15 ) ) {
-				xo_error( stringf( "BUG in cmaes_boundary_transformation_shift_into_feasible_preimage: lb=%f, ub=%f, al=%f au=%f, x=%f, y=%f, i=%d\n", lb, ub, al, au, x[ i ], y, i ) );
+				log::error( stringf( "BUG in cmaes_boundary_transformation_shift_into_feasible_preimage: lb=%f, ub=%f, al=%f au=%f, x=%f, y=%f, i=%d\n", lb, ub, al, au, x[ i ], y, i ) );
 			}
 			else x[ i ] = y;
 		}
@@ -99,5 +100,6 @@ namespace spot
 
 	void cmaes_boundary_transformer::apply_inverse( par_vec& v )
 	{
+		XO_NOT_IMPLEMENTED;
 	}
 }

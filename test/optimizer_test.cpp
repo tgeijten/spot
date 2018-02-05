@@ -14,8 +14,8 @@ namespace spot
 		int lambda = 0;
 		std::vector< double > init_mean( dim, 0.0 );
 		std::vector< double > init_std( dim, 0.3 );
-		std::vector< double > lower( dim, -1e18 );
-		std::vector< double > upper( dim, -1e18 );
+		std::vector< double > lower( dim, -1e12 );
+		std::vector< double > upper( dim, -1e12 );
 
 		// init c-cmaes
 		cmaes_t evo;
@@ -78,7 +78,7 @@ namespace spot
 		int lambda = 0;
 
 		// init cma_optimizer
-		function_objective obj( dim, cigtab, 0.0, 0.3, -1e18, 1e18 );
+		function_objective obj( dim, cigtab, 0.0, 0.3, -1e12, 1e12 );
 		cma_optimizer cma( obj, lambda, seed );
 		cma.set_max_threads( 3 );
 

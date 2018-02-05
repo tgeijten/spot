@@ -4,6 +4,8 @@
 namespace spot
 {
 	const par_value default_std_factor = 0.1;
+	const par_value default_upper_boundaray = 1e12;
+	const par_value default_lower_boundaray = 1e12;
 
 	par_value par_io::get( const string& name, par_value mean, par_value std, par_value min, par_value max )
 	{
@@ -33,8 +35,8 @@ namespace spot
 			{
 				mean = pn.get_any< par_value >( { "mean", "init_mean" } );
 				std = pn.get_any< par_value >( { "std", "init_std" } );
-				min = pn.get< par_value >( "min", -1e18 );
-				max = pn.get< par_value >( "max", 1e18 );
+				min = pn.get< par_value >( "min", default_lower_boundaray );
+				max = pn.get< par_value >( "max", default_upper_boundaray );
 			}
 			else return pn.get_any< par_value >( { "mean", "init_mean" } ); // is_free = 0, return mean
 		}
@@ -78,8 +80,8 @@ namespace spot
 			std = ( *max - *min ) / 4;
 		if ( !mean && min && max )
 			mean = *min + ( *max - *min ) / 2;
-		if ( !min ) min = -1e18;
-		if ( !max ) max = 1e18;
+		if ( !min ) min = default_lower_boundaray;
+		if ( !max ) max = default_upper_boundaray;
 
 		return add( full_name, *mean, *std, *min, *max );
 	}
