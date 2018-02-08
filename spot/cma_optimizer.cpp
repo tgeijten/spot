@@ -1149,18 +1149,6 @@ namespace spot
 		cmaes_t cmaes;
 		cmaes_boundary_trans_t bounds;
 		search_point_vec bounded_pop;
-
-		std::vector< double > get_bounded( const std::vector< double >& params )
-		{
-			xo_assert( cmaes.sp.N == params.size() );
-			if ( !bounds.lower_bounds.empty() )
-			{
-				std::vector< double > bounded_pars( params.size() );
-				cmaes_boundary_trans( &bounds, params, bounded_pars );
-				return bounded_pars;
-			}
-			else return params;
-		}
 	};
 
 	cma_optimizer::cma_optimizer( const objective& obj, int l, int seed, cma_weights w ) :
@@ -1207,8 +1195,7 @@ namespace spot
 			for ( size_t attempts = 0; !found_individual && attempts < max_sample_count; ++attempts )
 			{
 				// apply boundary transformation (if any)
-				if ( boundary_transformer_ )
-					boundary_transformer_->apply( individual );
+				boundary_transform( individual );
 				//cmaes_boundary_trans( &pimpl->bounds, pop[ ind_idx ], individual );
 
 				if ( !info().is_feasible( individual ) )
@@ -1245,7 +1232,8 @@ namespace spot
 
 	std::vector< double > cma_optimizer::current_mean() const
 	{
-		return pimpl->get_bounded( pimpl->cmaes.current_mean );
+		par_vec individual( pimpl->cmaes.current_mean.begin(), pimpl->cmaes.current_mean.begin() + info().dim() );
+		return boundary_transform( individual );
 	}
 
 	std::vector< double > cma_optimizer::current_std() const

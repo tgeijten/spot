@@ -4,6 +4,8 @@
 #include "xo/system/assert.h"
 #include "search_point.h"
 #include <functional>
+#include <future>
+#include "xo/system/system_tools.h"
 
 #if defined(_MSC_VER)
 #	pragma warning( push )
@@ -23,8 +25,11 @@ namespace spot
 		size_t dim() const { return info_.dim(); }
 
 		virtual string name() const { return string( "" ); }
-		virtual fitness_t evaluate( const search_point& point ) const { xo_error( "Cannot evaluate undefined objective" ); }
+		virtual fitness_t evaluate( const search_point& point ) const = 0;
 		virtual prop_node to_prop_node() const { return prop_node(); }
+
+		double evaluate_noexcept( const search_point& point ) const;
+		std::future< double > evaluate_async( const search_point& point, thread_priority prio = thread_priority::normal ) const;
 
 	protected:
 		objective_info info_;

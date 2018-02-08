@@ -1,6 +1,9 @@
 #include "objective.h"
 
 #include "xo/numerical/math.h"
+#include "xo/system/system_tools.h"
+#include <future>
+#include "xo/system/log.h"
 
 namespace spot
 {
@@ -16,5 +19,26 @@ namespace spot
 	{
 		for ( size_t i = 0; i < d; ++i )
 			info_.add( stringf( "%d", i ), start, start_std, lower, upper );
+	}
+
+	double objective::evaluate_noexcept( const search_point& point ) const
+	{
+		try
+		{
+			return evaluate( point );
+		}
+		catch ( std::exception& e )
+		{
+			log::error( "error evaluating objective: ", e.what() );
+			return info_.worst_fitness();
+		}
+	}
+
+	std::future< double > objective::evaluate_async( const search_point& point, thread_priority prio ) const
+	{
+		return std::async( std::launch::async, [&]() {
+			set_thread_priority( prio );
+			return evaluate_noexcept( point );
+		} );
 	}
 }

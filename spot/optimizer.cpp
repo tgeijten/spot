@@ -116,7 +116,7 @@ namespace spot
 				}
 
 				// add new thread
-				threads.push_back( std::make_pair( std::async( std::launch::async, [&]( const search_point& p ) { set_thread_priority( thread_priority_ ); return objective_.evaluate( p ); }, pop[ eval_idx ] ), eval_idx ) );
+				threads.push_back( std::make_pair( objective_.evaluate_async(  pop[ eval_idx ], thread_priority_ ), eval_idx ) );
 			}
 
 			// wait for remaining threads
@@ -173,7 +173,7 @@ namespace spot
 	{
 		if ( fitness_history_.size() >= 2 * fitness_history_bin_size_ )
 		{
-			std::vector< float > values( fitness_history_.size() / fitness_history_bin_size_, objective().info().worst< float >() );
+			std::vector< float > values( fitness_history_.size() / fitness_history_bin_size_, info().worst< float >() );
 			index_t start_idx = fitness_history_.size() % fitness_history_bin_size_;
 
 			for ( index_t i = start_idx; i < fitness_history_.size(); ++i )
@@ -208,5 +208,12 @@ namespace spot
 		if ( fitness_history_.size() >= 2 )
 			return fitness_trend()( static_cast< float >( step ) );
 		else return 0.0f;
+	}
+
+	par_vec& optimizer::boundary_transform( par_vec& v ) const
+	{
+		if ( boundary_transformer_ )
+			boundary_transformer_->apply( v );
+		return v;
 	}
 }

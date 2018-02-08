@@ -3,6 +3,7 @@
 #include "xo/container/container_tools.h"
 #include "xo/system/assert.h"
 #include <fstream>
+#include "xo/filesystem/filesystem.h"
 
 namespace spot
 {
@@ -47,7 +48,7 @@ namespace spot
 		size_t params_set = 0;
 		size_t params_not_found = 0;
 
-		std::ifstream str( filename.str() );
+		std::ifstream str( xo::find_file( filename ).str() );
 		xo_error_if( !str.good(), "Error opening file: " + filename.str() );
 		while ( str.good() )
 		{

@@ -3,6 +3,7 @@
 #include "xo/diagnose/test_framework.h"
 #include "test_functions.h"
 #include "optimization_test.h"
+#include <iostream>
 
 using xo::string;
 

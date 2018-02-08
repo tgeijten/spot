@@ -56,6 +56,7 @@ namespace spot
 
 		void add_reporter( s_ptr< reporter > cb ) { reporters_.emplace_back( std::move( cb ) ); }
 		fitness_vec_t evaluate( const search_point_vec& pop );
+
 		void set_max_threads( int val ) { max_threads = val; }
 		index_t current_step() const { return step_count_; }
 		fitness_t current_step_median() const { return current_step_median_; }
@@ -87,6 +88,7 @@ namespace spot
 
 	protected:
 		virtual void internal_step() = 0;
+		par_vec& boundary_transform( par_vec& v ) const;
 
 		index_t step_count_;
 		fitness_t current_step_median_;
