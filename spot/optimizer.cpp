@@ -26,7 +26,6 @@ namespace spot
 		xo_error_if( o.dim() <= 0, "Objective has no free parameters" );
 		INIT_PROP( pn, max_threads, XO_IS_DEBUG_BUILD ? 1 : 32 );
 		INIT_PROP( pn, thread_priority_, thread_priority::lowest );
-		INIT_PROP( pn, fitness_history_bin_size_, 10 );
 
 		add_stop_condition< abort_condition >();
 		//boundary_transformer_ = std::make_unique< cmaes_boundary_transformer >( o.info() );
@@ -171,20 +170,10 @@ namespace spot
 
 	xo::linear_function< float > optimizer::fitness_trend() const
 	{
-		if ( fitness_history_.size() >= 2 * fitness_history_bin_size_ )
+		if ( fitness_history_.size() >= 2 )
 		{
-			std::vector< float > values( fitness_history_.size() / fitness_history_bin_size_, info().worst< float >() );
-			index_t start_idx = fitness_history_.size() % fitness_history_bin_size_;
-
-			for ( index_t i = start_idx; i < fitness_history_.size(); ++i )
-			{
-				auto& cur_best = values[ ( i - start_idx ) / fitness_history_bin_size_ ];
-				if ( info().is_better( fitness_history_[ i ], cur_best ) )
-					cur_best = fitness_history_[ i ];
-			}
-
-			auto start = start_idx + ( fitness_history_samples_ - fitness_history_.size() ) + fitness_history_bin_size_ / 2;
-			return xo::linear_regression( float( start ), float( fitness_history_bin_size_ ), values );
+			auto start = fitness_history_samples_ - fitness_history_.size();
+			return xo::linear_regression( float( start ), 1.0f, fitness_history_ );
 		}
 		else return xo::linear_function< float >();
 	}
