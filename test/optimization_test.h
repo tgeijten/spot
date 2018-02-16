@@ -16,11 +16,11 @@ namespace spot
 			auto obj = make_schwefel_objective( 10 );
 
 			cma_optimizer opt1( obj, 0, i );
-			opt1.add_stop_condition< min_progress_condition >( 1e-6, 1000 );
+			opt1.add_stop_condition( std::make_shared< min_progress_condition >( 1e-6, 1000 ) );
 			auto* sc1 = opt1.run();
 
 			cma_optimizer opt2( obj, 0, i );
-			opt2.add_stop_condition< max_steps_condition >( 50000 );
+			opt2.add_stop_condition( std::make_shared< max_steps_condition >( 50000 ) );
 			auto* sc2 = opt2.run();
 
 			auto f1 = opt1.best_fitness();

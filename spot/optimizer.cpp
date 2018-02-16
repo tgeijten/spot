@@ -27,7 +27,7 @@ namespace spot
 		INIT_PROP( pn, max_threads, XO_IS_DEBUG_BUILD ? 1 : 32 );
 		INIT_PROP( pn, thread_priority_, thread_priority::lowest );
 
-		add_stop_condition< abort_condition >();
+		add_stop_condition( std::make_shared< abort_condition >() );
 		//boundary_transformer_ = std::make_unique< cmaes_boundary_transformer >( o.info() );
 	}
 

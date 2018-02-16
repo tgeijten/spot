@@ -42,19 +42,10 @@ namespace spot
 		const stop_condition* run( size_t number_of_steps = 0 );
 
 		stop_condition* test_stop_conditions();
-
-		template< typename T, typename... Args > T& add_stop_condition( Args&&... args ) { 
-			stop_conditions_.emplace_back( new T( std::forward<Args>( args )... ) );
-			return dynamic_cast<T&>( *stop_conditions_.back() );
-		}
-
-		template< typename T > T* try_find_stop_condition() {
-			for ( auto& c : stop_conditions_ )
-				if ( auto* p = dynamic_cast<T*>( c.get() ) ) return *p;
-			return nullptr;
-		}
+		void add_stop_condition( s_ptr< stop_condition > condition ) { stop_conditions_.emplace_back( std::move( condition ) ); }
 
 		void add_reporter( s_ptr< reporter > cb ) { reporters_.emplace_back( std::move( cb ) ); }
+
 		fitness_vec_t evaluate( const search_point_vec& pop );
 
 		void set_max_threads( int val ) { max_threads = val; }
@@ -104,7 +95,7 @@ namespace spot
 
 		const objective& objective_;
 		std::vector< s_ptr< reporter > > reporters_;
-		std::vector< u_ptr< stop_condition > > stop_conditions_;
+		std::vector< s_ptr< stop_condition > > stop_conditions_;
 		u_ptr< boundary_transformer > boundary_transformer_;
 	};
 }
