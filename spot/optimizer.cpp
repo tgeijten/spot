@@ -5,7 +5,7 @@
 #include "xo/system/system_tools.h"
 #include "xo/serialization/prop_node_tools.h"
 #include "xo/system/assert.h"
-#include "xo/numerical/linear_regression.h"
+#include "xo/numerical/regression.h"
 #include "xo/numerical/polynomial.h"
 #include "xo/numerical/math.h"
 
@@ -173,7 +173,7 @@ namespace spot
 		if ( fitness_history_.size() >= 2 )
 		{
 			auto start = fitness_history_samples_ - fitness_history_.size();
-			return xo::linear_regression( float( start ), 1.0f, fitness_history_ );
+			return xo::linear_median_regression( fitness_history_, float( start ), 1.0f );
 		}
 		else return xo::linear_function< float >();
 	}

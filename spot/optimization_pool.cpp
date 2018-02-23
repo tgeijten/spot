@@ -1,5 +1,5 @@
 #include "optimization_pool.h"
-#include "xo/numerical/linear_regression.h"
+#include "xo/numerical/regression.h"
 #include "xo/system/log.h"
 
 namespace spot

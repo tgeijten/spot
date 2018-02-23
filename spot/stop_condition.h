@@ -1,7 +1,7 @@
 #pragma once
 
 #include "xo/container/container_tools.h"
-#include "xo/numerical/linear_regression.h"
+#include "xo/numerical/regression.h"
 #include "xo/numerical/polynomial.h"
 #include "xo/container/circular_deque.h"
 #include "search_point.h"
