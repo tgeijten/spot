@@ -21,7 +21,8 @@ namespace spot
 	current_step_best_( o.info().worst_fitness() ),
 	current_step_median_( o.info().worst_fitness() ),
 	fitness_history_samples_( 0 ),
-	thread_priority_( thread_priority::lowest )
+	thread_priority_( thread_priority::lowest ),
+	fitness_trend_step_( no_index )
 	{
 		xo_error_if( o.dim() <= 0, "Objective has no free parameters" );
 		INIT_PROP( pn, max_threads, XO_IS_DEBUG_BUILD ? 1 : 32 );
@@ -170,12 +171,18 @@ namespace spot
 
 	xo::linear_function< float > optimizer::fitness_trend() const
 	{
-		if ( fitness_history_.size() >= 2 )
+		if ( fitness_trend_step_ != current_step() )
 		{
-			auto start = fitness_history_samples_ - fitness_history_.size();
-			return xo::linear_median_regression( fitness_history_, float( start ), 1.0f );
+			if ( fitness_history_.size() >= 2 )
+			{
+				auto start = fitness_history_samples_ - fitness_history_.size();
+				fitness_trend_ = xo::linear_median_regression( fitness_history_, float( start ), 1.0f );
+			}
+			fitness_trend_ = xo::linear_function< float >();
+			fitness_trend_step_ = current_step();
 		}
-		else return xo::linear_function< float >();
+
+		return fitness_trend_;
 	}
 
 	float optimizer::progress() const

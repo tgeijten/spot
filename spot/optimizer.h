@@ -92,6 +92,8 @@ namespace spot
 
 		size_t fitness_history_samples_;
 		circular_deque< float > fitness_history_;
+		mutable linear_function< float > fitness_trend_;
+		mutable index_t fitness_trend_step_;
 
 		const objective& objective_;
 		std::vector< s_ptr< reporter > > reporters_;
