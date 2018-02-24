@@ -171,15 +171,16 @@ namespace spot
 
 	xo::linear_function< float > optimizer::fitness_trend() const
 	{
-		if ( fitness_trend_step_ != current_step() )
+		if ( fitness_trend_step_ != fitness_history_samples_ )
 		{
 			if ( fitness_history_.size() >= 2 )
 			{
 				auto start = fitness_history_samples_ - fitness_history_.size();
 				fitness_trend_ = xo::linear_median_regression( fitness_history_, float( start ), 1.0f );
 			}
-			fitness_trend_ = xo::linear_function< float >();
-			fitness_trend_step_ = current_step();
+			else fitness_trend_ = xo::linear_function< float >();
+
+			fitness_trend_step_ = fitness_history_samples_;
 		}
 
 		return fitness_trend_;
