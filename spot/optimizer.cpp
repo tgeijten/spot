@@ -8,6 +8,7 @@
 #include "xo/numerical/regression.h"
 #include "xo/numerical/polynomial.h"
 #include "xo/numerical/math.h"
+#include "xo/utility/irange.h"
 
 namespace spot
 {
@@ -175,8 +176,9 @@ namespace spot
 		{
 			if ( fitness_history_.size() >= 2 )
 			{
-				auto start = fitness_history_samples_ - fitness_history_.size();
-				fitness_trend_ = xo::linear_median_regression( fitness_history_, float( start ), 1.0f );
+				auto range = make_irange< int >( int( fitness_history_samples_ - fitness_history_.size() ), int( fitness_history_samples_ ) );
+				//auto start = fitness_history_samples_ - fitness_history_.size();
+				fitness_trend_ = xo::repeated_median_regression( range.begin(), range.end(), fitness_history_.begin(), fitness_history_.end() );
 			}
 			else fitness_trend_ = xo::linear_function< float >();
 
