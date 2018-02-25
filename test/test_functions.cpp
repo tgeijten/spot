@@ -58,7 +58,7 @@ namespace spot
 	{
 		double sum = 10.0 * v.size();
 		for ( index_t i = 0; i < v.size(); ++i )
-			sum += squared( v[ i ] ) - 10.0 * cos( 2 * double_pi * v[ i ] );
+			sum += squared( v[ i ] ) - 10.0 * cos( 2 * pi< double >() * v[ i ] );
 		return sum;
 	}
 
