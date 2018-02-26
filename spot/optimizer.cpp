@@ -84,14 +84,14 @@ namespace spot
 		return nullptr;
 	}
 
-	fitness_vec_t optimizer::evaluate( const search_point_vec& pop )
+	const fitness_vec_t optimizer::evaluate( const search_point_vec& pop )
 	{
 		try
 		{
 			for ( auto& cb : reporters_ )
 				cb->evaluate_population_start( *this, pop );
 
-			std::vector< double > results( pop.size(), objective_.info().worst_fitness() );
+			fitness_vec_t results( pop.size(), objective_.info().worst_fitness() );
 			std::vector< std::pair< std::future< double >, index_t > > threads;
 
 			for ( index_t eval_idx = 0; eval_idx < pop.size(); ++eval_idx )
