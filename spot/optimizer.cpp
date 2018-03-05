@@ -3,7 +3,7 @@
 #include "xo/system/log.h"
 #include <cmath>
 #include "xo/system/system_tools.h"
-#include "xo/serialization/prop_node_tools.h"
+#include "xo/container/prop_node_tools.h"
 #include "xo/system/assert.h"
 #include "xo/numerical/regression.h"
 #include "xo/numerical/polynomial.h"
