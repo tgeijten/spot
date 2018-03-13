@@ -27,6 +27,19 @@ namespace spot
 		if ( auto val = try_get( full_name ) )
 			return *val;
 
+		// see if this is a reference to another parameter
+		if ( !pn.get_value().empty() && pn.get_value().front() == '@' )
+		{
+			auto val = try_get( pn.get_value().substr( 1 ) );
+			xo_error_if( !val, "Could not find " + pn.get_value() );
+			return *val;
+		}
+
+		return add( full_name, pn );
+	}
+
+	spot::par_value par_io::add( const string& full_name, const prop_node& pn )
+	{
 		// check if the prop_node has children
 		optional< par_value > mean, std, min, max;
 		if ( pn.size() > 0 )
@@ -40,42 +53,46 @@ namespace spot
 			}
 			else return pn.get_any< par_value >( { "mean", "init_mean" } ); // is_free = 0, return mean
 		}
-
-		// parse the string, format mean~std[min,max]
-		char_stream str( pn.get_value().c_str() );
-		while ( str.good() )
+		else
 		{
-			char c = str.peekc();
-			if ( c == '~' )
+			// parse the string, format mean~std[min,max]
+			char_stream str( pn.get_value().c_str() );
+			while ( str.good() )
 			{
-				str.getc();
-				str >> std;
-			}
-			else if ( c == '[' || c == '<' || c == '(' )
-			{
-				str.getc();
-				str >> min;
-				xo_error_if( str.getc() != ',', "Error parsing parameter '" + name + "': expected ','" );
-				str >> max;
-				char c2 = str.getc();
-				if ( ( c == '[' && c2 != ']' ) || ( c == '<' && c2 != '>' ) || ( c == '(' && c2 != ')' ) )
-					xo_error( "Error parsing parameter '" + name + "': opening bracket " + c + " does not match closing bracket " + c2 );
-			}
-			else // just a value, interpret as mean
-			{
-				xo_error_if( mean, "Error parsing parameter '" + name + "': mean already defined" );
-				str >> mean;
+				char c = str.peekc();
+				if ( c == '~' )
+				{
+					str.getc();
+					str >> std;
+				}
+				else if ( c == '[' || c == '<' || c == '(' )
+				{
+					str.getc();
+					str >> min;
+					xo_error_if( str.getc() != ',', "Error parsing parameter '" + full_name + "': expected ','" );
+					str >> max;
+					char c2 = str.getc();
+					if ( ( c == '[' && c2 != ']' ) || ( c == '<' && c2 != '>' ) || ( c == '(' && c2 != ')' ) )
+						xo_error( "Error parsing parameter '" + full_name + "': opening bracket " + c + " does not match closing bracket " + c2 );
+				}
+				else // just a value, interpret as mean
+				{
+					xo_error_if( mean, "Error parsing parameter '" + full_name + "': mean already defined" );
+					str >> mean;
+				}
 			}
 		}
 
 		// do some sanity checking and fixing
-		xo_error_if( min && max && ( *min > *max ), "Error parsing parameter '" + name + "': min > max" );
-		xo_error_if( !mean && !std && !min && !max, "Error parsing parameter '" + name + "': no parameter defined" );
+		xo_error_if( min && max && ( *min > *max ), "Error parsing parameter '" + full_name + "': min > max" );
+		xo_error_if( !mean && !std && !min && !max, "Error parsing parameter '" + full_name + "': no parameter defined" );
 		if ( mean && !std && !min && !max )
 			return *mean; // just a value
 
 		if ( std && !mean )
-		{ mean = std; std = default_std_factor * abs( *mean ); }
+		{
+			mean = std; std = default_std_factor * abs( *mean );
+		}
 		if ( !std && min && max )
 			std = ( *max - *min ) / 4;
 		if ( !mean && min && max )

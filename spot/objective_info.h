@@ -32,6 +32,7 @@ namespace spot
 
 		virtual size_t dim() const override { return par_infos_.size(); }
 		virtual par_value add( const string& name, par_value mean, par_value std, par_value min = -1e15, par_value max = 1e15 ) override;
+		using par_io::add;
 		virtual optional_par_value try_get( const string& name ) const override;
 		optional_par_value try_get_locked( const string& name ) const;
 		const string& name() const { return name_; }
