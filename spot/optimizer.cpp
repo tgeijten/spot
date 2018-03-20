@@ -1,18 +1,20 @@
 #include "optimizer.h"
+
 #include <future>
-#include "xo/system/log.h"
 #include <cmath>
-#include "xo/system/system_tools.h"
+
 #include "xo/container/prop_node_tools.h"
-#include "xo/system/assert.h"
-#include "xo/numerical/regression.h"
-#include "xo/numerical/polynomial.h"
 #include "xo/numerical/math.h"
+#include "xo/numerical/polynomial.h"
+#include "xo/numerical/regression.h"
+#include "xo/system/assert.h"
+#include "xo/system/log.h"
+#include "xo/system/system_tools.h"
 #include "xo/utility/irange.h"
 
 namespace spot
 {
-	optimizer::optimizer( const objective& o, const prop_node& pn ) :
+	optimizer::optimizer( const objective& o ) :
 	objective_( o ),
 	best_fitness_( o.info().worst_fitness() ),
 	best_point_( o.info() ),
@@ -22,12 +24,11 @@ namespace spot
 	current_step_best_( o.info().worst_fitness() ),
 	current_step_median_( o.info().worst_fitness() ),
 	fitness_history_samples_( 0 ),
-	thread_priority_( thread_priority::lowest ),
-	fitness_trend_step_( no_index )
+	fitness_trend_step_( no_index ),
+	max_threads_( xo::max<int>( 4, std::thread::hardware_concurrency() ) ),
+	thread_priority_( thread_priority::lowest )
 	{
 		xo_error_if( o.dim() <= 0, "Objective has no free parameters" );
-		INIT_PROP( pn, max_threads, XO_IS_DEBUG_BUILD ? 1 : 32 );
-		INIT_PROP( pn, thread_priority_, thread_priority::lowest );
 
 		add_stop_condition( std::make_shared< abort_condition >() );
 		//boundary_transformer_ = std::make_unique< cmaes_boundary_transformer >( o.info() );
@@ -100,7 +101,7 @@ namespace spot
 					break;
 
 				// wait for threads to finish
-				while ( threads.size() >= max_threads )
+				while ( threads.size() >= max_threads_ )
 				{
 					for ( auto it = threads.begin(); it != threads.end(); )
 					{

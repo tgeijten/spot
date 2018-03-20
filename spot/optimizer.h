@@ -33,7 +33,7 @@ namespace spot
 	class SPOT_API optimizer : public xo::interruptible
 	{
 	public:
-		optimizer( const objective& o, const prop_node& pn = prop_node() );
+		optimizer( const objective& o );
 		optimizer( const optimizer& ) = delete;
 		optimizer& operator=( const optimizer& ) = delete;
 		virtual ~optimizer();
@@ -48,7 +48,9 @@ namespace spot
 
 		const fitness_vec_t evaluate( const search_point_vec& pop );
 
-		void set_max_threads( int val ) { max_threads = val; }
+		void set_max_threads( int val ) { max_threads_ = val; }
+		void set_thread_priority( thread_priority tp ) { thread_priority_ = tp; }
+
 		index_t current_step() const { return step_count_; }
 		fitness_t current_step_median() const { return current_step_median_; }
 		fitness_t current_step_average() const { return current_step_average_; }
@@ -73,8 +75,6 @@ namespace spot
 		virtual objective_info make_updated_objective_info() const { XO_NOT_IMPLEMENTED; }
 
 		// properties
-		int max_threads = 1;
-		thread_priority thread_priority_;
 		mutable string name; // TODO: not this, name should be const
 
 	protected:
@@ -99,6 +99,9 @@ namespace spot
 		std::vector< s_ptr< reporter > > reporters_;
 		std::vector< s_ptr< stop_condition > > stop_conditions_;
 		u_ptr< boundary_transformer > boundary_transformer_;
+
+		int max_threads_;
+		thread_priority thread_priority_;
 	};
 }
 
