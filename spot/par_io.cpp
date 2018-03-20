@@ -1,5 +1,4 @@
 #include "par_io.h"
-#include "xo/numerical/bounds.h"
 
 namespace spot
 {
