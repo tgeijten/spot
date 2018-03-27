@@ -6,6 +6,7 @@
 #include <cmath>
 #include <cstring>
 #include <numeric>
+#include <random>
 
 #include "xo/system/assert.h"
 #include "xo/container/container_tools.h"
@@ -1167,6 +1168,10 @@ namespace spot
 			lb[ i ] = p.min;
 			ub[ i ] = p.max;
 		}
+
+		// create random seed when zero
+		if ( seed == 0 )
+			seed = std::random_device()();
 
 		cmaes_init( &pimpl->cmaes, (int)n, mean, std, seed, l );
 		cmaes_readpara_SupplementDefaults( &pimpl->cmaes );

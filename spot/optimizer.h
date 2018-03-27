@@ -43,7 +43,6 @@ namespace spot
 
 		stop_condition* test_stop_conditions();
 		void add_stop_condition( s_ptr< stop_condition > condition ) { stop_conditions_.emplace_back( std::move( condition ) ); }
-
 		void add_reporter( s_ptr< reporter > cb ) { reporters_.emplace_back( std::move( cb ) ); }
 
 		const fitness_vec_t evaluate( const search_point_vec& pop );
