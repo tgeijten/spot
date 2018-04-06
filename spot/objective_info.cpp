@@ -4,6 +4,7 @@
 #include "xo/system/assert.h"
 #include <fstream>
 #include "xo/filesystem/filesystem.h"
+#include "xo/system/log.h"
 
 namespace spot
 {
@@ -124,7 +125,14 @@ namespace spot
 	void objective_info::clamp( par_vec& vec ) const
 	{
 		for ( index_t i = 0; i < size(); ++i )
-			xo::clamp( vec[ i ], par_infos_[ i ].min, par_infos_[ i ].max );
+		{
+			auto& pi = par_infos_[ i ];
+			if ( !xo::is_between( vec[ i ], pi.min, pi.max ) )
+			{
+				xo::log::debug( "Clamping parameter ", pi.name, "; value=", vec[ i ], " min=", pi.min, " max=", pi.max );
+				xo::clamp( vec[ i ], pi.min, pi.max );
+			}
+		}
 	}
 
 	std::vector< objective_info::par_info >::const_iterator objective_info::find( const string& name ) const

@@ -1213,7 +1213,7 @@ namespace spot
 
 			if ( !found_individual )
 			{
-				log::warning( "cma_optimizer: could not find feasible individual after ", max_sample_count, " attempts, clamping values instead. gen=", current_step(), " ind=", ind_idx );
+				log::warning( "cma_optimizer: could not find feasible point after ", max_sample_count, " attempts, clamping values instead. gen=", current_step(), " ind=", ind_idx );
 				info().clamp( individual );
 			}
 
