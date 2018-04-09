@@ -59,15 +59,20 @@ namespace spot
 
 			if ( !str.fail() )
 			{
-				auto iter = find( name );
-				if ( iter != end() )
+				if ( std == 0 )
+				{
+					if ( lock_parameter( name, value ) )
+						++params_set;
+					else ++params_not_found;
+				}
+				else if ( auto p = try_find( name ) )
 				{
 					// read existing parameter, updating mean / std
-					iter->mean = mean;
+					p->mean = mean;
 					if ( import_std )
-						iter->std = std_offset + std_factor * std;
+						p->std = std_offset + std_factor * std;
 					else if ( std_factor != 1.0 ) // set std to factor of mean
-						iter->std = std_offset + std_factor * iter->mean;
+						p->std = std_offset + std_factor * p->mean;
 					++params_set;
 				}
 				else ++params_not_found;
@@ -143,6 +148,18 @@ namespace spot
 	std::vector< objective_info::par_info >::iterator objective_info::find( const string& name )
 	{
 		return xo::find_if( par_infos_, [&]( par_info& p ) { return p.name == name; } );
+	}
+
+	const spot::objective_info::par_info* objective_info::try_find( const string& name ) const
+	{
+		auto it = find( name );
+		return it != par_infos_.end() ? &*it : nullptr;
+	}
+
+	spot::objective_info::par_info* objective_info::try_find( const string& name )
+	{
+		auto it = find( name );
+		return it != par_infos_.end() ? &*it : nullptr;
 	}
 
 	bool objective_info::lock_parameter( const string& name, par_value value )

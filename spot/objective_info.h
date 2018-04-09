@@ -85,6 +85,8 @@ namespace spot
 
 		std::vector< par_info >::const_iterator find( const string& name ) const;
 		std::vector< par_info >::iterator find( const string& name );
+		const par_info* try_find( const string& name ) const;
+		par_info* try_find( const string& name );
 		bool lock_parameter( const string& name, par_value value );
 	};
 }
