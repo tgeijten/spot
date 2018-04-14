@@ -75,7 +75,11 @@ namespace spot
 						p->std = std_offset + std_factor * p->mean;
 					++params_set;
 				}
-				else ++params_not_found;
+				else
+				{
+					log::trace( "Ignored parameter ", name );
+					++params_not_found;
+				}
 			}
 		}
 
