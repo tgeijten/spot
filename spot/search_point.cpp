@@ -44,7 +44,7 @@ namespace spot
 
 	par_value search_point::add( const string& full_name, par_value mean, par_value std, par_value min, par_value max )
 	{
-		xo_error( "Previously undefined parameter: " + full_name );
+		xo_error( "Previously undefined parameter: " + full_name + "; " + xo_varstr( dim() ) );
 	}
 
 	size_t search_point::import_values( const path& filename )

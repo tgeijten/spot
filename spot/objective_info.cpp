@@ -33,7 +33,8 @@ namespace spot
 
 	par_value objective_info::add( const string& name, par_value mean, par_value std, par_value min, par_value max )
 	{
-		xo_assert( find( name ) == par_infos_.end() );
+		xo_error_if( find( name ) != par_infos_.end(), "Parameter already exists: " + name );
+		xo_error_if( std <= 0, "Initial STD must be > 0: " + name + " " + xo_varstr( std ) );
 		par_infos_.emplace_back( par_info{ name, mean, std, min, max } );
 		return par_infos_.back().mean;
 	}

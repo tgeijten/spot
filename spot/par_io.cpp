@@ -1,8 +1,10 @@
 #include "par_io.h"
+#include "xo/numerical/math.h"
 
 namespace spot
 {
 	const par_value default_std_factor = 0.1;
+	const par_value default_std_minimum = 0.01;
 	const par_value default_upper_boundaray = 1e12;
 	const par_value default_lower_boundaray = -1e12;
 
@@ -88,9 +90,9 @@ namespace spot
 		if ( mean && !std && !min && !max )
 			return *mean; // just a value
 
-		if ( std && !mean )
-		{
-			mean = std; std = default_std_factor * abs( *mean );
+		if ( std && !mean ) { // using ~value notation
+			mean = std;
+			std = xo::max( default_std_factor * abs( *mean ), default_std_minimum );
 		}
 		if ( !std && min && max )
 			std = ( *max - *min ) / 4;
