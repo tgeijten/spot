@@ -36,7 +36,8 @@ namespace spot
 
 	std::future< double > objective::evaluate_async( const search_point& point, thread_priority prio ) const
 	{
-		return std::async( std::launch::async, [&]() {
+		// important: prio must be captured by value, since it's a local parameter
+		return std::async( std::launch::async, [&, prio]() {
 			set_thread_priority( prio );
 			return evaluate_noexcept( point );
 		} );

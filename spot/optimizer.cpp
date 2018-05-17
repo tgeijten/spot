@@ -118,7 +118,7 @@ namespace spot
 				}
 
 				// add new thread
-				threads.push_back( std::make_pair( objective_.evaluate_async(  pop[ eval_idx ], thread_priority_ ), eval_idx ) );
+				threads.push_back( std::make_pair( objective_.evaluate_async( pop[ eval_idx ], thread_priority_ ), eval_idx ) );
 			}
 
 			// wait for remaining threads
