@@ -21,10 +21,11 @@ namespace spot
 			info_.add( stringf( "%d", i ), start, start_std, lower, upper );
 	}
 
-	double objective::evaluate_noexcept( const search_point& point ) const
+	double objective::evaluate_noexcept( const search_point& point, thread_priority prio ) const
 	{
 		try
 		{
+			set_thread_priority( prio );
 			return evaluate( point );
 		}
 		catch ( std::exception& e )
@@ -36,10 +37,6 @@ namespace spot
 
 	std::future< double > objective::evaluate_async( const search_point& point, thread_priority prio ) const
 	{
-		// important: prio must be captured by value, since it's a local parameter
-		return std::async( std::launch::async, [&, prio]() {
-			set_thread_priority( prio );
-			return evaluate_noexcept( point );
-		} );
+		return std::async( std::launch::async, &objective::evaluate_noexcept, this, point, prio );
 	}
 }
