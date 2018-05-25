@@ -6,7 +6,6 @@
 #include "xo/container/prop_node.h"
 #include "xo/utility/types.h"
 
-#include "xo/numerical/math.h"
 #include "xo/utility/optional.h"
 #include "xo/system/system_tools.h"
 #include "xo/container/circular_deque.h"

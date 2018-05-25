@@ -4,7 +4,6 @@
 #include <cmath>
 
 #include "xo/container/prop_node_tools.h"
-#include "xo/numerical/math.h"
 #include "xo/numerical/polynomial.h"
 #include "xo/numerical/regression.h"
 #include "xo/system/assert.h"
@@ -63,7 +62,7 @@ namespace spot
 	const stop_condition* optimizer::run( size_t number_of_steps )
 	{
 		if ( number_of_steps == 0 )
-			number_of_steps = constants< size_t >::max();
+			number_of_steps = max<size_t>();
 
 		const stop_condition* sc = nullptr;
 		for ( size_t n = 0; n < number_of_steps && !sc; ++n )

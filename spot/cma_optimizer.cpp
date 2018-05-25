@@ -10,7 +10,6 @@
 
 #include "xo/system/assert.h"
 #include "xo/container/container_tools.h"
-#include "xo/numerical/math.h"
 #include "xo/system/log.h"
 #include "boundary_transformer.h"
 

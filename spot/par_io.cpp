@@ -1,5 +1,4 @@
 #include "par_io.h"
-#include "xo/numerical/math.h"
 
 namespace spot
 {

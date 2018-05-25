@@ -1,7 +1,6 @@
 #pragma once
 
 #include "spot/types.h"
-#include "xo/numerical/math.h"
 #include "spot/objective.h"
 
 namespace spot

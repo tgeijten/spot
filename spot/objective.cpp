@@ -1,8 +1,8 @@
 #include "objective.h"
 
-#include "xo/numerical/math.h"
-#include "xo/system/system_tools.h"
 #include <future>
+
+#include "xo/system/system_tools.h"
 #include "xo/system/log.h"
 
 namespace spot

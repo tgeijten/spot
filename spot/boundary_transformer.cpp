@@ -1,7 +1,6 @@
 #include "boundary_transformer.h"
 
 #include "xo/system/assert.h"
-#include "xo/numerical/math.h"
 #include "xo/system/log.h"
 
 namespace spot
