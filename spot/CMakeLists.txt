@@ -1,10 +1,14 @@
 # Gather spot sources.
 file (GLOB SPOT_SOURCES "*.h" "*.cpp")
 
+include( PrecompiledHeaders )
+use_precompiled_headers( SPOT_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/stdafx.h" "${CMAKE_CURRENT_SOURCE_DIR}/stdafx.cpp" 256 )
+
 add_library(spot SHARED ${SPOT_SOURCES})
 
 if (MSVC)
-source_group("spot" FILES ${SPOT_SOURCES})
+	source_group("" FILES ${PRECOMPILED_HEADER_FILES})
+	source_group("spot" FILES ${SPOT_SOURCES})
 endif()
 
 include_directories(${XO_INCLUDE_DIR})
