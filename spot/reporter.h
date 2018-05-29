@@ -1,8 +1,7 @@
 #pragma once
 
+#include "types.h"
 #include "search_point.h"
-
-#include "xo/system/platform.h"
 
 namespace spot
 {

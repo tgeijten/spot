@@ -3,6 +3,7 @@
 #include "xo/utility/types.h"
 #include "xo/container/flat_map.h"
 #include "xo/container/prop_node.h"
+
 #include "objective_info.h"
 #include "par_io.h"
 #include "types.h"

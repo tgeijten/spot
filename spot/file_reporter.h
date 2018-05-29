@@ -1,9 +1,6 @@
 #pragma once
 
-#include <utility>
-
 #include "xo/container/circular_deque.h"
-
 #include "reporter.h"
 
 #if defined(_MSC_VER)
