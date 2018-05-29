@@ -109,23 +109,4 @@ namespace spot
 			return get( name, *pn );
 		else return default_value;
 	}
-
-	void par_io::set_prefix( const string& s )
-	{
-		prefixes_sizes.clear();
-		prefix_ = s;
-	}
-
-	void par_io::push_prefix( const string& s )
-	{
-		prefixes_sizes.push_back( prefix_.size() );
-		prefix_ += s;
-	}
-
-	void par_io::pop_prefix()
-	{
-		xo_assert( prefixes_sizes.size() > 0 );
-		prefix_.resize( prefixes_sizes.back() );
-		prefixes_sizes.pop_back();
-	}
 }
