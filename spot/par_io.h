@@ -30,7 +30,7 @@ namespace spot
 
 		void set_prefix( const string& s );
 		void push_prefix( const string& s );
-		string pop_prefix();
+		void pop_prefix();
 		const string& prefix() const { return prefix_; }
 
 	private:

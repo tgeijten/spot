@@ -122,12 +122,10 @@ namespace spot
 		prefix_ += s;
 	}
 
-	string par_io::pop_prefix()
+	void par_io::pop_prefix()
 	{
 		xo_assert( prefixes_sizes.size() > 0 );
-		string r = mid_str( prefix_, prefixes_sizes.back() );
 		prefix_.resize( prefixes_sizes.back() );
 		prefixes_sizes.pop_back();
-		return r;
 	}
 }
