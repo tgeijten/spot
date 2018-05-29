@@ -11,8 +11,6 @@
 #endif
 
 #include "xo/utility/types.h"
-#include "xo/utility/optional.h"
-
 #include <vector>
 
 namespace spot
@@ -23,6 +21,5 @@ namespace spot
 	using fitness_vec_t = std::vector< fitness_t >;
 
 	using par_value = double;
-	using optional_par_value = optional< par_value >;
 	using par_vec = std::vector< par_value >;
 }

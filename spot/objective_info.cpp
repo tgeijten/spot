@@ -8,7 +8,7 @@
 
 namespace spot
 {
-	optional_par_value objective_info::try_get( const string& name ) const
+	optional< par_value > objective_info::try_get( const string& name ) const
 	{
 		auto it = find( name );
 		if ( it != par_infos_.end() )
@@ -16,12 +16,12 @@ namespace spot
 		else return try_get_locked( name );
 	}
 
-	optional_par_value objective_info::try_get_locked( const string& name ) const
+	optional< par_value > objective_info::try_get_locked( const string& name ) const
 	{
 		auto it = locked_pars_.find( name );
 		if ( it != locked_pars_.end() )
 			return it->second;
-		else return optional_par_value();
+		else return optional< par_value >();
 	}
 
 	xo::index_t objective_info::find_best_fitness( const fitness_vec_t& f ) const

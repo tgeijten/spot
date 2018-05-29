@@ -21,7 +21,7 @@ namespace spot
 
 		virtual size_t dim() const = 0;
 
-		virtual optional_par_value try_get( const string& name ) const = 0;
+		virtual optional< par_value > try_get( const string& name ) const = 0;
 		virtual par_value add( const string& full_name, par_value mean, par_value std, par_value min = -1e15, par_value max = 1e15 ) = 0;
 
 		par_value get( const string& name, par_value mean, par_value std, par_value min = -1e15, par_value max = 1e15 );

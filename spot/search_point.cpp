@@ -33,7 +33,7 @@ namespace spot
 		import_values( filename );
 	}
 
-	optional_par_value search_point::try_get( const string& full_name ) const
+	optional< par_value > search_point::try_get( const string& full_name ) const
 	{
 		// see if this is a parameter
 		auto idx = info_.find_index( full_name );

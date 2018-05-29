@@ -42,12 +42,12 @@ namespace spot
 		return read;
 	}
 
-	optional_par_value static_par_set::try_get( const string& name ) const
+	optional< par_value > static_par_set::try_get( const string& name ) const
 	{
 		auto it = values_.find( name );
 		if ( it != values_.end() )
 			return it->second;
-		else return optional_par_value();
+		else return optional< par_value >();
 	}
 
 	par_value static_par_set::add( const string& name, par_value mean, par_value std, par_value min, par_value max )
