@@ -62,7 +62,7 @@ namespace spot
 	const stop_condition* optimizer::run( size_t number_of_steps )
 	{
 		if ( number_of_steps == 0 )
-			number_of_steps = max<size_t>();
+			number_of_steps = const_max<size_t>();
 
 		const stop_condition* sc = nullptr;
 		for ( size_t n = 0; n < number_of_steps && !sc; ++n )

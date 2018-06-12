@@ -58,7 +58,7 @@ namespace spot
 	{
 		double sum = 10.0 * v.size();
 		for ( index_t i = 0; i < v.size(); ++i )
-			sum += squared( v[ i ] ) - 10.0 * cos( 2 * pi< double >() * v[ i ] );
+			sum += squared( v[ i ] ) - 10.0 * cos( 2 * const_pi<double>() * v[ i ] );
 		return sum;
 	}
 
@@ -66,5 +66,4 @@ namespace spot
 	{
 		return function_objective( d, rastrigin, 0, 2.56, -5.12, 5.12 );
 	}
-
 }

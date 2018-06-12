@@ -25,7 +25,7 @@ namespace spot
 		optimizer& front() { return *optimizers_.front(); }
 		size_t size() const { return optimizers_.size(); }
 
-		void run( int max_steps = max<int>() );
+		void run( int max_steps = const_max<int>() );
 		bool step();
 		virtual void interrupt() const override;
 
