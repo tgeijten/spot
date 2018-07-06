@@ -2,6 +2,7 @@
 
 namespace spot
 {
+	// TODO: make these parameters accessible
 	const par_value default_std_factor = 0.1;
 	const par_value default_std_minimum = 0.01;
 	const par_value default_upper_boundaray = 1e12;
