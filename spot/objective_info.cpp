@@ -108,10 +108,10 @@ namespace spot
 		return { params_locked, params_not_found };
 	}
 
-	void objective_info::set_global_std( double factor, double offset )
+	void objective_info::set_std_minimum( double value, double factor )
 	{
 		for ( auto& p : par_infos_ )
-			p.std = factor * fabs( p.mean ) + offset;
+			p.std = xo::max( p.std, factor * fabs( p.mean ) + value );
 	}
 
 	void objective_info::set_mean_std( const par_vec& mean, const par_vec& std )
