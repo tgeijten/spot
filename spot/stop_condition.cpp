@@ -21,7 +21,7 @@ namespace spot
 
 	bool min_progress_condition::test( const optimizer& opt )
 	{
-		if ( opt.current_step() >= progress_window_ )
+		if ( opt.current_step() >= min_samples_ )
 			return opt.progress() < min_progress_;
 		else return false;
 	}
