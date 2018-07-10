@@ -23,9 +23,9 @@ namespace spot
 		else printf( "\r" );
 	}
 
-	void console_reporter::on_finish( const optimizer& opt )
+	void console_reporter::on_stop( const optimizer& opt, const stop_condition& s )
 	{
-		printf( "Optimization finished\n" );
+		printf( "\nOptimization finished: %s", s.what().c_str() );
 	}
 
 	void console_reporter::on_next_step( const optimizer& opt, size_t gen )

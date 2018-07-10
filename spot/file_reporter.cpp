@@ -15,33 +15,39 @@ namespace spot
 
 	void file_reporter::on_start( const optimizer& opt )
 	{
-		root_ = xo::create_unique_folder( root_ );
+		xo::create_directories( root_ );
 
 		// setup history.txt
 		history_ = std::ofstream( ( root_ / "history.txt" ).string() );
 		history_ << "Step\tBest\tAverage\tPredicted\tSlope\tOffset\tProgress" << std::endl;
 	}
 
-	void file_reporter::on_finish( const optimizer& opt )
+	void file_reporter::on_stop( const optimizer& opt, const stop_condition& s )
 	{}
 
 	void file_reporter::on_pre_evaluate_population( const optimizer& opt, const search_point_vec& pop )
 	{
-		// create temp files for debugging purposes
-		for ( index_t i = 0; i < pop.size(); ++i )
+		if ( output_temp_files )
 		{
-			path p = root_ / stringf( "%04d_%02d.tmp", opt.current_step(), i );
-			std::ofstream( p.str() ) << pop[ i ];
+			// create temp files for debugging purposes
+			for ( index_t i = 0; i < pop.size(); ++i )
+			{
+				path p = root_ / stringf( "%04d_%02d.tmp", opt.current_step(), i );
+				std::ofstream( p.str() ) << pop[ i ];
+			}
 		}
 	}
 
 	void file_reporter::on_post_evaluate_population( const optimizer& opt, const search_point_vec& pop, const fitness_vec_t& fitnesses, index_t best_idx, bool new_best )
 	{
-		// remove temp files
-		for ( index_t i = 0; i < pop.size(); ++i )
+		if ( output_temp_files )
 		{
-			path p = root_ / stringf( "%04d_%02d.tmp", opt.current_step(), i );
-			remove( p );
+			// remove temp files
+			for ( index_t i = 0; i < pop.size(); ++i )
+			{
+				path p = root_ / stringf( "%04d_%02d.tmp", opt.current_step(), i );
+				remove( p );
+			}
 		}
 
 		if ( new_best || ( opt.current_step() - last_output_step > max_steps_without_file_output ) )
@@ -78,8 +84,14 @@ namespace spot
 
 		// update history
 		auto cur_trend = opt.fitness_trend();
-		auto max_generations = opt.find_stop_condition< max_steps_condition >().max_steps_;
-		history_ << opt.current_step() << "\t" << opt.current_step_best() << "\t" << opt.current_step_average() << "\t" << opt.predicted_fitness( opt.current_step() + 1000 ) << "\t" << cur_trend.slope() << "\t" << cur_trend.offset() << "\t" << opt.progress() << "\n";
+		auto max_steps = opt.find_stop_condition< max_steps_condition >().max_steps_;
+		history_ << opt.current_step()
+			<< "\t" << opt.current_step_best()
+			<< "\t" << opt.current_step_average()
+			<< "\t" << opt.predicted_fitness( max_steps )
+			<< "\t" << cur_trend.slope()
+			<< "\t" << cur_trend.offset()
+			<< "\t" << opt.progress() << "\n";
 		if ( opt.current_step() % 10 == 9 ) // flush every 10 entries
 			history_.flush();
 	}
