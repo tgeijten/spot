@@ -42,8 +42,10 @@ namespace spot
 		const stop_condition* run( size_t number_of_steps = 0 );
 
 		stop_condition* test_stop_conditions();
-		void add_stop_condition( s_ptr< stop_condition > condition ) { stop_conditions_.emplace_back( std::move( condition ) ); }
-		void add_reporter( s_ptr< reporter > cb ) { reporters_.emplace_back( std::move( cb ) ); }
+		void add_stop_condition( s_ptr< stop_condition > condition );
+		template< typename T > const T& find_stop_condition() const;
+
+		void add_reporter( s_ptr< reporter > cb );
 
 		const fitness_vec_t evaluate( const search_point_vec& pop );
 
@@ -102,6 +104,13 @@ namespace spot
 		int max_threads_;
 		thread_priority thread_priority_;
 	};
+
+	template< typename T > const T& spot::optimizer::find_stop_condition() const {
+		for ( auto& s : stop_conditions_ )
+			if ( auto sp = dynamic_cast<const T*>( s.get() ) )
+				return *sp;
+		xo_error( "Could not find stop condition" );
+	}
 }
 
 #if defined(_MSC_VER)

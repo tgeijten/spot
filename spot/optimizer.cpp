@@ -46,11 +46,11 @@ namespace spot
 		// send out start callback if this is the first step
 		if ( step_count_ == 0 )
 			for ( auto& cb : reporters_ )
-				cb->start( *this );
+				cb->on_start( *this );
 
 		// signal reporters
 		for ( auto& cb : reporters_ )
-			cb->next_step( *this, step_count_ );
+			cb->on_next_step( *this, step_count_ );
 
 		// perform actual step
 		internal_step();
@@ -77,11 +77,21 @@ namespace spot
 			if ( sc->test( *this ) )
 			{
 				for ( auto& cb : reporters_ )
-					cb->finish( *this );
+					cb->on_finish( *this );
 				return sc.get();
 			}
 		}
 		return nullptr;
+	}
+
+	void optimizer::add_stop_condition( s_ptr< stop_condition > condition )
+	{
+		stop_conditions_.emplace_back( std::move( condition ) );
+	}
+
+	void optimizer::add_reporter( s_ptr< reporter > cb )
+	{
+		reporters_.emplace_back( std::move( cb ) );
 	}
 
 	const fitness_vec_t optimizer::evaluate( const search_point_vec& pop )
@@ -89,7 +99,7 @@ namespace spot
 		try
 		{
 			for ( auto& cb : reporters_ )
-				cb->evaluate_population_start( *this, pop );
+				cb->on_pre_evaluate_population( *this, pop );
 
 			fitness_vec_t results( pop.size(), objective_.info().worst_fitness() );
 			std::vector< std::pair< std::future< double >, index_t > > threads;
@@ -109,7 +119,7 @@ namespace spot
 							// a thread is finished, add it to the results and make room for a new thread
 							results[ it->second ] = it->first.get();
 							for ( auto& cb : reporters_ )
-								cb->evaluate_point_finish( *this, pop[ it->second ], results[ it->second ] );
+								cb->on_post_evaluate_point( *this, pop[ it->second ], results[ it->second ] );
 							it = threads.erase( it );
 						}
 						else ++it;
@@ -127,7 +137,7 @@ namespace spot
 
 				// run callbacks
 				for ( auto& cb : reporters_ )
-					cb->evaluate_point_finish( *this, pop[ f.second ], results[ f.second ] );
+					cb->on_post_evaluate_point( *this, pop[ f.second ], results[ f.second ] );
 			}
 
 			auto best_idx = objective_.info().find_best_fitness( results );
@@ -156,9 +166,9 @@ namespace spot
 			// run callbacks (AFTER current_best is updated!)
 			for ( auto& cb : reporters_ )
 			{
-				cb->evaluate_population_finish( *this, pop, results, best_idx, new_best );
+				cb->on_post_evaluate_population( *this, pop, results, best_idx, new_best );
 				if ( new_best )
-					cb->new_best( *this, best_point_, best_fitness_ );
+					cb->on_new_best( *this, best_point_, best_fitness_ );
 			}
 
 			return results;

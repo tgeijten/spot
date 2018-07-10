@@ -13,15 +13,19 @@ namespace spot
 	file_reporter::file_reporter( const path& root_folder ) : root_( root_folder ), last_output_step( -1 )
 	{}
 
-	void file_reporter::start( const optimizer& opt )
+	void file_reporter::on_start( const optimizer& opt )
 	{
 		root_ = xo::create_unique_folder( root_ );
+
+		// setup history.txt
+		history_ = std::ofstream( ( root_ / "history.txt" ).string() );
+		history_ << "Step\tBest\tAverage\tPredicted\tSlope\tOffset\tProgress" << std::endl;
 	}
 
-	void file_reporter::finish( const optimizer& opt )
+	void file_reporter::on_finish( const optimizer& opt )
 	{}
 
-	void file_reporter::evaluate_population_start( const optimizer& opt, const search_point_vec& pop )
+	void file_reporter::on_pre_evaluate_population( const optimizer& opt, const search_point_vec& pop )
 	{
 		// create temp files for debugging purposes
 		for ( index_t i = 0; i < pop.size(); ++i )
@@ -31,7 +35,7 @@ namespace spot
 		}
 	}
 
-	void file_reporter::evaluate_population_finish( const optimizer& opt, const search_point_vec& pop, const fitness_vec_t& fitnesses, index_t best_idx, bool new_best )
+	void file_reporter::on_post_evaluate_population( const optimizer& opt, const search_point_vec& pop, const fitness_vec_t& fitnesses, index_t best_idx, bool new_best )
 	{
 		// remove temp files
 		for ( index_t i = 0; i < pop.size(); ++i )
@@ -71,5 +75,12 @@ namespace spot
 				}
 			}
 		}
+
+		// update history
+		auto cur_trend = opt.fitness_trend();
+		auto max_generations = opt.find_stop_condition< max_steps_condition >().max_steps_;
+		history_ << opt.current_step() << "\t" << opt.current_step_best() << "\t" << opt.current_step_average() << "\t" << opt.predicted_fitness( opt.current_step() + 1000 ) << "\t" << cur_trend.slope() << "\t" << cur_trend.offset() << "\t" << opt.progress() << "\n";
+		if ( opt.current_step() % 10 == 9 ) // flush every 10 entries
+			history_.flush();
 	}
 }
