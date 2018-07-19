@@ -63,6 +63,7 @@ namespace spot
 				char c = str.peekc();
 				if ( c == '~' )
 				{
+					xo_error_if( std, "Standard deviation already set" );
 					str.getc();
 					str >> std;
 				}
@@ -87,6 +88,8 @@ namespace spot
 		// do some sanity checking and fixing
 		xo_error_if( min && max && ( *min > *max ), "Error parsing parameter '" + full_name + "': min > max" );
 		xo_error_if( !mean && !std && !min && !max, "Error parsing parameter '" + full_name + "': no parameter defined" );
+		xo_error_if( mean && !std && ( min || max ), "Error parsing parameter '" + full_name + "': min / max without std" );
+
 		if ( mean && !std && !min && !max )
 			return *mean; // just a value
 
@@ -94,8 +97,6 @@ namespace spot
 			mean = std;
 			std = xo::max( default_std_factor * abs( *mean ), default_std_minimum );
 		}
-		if ( !std && min && max )
-			std = ( *max - *min ) / 4;
 		if ( !mean && min && max )
 			mean = *min + ( *max - *min ) / 2;
 		if ( !min ) min = default_lower_boundaray;
