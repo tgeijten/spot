@@ -6,17 +6,16 @@
 
 namespace spot
 {
-	class SPOT_API console_reporter : public reporter
+	struct SPOT_API console_reporter : public reporter
 	{
-	public:
 		console_reporter( int individual_precision = 0, int summary_precision = 2 );
-		virtual ~console_reporter() {}
-		virtual void evaluate_point_finish( const optimizer& opt, const search_point& point, fitness_t fitness ) override;
-		virtual void evaluate_population_finish( const optimizer& opt, const search_point_vec& pop, const fitness_vec_t& fitnesses, index_t best_idx, bool new_best ) override;
 
-		virtual void finish( const optimizer& opt ) override;
-		virtual void next_step( const optimizer& opt, size_t gen ) override;
-		virtual void start( const optimizer& opt ) override;
+		virtual void on_post_evaluate_point( const optimizer& opt, const search_point& point, fitness_t fitness ) override;
+		virtual void on_post_evaluate_population( const optimizer& opt, const search_point_vec& pop, const fitness_vec_t& fitnesses, index_t best_idx, bool new_best ) override;
+
+		virtual void on_stop( const optimizer& opt, const stop_condition& s ) override;
+		virtual void on_next_step( const optimizer& opt, size_t gen ) override;
+		virtual void on_start( const optimizer& opt ) override;
 
 	private:
 		int individual_precision_;

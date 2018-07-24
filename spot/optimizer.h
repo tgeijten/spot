@@ -42,8 +42,10 @@ namespace spot
 		const stop_condition* run( size_t number_of_steps = 0 );
 
 		stop_condition* test_stop_conditions();
-		void add_stop_condition( s_ptr< stop_condition > condition ) { stop_conditions_.emplace_back( std::move( condition ) ); }
-		void add_reporter( s_ptr< reporter > cb ) { reporters_.emplace_back( std::move( cb ) ); }
+		template< typename T, typename... Args > T& add_stop_condition( Args&&... a );
+		template< typename T > const T& find_stop_condition() const;
+
+		template< typename T, typename... Args > T& add_reporter( Args&&... a );
 
 		const fitness_vec_t evaluate( const search_point_vec& pop );
 
@@ -96,12 +98,42 @@ namespace spot
 
 		const objective& objective_;
 		std::vector< s_ptr< reporter > > reporters_;
-		std::vector< s_ptr< stop_condition > > stop_conditions_;
+		std::vector< u_ptr< stop_condition > > stop_conditions_;
 		u_ptr< boundary_transformer > boundary_transformer_;
 
 		int max_threads_;
 		thread_priority thread_priority_;
+
+		template< typename T, typename... Args > void signal_reporters( T fn, Args&&... args ) {
+			try {
+				for ( auto& r : reporters_ )
+					std::mem_fn( fn )( *r, std::forward< Args >( args )... );
+			}
+			catch ( std::exception& e ) {
+				log::error( "Error in reporter: ", e.what() );
+			}
+		}
 	};
+
+	template< typename T, typename... Args >
+	T& spot::optimizer::add_stop_condition( Args&&... a ) {
+		stop_conditions_.emplace_back( std::make_unique< T >( std::forward< Args >( a )... ) );
+		return static_cast<T&>( *stop_conditions_.back() );
+	}
+
+	template< typename T, typename... Args >
+	T& spot::optimizer::add_reporter( Args&&... a )
+	{
+		reporters_.emplace_back( std::make_unique< T >( std::forward< Args >( a )... ) );
+		return static_cast<T&>( *reporters_.back() );
+	}
+
+	template< typename T > const T& spot::optimizer::find_stop_condition() const {
+		for ( auto& s : stop_conditions_ )
+			if ( auto sp = dynamic_cast<const T*>( s.get() ) )
+				return *sp;
+		xo_error( "Could not find stop condition" );
+	}
 }
 
 #if defined(_MSC_VER)

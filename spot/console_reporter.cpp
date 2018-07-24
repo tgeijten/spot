@@ -8,12 +8,12 @@ namespace spot
 
 	}
 
-	void console_reporter::evaluate_point_finish( const optimizer& opt, const search_point& point, fitness_t fitness )
+	void console_reporter::on_post_evaluate_point( const optimizer& opt, const search_point& point, fitness_t fitness )
 	{
 		printf( "%.*f ", individual_precision_, fitness );
 	}
 
-	void console_reporter::evaluate_population_finish( const optimizer& opt, const search_point_vec& pop, const fitness_vec_t& fitnesses, index_t best_idx, bool new_best )
+	void console_reporter::on_post_evaluate_population( const optimizer& opt, const search_point_vec& pop, const fitness_vec_t& fitnesses, index_t best_idx, bool new_best )
 	{
 		auto avg = xo::average( fitnesses );
 		auto med = xo::median( fitnesses );
@@ -23,17 +23,17 @@ namespace spot
 		else printf( "\r" );
 	}
 
-	void console_reporter::finish( const optimizer& opt )
+	void console_reporter::on_stop( const optimizer& opt, const stop_condition& s )
 	{
-		printf( "Optimization finished\n" );
+		printf( "\nOptimization finished: %s", s.what().c_str() );
 	}
 
-	void console_reporter::next_step( const optimizer& opt, size_t gen )
+	void console_reporter::on_next_step( const optimizer& opt, size_t gen )
 	{
 		printf( "%04d: ", ( int )gen );
 	}
 
-	void console_reporter::start( const optimizer& opt )
+	void console_reporter::on_start( const optimizer& opt )
 	{
 		printf( "Starting optimization, dim=%d\n", ( int )opt.info().dim() );
 	}
