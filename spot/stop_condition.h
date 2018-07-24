@@ -20,20 +20,20 @@ namespace spot
 	{
 		stop_condition() {}
 		virtual ~stop_condition() {}
-		virtual const char* what() const { return ""; }
+		virtual string what() const { return ""; }
 		virtual bool test( const optimizer& opt ) = 0;
 	};
 
 	struct SPOT_API abort_condition : public stop_condition
 	{
-		virtual const char* what() const override { return "aborted by user"; }
+		virtual string what() const override { return "Aborted by user"; }
 		virtual bool test( const optimizer& opt ) override;
 	};
 
 	struct SPOT_API flat_fitness_condition : public stop_condition
 	{
 		flat_fitness_condition( fitness_t epsilon = 1e-6 ) : epsilon_( epsilon ) {}
-		virtual const char* what() const override { return "flat fitness detected"; }
+		virtual string what() const override { return "Flat fitness"; }
 		virtual bool test( const optimizer& opt ) override;
 		fitness_t epsilon_;
 	};
@@ -41,25 +41,25 @@ namespace spot
 
 	struct SPOT_API max_steps_condition : public stop_condition
 	{
-		max_steps_condition( size_t steps ) : max_steps_( steps = 99999 ) {}
-		virtual const char* what() const override { return "maximum number of steps reached"; }
+		max_steps_condition( size_t steps = 99999 ) : max_steps_( steps ) {}
+		virtual string what() const override { return "Maximum number of steps reached"; }
 		virtual bool test( const optimizer& opt ) override;
 		size_t max_steps_;
 	};
 
 	struct SPOT_API min_progress_condition : public stop_condition
 	{
-		min_progress_condition( fitness_t progress = 0.001, size_t window_size = 1000 ) : min_progress_( progress ), progress_window_( window_size ) {}
-		virtual const char* what() const override { return "minimum progress threshold reached"; }
+		min_progress_condition( fitness_t progress, size_t min_samples = 300 ) : min_progress_( progress ), min_samples_( min_samples ) {}
+		virtual string what() const override { return "Minimum progress reached"; }
 		virtual bool test( const optimizer& opt ) override;
 
 		fitness_t min_progress_;
-		size_t progress_window_;
+		size_t min_samples_;
 	};
 
 	struct SPOT_API similarity_condition : public stop_condition
 	{
-		virtual const char* what() const override { return "similar search point detected"; }
+		virtual string what() const override { return "Similar search point"; }
 		virtual bool test( const optimizer& opt ) override;
 
 		std::vector< par_vec > similarity_points;

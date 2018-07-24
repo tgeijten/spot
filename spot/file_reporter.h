@@ -23,7 +23,7 @@ namespace spot
 
 	private:
 		path root_;
-		size_t max_steps_without_file_output = 500;
+		size_t max_steps_without_file_output = 200;
 		double min_improvement_factor_for_file_output = 1.05;
 		index_t last_output_step;
 		circular_deque< std::pair< path, fitness_t > > recent_files;
