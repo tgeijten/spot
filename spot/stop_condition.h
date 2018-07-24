@@ -49,7 +49,7 @@ namespace spot
 
 	struct SPOT_API min_progress_condition : public stop_condition
 	{
-		min_progress_condition( fitness_t progress, size_t min_samples = 500 ) : min_progress_( progress ), min_samples_( min_samples ) {}
+		min_progress_condition( fitness_t progress, size_t min_samples = 300 ) : min_progress_( progress ), min_samples_( min_samples ) {}
 		virtual string what() const override { return "Minimum progress reached"; }
 		virtual bool test( const optimizer& opt ) override;
 
