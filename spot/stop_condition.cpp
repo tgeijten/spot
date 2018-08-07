@@ -11,7 +11,7 @@ namespace spot
 
 	bool flat_fitness_condition::test( const optimizer& opt )
 	{
-		return opt.current_step() > 0 && xo::equals( opt.current_step_best(), opt.current_step_median(), epsilon_ );
+		return opt.current_step() > 0 && xo::equal( opt.current_step_best(), opt.current_step_median(), epsilon_ );
 	}
 
 	bool max_steps_condition::test( const optimizer& opt )
