@@ -103,16 +103,23 @@ namespace spot
 		int max_threads_;
 		thread_priority thread_priority_;
 
-		template< typename T, typename... Args > void signal_reporters( T fn, Args&&... args ) {
-			try {
-				for ( auto& r : reporters_ )
-					std::mem_fn( fn )( *r, std::forward< Args >( args )... );
-			}
-			catch ( std::exception& e ) {
-				log::error( "Error in reporter: ", e.what() );
-			}
-		}
+		template< typename T, typename... Args > void signal_reporters( T fn, Args&&... args );
 	};
+
+	//
+	// Implementation of template functions
+	//
+
+	template< typename T, typename... Args >
+	void spot::optimizer::signal_reporters( T fn, Args&&... args ) {
+		try {
+			for ( auto& r : reporters_ )
+				std::mem_fn( fn )( *r, std::forward< Args >( args )... );
+		}
+		catch ( std::exception& e ) {
+			log::error( "Error in reporter: ", e.what() );
+		}
+	}
 
 	template< typename T, typename... Args >
 	T& spot::optimizer::add_stop_condition( Args&&... a ) {
