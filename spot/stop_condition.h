@@ -57,6 +57,18 @@ namespace spot
 		size_t min_samples_;
 	};
 
+	struct SPOT_API predicted_fitness_condition : public stop_condition
+	{
+		predicted_fitness_condition( fitness_t fitness, size_t look_ahead, size_t min_samples = 100 ) : fitness_( fitness ), look_ahead_( look_ahead ), min_samples_( min_samples ) {}
+		virtual string what() const override;
+		virtual bool test( const optimizer& opt ) override;
+
+		fitness_t prediction_;
+		fitness_t fitness_;
+		size_t look_ahead_;
+		size_t min_samples_;
+	};
+
 	struct SPOT_API similarity_condition : public stop_condition
 	{
 		virtual string what() const override { return "Similar search point"; }

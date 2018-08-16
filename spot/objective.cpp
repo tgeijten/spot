@@ -21,7 +21,7 @@ namespace spot
 			info_.add( stringf( "%d", i ), start, start_std, lower, upper );
 	}
 
-	double objective::evaluate_noexcept( const search_point& point, thread_priority prio ) const
+	fitness_t objective::evaluate_noexcept( const search_point& point, thread_priority prio ) const
 	{
 		try
 		{
@@ -38,5 +38,38 @@ namespace spot
 	std::future< double > objective::evaluate_async( const search_point& point, thread_priority prio ) const
 	{
 		return std::async( std::launch::async, &objective::evaluate_noexcept, this, point, prio );
+	}
+
+	fitness_vec_t objective::evaluate_async( const search_point_vec& pop, size_t max_threads, thread_priority prio ) const
+	{
+		fitness_vec_t results( pop.size(), info().worst_fitness() );
+		std::vector< std::pair< std::future< double >, index_t > > threads;
+
+		for ( index_t eval_idx = 0; eval_idx < pop.size(); ++eval_idx )
+		{
+			// wait for threads to finish
+			while ( threads.size() >= max_threads )
+			{
+				for ( auto it = threads.begin(); it != threads.end(); )
+				{
+					if ( it->first.wait_for( std::chrono::milliseconds( 1 ) ) == std::future_status::ready )
+					{
+						// a thread is finished, add it to the results and make room for a new thread
+						results[ it->second ] = it->first.get();
+						it = threads.erase( it );
+					}
+					else ++it;
+				}
+			}
+
+			// add new thread
+			threads.push_back( std::make_pair( evaluate_async( pop[ eval_idx ], prio ), eval_idx ) );
+		}
+
+		// wait for remaining threads
+		for ( auto& f : threads )
+			results[ f.second ] = f.first.valid() ? f.first.get() : info().worst_fitness();
+
+		return results;
 	}
 }

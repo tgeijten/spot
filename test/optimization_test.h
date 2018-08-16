@@ -5,7 +5,7 @@
 #include <memory>
 #include "xo/container/storage.h"
 #include "spot/tools.h"
-#include "spot/optimization_pool.h"
+#include "spot/optimizer_pool.h"
 
 namespace spot
 {
@@ -26,7 +26,7 @@ namespace spot
 			auto f1 = opt1.best_fitness();
 			auto f2 = opt2.best_fitness();
 
-			log::messagef( log::info_level, "%3d: f1=%8.3f s1=%4d f2=%8.3f s2=%4d improvement=%5.3f", i, f1, opt1.current_step(), f2, opt2.current_step(), f1 / f2 );
+			log::messagef( log::info_level, "%3d: f1=%8.3f s1=%4d f2=%8.3f s2=%4d improvement=%5.3f", i, f1, opt1.step_count(), f2, opt2.step_count(), f1 / f2 );
 		}
 	}
 
@@ -77,10 +77,10 @@ namespace spot
 
 	void multi_optimizer_test()
 	{
-		auto obj = make_rastrigin_objective( 5 );
-		optimization_pool pool;
+		auto obj = make_schwefel_objective( 10 );
+		optimizer_pool pool( obj, 200, 50, 3 );
 
-		for ( int i = 0; i < 10; ++i )
+		for ( int i = 0; i < 8; ++i )
 			pool.push_back( std::make_unique< cma_optimizer >( obj, 0, i + 1 ) );
 
 		pool.run( 10000 );

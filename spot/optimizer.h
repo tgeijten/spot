@@ -40,21 +40,23 @@ namespace spot
 		const stop_condition* step();
 		const stop_condition* run( size_t number_of_steps = 0 );
 
-		stop_condition* test_stop_conditions();
+		virtual stop_condition* test_stop_conditions();
 		template< typename T, typename... Args > T& add_stop_condition( Args&&... a );
+		void add_stop_condition( s_ptr< stop_condition > s ) { stop_conditions_.emplace_back( s ); }
 		template< typename T > const T& find_stop_condition() const;
+		template< typename T > T& find_stop_condition();
 
 		template< typename T, typename... Args > T& add_reporter( Args&&... a );
 
-		const fitness_vec_t evaluate( const search_point_vec& pop );
+		const fitness_vec_t& evaluate( const search_point_vec& pop );
 
 		void set_max_threads( int val ) { max_threads_ = val; }
 		void set_thread_priority( thread_priority tp ) { thread_priority_ = tp; }
 
-		index_t current_step() const { return step_count_; }
-		fitness_t current_step_median() const { return current_step_median_; }
-		fitness_t current_step_average() const { return current_step_average_; }
-		fitness_t current_step_best() const { return current_step_best_; }
+		index_t step_count() const { return step_count_; }
+		fitness_t current_step_median() const;
+		fitness_t current_step_average() const;
+		fitness_t current_step_best() const { return current_step_best_fitness_; }
 		const search_point& current_step_best_point() const { return current_step_best_point_; }
 
 		fitness_t best_fitness() const { return best_fitness_; }
@@ -81,10 +83,12 @@ namespace spot
 		virtual void internal_step() = 0;
 		par_vec& boundary_transform( par_vec& v ) const;
 
+		const objective& objective_;
+
 		index_t step_count_;
-		fitness_t current_step_median_;
-		fitness_t current_step_average_;
-		fitness_t current_step_best_;
+
+		fitness_t current_step_best_fitness_;
+		fitness_vec_t current_step_fitnesses_;
 		search_point current_step_best_point_;
 
 		fitness_t best_fitness_;
@@ -95,9 +99,8 @@ namespace spot
 		mutable linear_function< float > fitness_trend_;
 		mutable index_t fitness_trend_step_;
 
-		const objective& objective_;
 		std::vector< s_ptr< reporter > > reporters_;
-		std::vector< u_ptr< stop_condition > > stop_conditions_;
+		std::vector< s_ptr< stop_condition > > stop_conditions_;
 		u_ptr< boundary_transformer > boundary_transformer_;
 
 		int max_threads_;
@@ -132,6 +135,13 @@ namespace spot
 	{
 		reporters_.emplace_back( std::make_unique< T >( std::forward< Args >( a )... ) );
 		return static_cast<T&>( *reporters_.back() );
+	}
+
+	template< typename T > T& spot::optimizer::find_stop_condition() {
+		for ( auto& s : stop_conditions_ )
+			if ( auto sp = dynamic_cast<T*>( s.get() ) )
+				return *sp;
+		xo_error( "Could not find stop condition" );
 	}
 
 	template< typename T > const T& spot::optimizer::find_stop_condition() const {

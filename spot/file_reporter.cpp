@@ -32,7 +32,7 @@ namespace spot
 			// create temp files for debugging purposes
 			for ( index_t i = 0; i < pop.size(); ++i )
 			{
-				path p = root_ / stringf( "%04d_%02d.tmp", opt.current_step(), i );
+				path p = root_ / stringf( "%04d_%02d.tmp", opt.step_count(), i );
 				std::ofstream( p.str() ) << pop[ i ];
 			}
 		}
@@ -45,21 +45,21 @@ namespace spot
 			// remove temp files
 			for ( index_t i = 0; i < pop.size(); ++i )
 			{
-				path p = root_ / stringf( "%04d_%02d.tmp", opt.current_step(), i );
+				path p = root_ / stringf( "%04d_%02d.tmp", opt.step_count(), i );
 				remove( p );
 			}
 		}
 
-		if ( new_best || ( opt.current_step() - last_output_step > max_steps_without_file_output ) )
+		if ( new_best || ( opt.step_count() - last_output_step > max_steps_without_file_output ) )
 		{
 			objective_info updated_info = opt.make_updated_objective_info();
 			search_point sp( updated_info, pop[ best_idx ].values() );
 			auto best = fitnesses[ best_idx ];
 			auto avg = xo::median( fitnesses );
-			path filename = root_ / xo::stringf( "%04d_%.3f_%.3f.par", opt.current_step(), avg, best );
+			path filename = root_ / xo::stringf( "%04d_%.3f_%.3f.par", opt.step_count(), avg, best );
 			std::ofstream str( filename.str() );
 			str << sp;
-			last_output_step = opt.current_step();
+			last_output_step = opt.step_count();
 
 			if ( new_best )
 			{
@@ -85,14 +85,14 @@ namespace spot
 		// update history
 		auto cur_trend = opt.fitness_trend();
 		auto max_steps = opt.find_stop_condition< max_steps_condition >().max_steps_;
-		history_ << opt.current_step()
+		history_ << opt.step_count()
 			<< "\t" << opt.current_step_best()
 			<< "\t" << opt.current_step_average()
 			<< "\t" << opt.predicted_fitness( max_steps )
 			<< "\t" << cur_trend.slope()
 			<< "\t" << cur_trend.offset()
 			<< "\t" << opt.progress() << "\n";
-		if ( opt.current_step() % 10 == 9 ) // flush every 10 entries
+		if ( opt.step_count() % 10 == 9 ) // flush every 10 entries
 			history_.flush();
 	}
 }

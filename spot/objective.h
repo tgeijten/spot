@@ -28,8 +28,9 @@ namespace spot
 		virtual prop_node to_prop_node() const { return prop_node(); }
 
 		virtual fitness_t evaluate( const search_point& point ) const = 0;
+		fitness_t evaluate_noexcept( const search_point& point, thread_priority prio = thread_priority::normal ) const;
 		std::future< double > evaluate_async( const search_point& point, thread_priority prio = thread_priority::normal ) const;
-		double evaluate_noexcept( const search_point& point, thread_priority prio = thread_priority::normal ) const;
+		fitness_vec_t evaluate_async( const search_point_vec& pop, size_t max_threads, thread_priority prio = thread_priority::normal ) const;
 
 	protected:
 		objective_info info_;
