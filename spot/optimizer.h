@@ -29,7 +29,6 @@ namespace spot
 {
 	// TODO: this class is a bit of mess and should be cleaned up
 	// Perhaps take step / threading out of this class?
-	// make interface for stop conditions cleaner
 	class SPOT_API optimizer : public xo::interruptible
 	{
 	public:

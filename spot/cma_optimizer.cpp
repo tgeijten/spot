@@ -1198,8 +1198,6 @@ namespace spot
 			{
 				// apply boundary transformation (if any)
 				boundary_transform( individual );
-				//cmaes_boundary_trans( &pimpl->bounds, pop[ ind_idx ], individual );
-
 				if ( !info().is_feasible( individual ) )
 				{
 					cmaes_ReSampleSingle( &pimpl->cmaes, ind_idx );

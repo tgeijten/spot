@@ -40,12 +40,16 @@ namespace spot
 		void set_values( const par_vec& values );
 		const par_vec& values() const { return values_; }
 
+		const xo::optional< fitness_t >& fitness() const { return fitness_; }
+		void set_fitness( fitness_t f ) { fitness_ = f; }
+
 	private:
 		void round_values();
 		par_value rounded( par_value );
 
 		const objective_info& info_;
 		par_vec values_;
+		xo::optional< fitness_t > fitness_;
 	};
 
 	using search_point_vec = std::vector< search_point >;
