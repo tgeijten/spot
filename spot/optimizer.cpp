@@ -156,12 +156,12 @@ namespace spot
 		else return 0.0f;
 	}
 
-	float optimizer::predicted_fitness( size_t step ) const
+	float optimizer::predicted_fitness( size_t steps_ahead ) const
 	{
 		xo_error_if( fitness_history_.capacity() == 0, "fitness tracking must be enabled for this method" );
 
 		if ( fitness_history_.size() >= 2 )
-			return fitness_trend()( static_cast< float >( step ) );
+			return fitness_trend()( static_cast< float >( current_step() + steps_ahead ) );
 		else return 0.0f;
 	}
 

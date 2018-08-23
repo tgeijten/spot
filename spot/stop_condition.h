@@ -32,7 +32,7 @@ namespace spot
 
 	struct SPOT_API flat_fitness_condition : public stop_condition
 	{
-		flat_fitness_condition( fitness_t epsilon = 1e-6 ) : epsilon_( epsilon ) {}
+		flat_fitness_condition( fitness_t epsilon ) : epsilon_( epsilon ) {}
 		virtual string what() const override { return "Flat fitness"; }
 		virtual bool test( const optimizer& opt ) override;
 		fitness_t epsilon_;
@@ -41,7 +41,7 @@ namespace spot
 
 	struct SPOT_API max_steps_condition : public stop_condition
 	{
-		max_steps_condition( size_t steps = 99999 ) : max_steps_( steps ) {}
+		max_steps_condition( size_t steps ) : max_steps_( steps ) {}
 		virtual string what() const override { return "Maximum number of steps reached"; }
 		virtual bool test( const optimizer& opt ) override;
 		size_t max_steps_;

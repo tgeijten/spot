@@ -1176,9 +1176,10 @@ namespace spot
 
 		pimpl->bounded_pop.resize( lambda(), search_point( objective_.info() ) );
 		cmaes_boundary_trans_init( &pimpl->bounds, lb, ub );
-
 		name = obj.name() + stringf( ".R%d", random_seed() );
-		add_stop_condition< flat_fitness_condition >( 1e-6 );
+
+		// add flat fitness condition
+		add_stop_condition< flat_fitness_condition >( 1e-9 );
 	}
 
 	cma_optimizer::~cma_optimizer()
@@ -1208,7 +1209,7 @@ namespace spot
 
 			if ( !found_individual )
 			{
-				log::warning( "cma_optimizer: could not find feasible point after ", max_sample_count, " attempts, clamping values instead. gen=", step_count(), " ind=", ind_idx );
+				log::warning( "cma_optimizer: could not find feasible point after ", max_sample_count, " attempts, clamping values instead. gen=", current_step(), " ind=", ind_idx );
 				info().clamp( individual );
 			}
 

@@ -42,7 +42,6 @@ namespace spot
 
 		virtual stop_condition* test_stop_conditions();
 		template< typename T, typename... Args > T& add_stop_condition( Args&&... a );
-		void add_stop_condition( s_ptr< stop_condition > s ) { stop_conditions_.emplace_back( s ); }
 		template< typename T > const T& find_stop_condition() const;
 		template< typename T > T& find_stop_condition();
 
@@ -53,9 +52,10 @@ namespace spot
 		void set_max_threads( int val ) { max_threads_ = val; }
 		void set_thread_priority( thread_priority tp ) { thread_priority_ = tp; }
 
-		index_t step_count() const { return step_count_; }
+		index_t current_step() const { return step_count_; }
 		fitness_t current_step_median() const;
 		fitness_t current_step_average() const;
+		fitness_vec_t current_step_fitnesses() const { return current_step_fitnesses_; }
 		fitness_t current_step_best() const { return current_step_best_fitness_; }
 		const search_point& current_step_best_point() const { return current_step_best_point_; }
 
@@ -70,7 +70,7 @@ namespace spot
 		void enable_fitness_tracking( size_t window_size ) { fitness_history_.reserve( window_size ); }
 		linear_function< float > fitness_trend() const;
 		float progress() const;
-		float predicted_fitness( size_t step ) const;
+		float predicted_fitness( size_t steps_ahead ) const;
 
 		// state
 		virtual void save_state( const path& filename ) const { XO_NOT_IMPLEMENTED; }

@@ -11,17 +11,23 @@ namespace spot
 
 	bool flat_fitness_condition::test( const optimizer& opt )
 	{
-		return opt.step_count() > 0 && xo::equal( opt.current_step_best(), opt.current_step_median(), epsilon_ );
+		if ( opt.current_step() > 0 )
+		{
+			auto highest = *xo::max_element( opt.current_step_fitnesses() );
+			auto lowest = *xo::min_element( opt.current_step_fitnesses() );
+			return highest - lowest < epsilon_;
+		}
+		else return false;
 	}
 
 	bool max_steps_condition::test( const optimizer& opt )
 	{
-		return opt.step_count() >= max_steps_;
+		return opt.current_step() >= max_steps_;
 	}
 
 	bool min_progress_condition::test( const optimizer& opt )
 	{
-		if ( opt.step_count() >= min_samples_ )
+		if ( opt.current_step() >= min_samples_ )
 			return opt.progress() < min_progress_;
 		else return false;
 	}
@@ -33,9 +39,9 @@ namespace spot
 
 	bool predicted_fitness_condition::test( const optimizer& opt )
 	{
-		if ( opt.step_count() >= min_samples_ )
+		if ( opt.current_step() >= min_samples_ )
 		{
-			prediction_ = opt.predicted_fitness( opt.step_count() + look_ahead_ );
+			prediction_ = opt.predicted_fitness( look_ahead_ );
 			return !opt.info().is_better( prediction_, fitness_ );
 		}
 		else return false;
@@ -43,7 +49,7 @@ namespace spot
 
 	bool similarity_condition::test( const optimizer& opt )
 	{
-		if ( opt.step_count() >= min_steps_ )
+		if ( opt.current_step() >= min_steps_ )
 		{
 			similarities.resize( similarity_points.size() );
 			auto& cma = dynamic_cast< const cma_optimizer& >( opt );

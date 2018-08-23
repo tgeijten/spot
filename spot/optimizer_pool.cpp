@@ -49,15 +49,12 @@ namespace spot
 		{
 			if ( active_count < max_concurrency_ && o->test_stop_conditions() == nullptr )
 			{
-				if ( o->step_count() >= min_steps_ )
+				if ( o->current_step() >= min_steps_ )
 					priorities.push_back( o->predicted_fitness( window_size_ ) );
-				else priorities.push_back( 0 );
+				else priorities.push_back( info().best_fitness() );
 				++active_count;
 			}
-			else
-			{
-				priorities.push_back( o->test_stop_conditions() ? 6666 : 999 );
-			}
+			else priorities.push_back( info().worst_fitness() );
 		}
 
 		return priorities;
@@ -82,12 +79,17 @@ namespace spot
 					break; // stop if the next one is worse
 			}
 
+			string str = stringf( "%d (%.0f):", current_step(), best_fitness() );
 			for ( int i = 0; i < optimizers_.size(); ++i )
 			{
 				auto& opt = *optimizers_[ i ];
 				auto sc = opt.test_stop_conditions();
-				log::info( i, ": step=", opt.step_count(), " best=", opt.best_fitness(), " pred=", predictions[ i ], " ", sc ? sc->what() : "" );
+				auto bf = xo::clamped( opt.best_fitness(), -9999.0, 9999.0 );
+				auto pf = xo::clamped( predictions[ i ], -9999.0, 9999.0 );
+				str += stringf( "\t%d/%.0f/%.0f", opt.current_step(), bf, pf );
+				//log::info( i, ": step=", opt.step_count(), " best=", opt.best_fitness(), " pred=", predictions[ i ], " ", sc ? sc->what() : "" );
 			}
+			log::info( str );
 		}
 
 		// process a single optimizer from the step queue
