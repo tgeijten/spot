@@ -23,7 +23,8 @@ namespace spot
 	fitness_history_samples_( 0 ),
 	fitness_trend_step_( no_index ),
 	max_threads_( xo::max<int>( 4, std::thread::hardware_concurrency() ) ),
-	thread_priority_( thread_priority::lowest )
+	thread_priority_( thread_priority::lowest ),
+	stop_condition_( nullptr )
 	{
 		xo_error_if( o.dim() <= 0, "Objective has no free parameters" );
 
@@ -68,12 +69,16 @@ namespace spot
 
 	spot::stop_condition* optimizer::test_stop_conditions()
 	{
+		if ( stop_condition_ )
+			return stop_condition_; // already stopped and signaled
+
 		for ( auto& sc : stop_conditions_ )
 		{
 			if ( sc->test( *this ) )
 			{
+				stop_condition_ = sc.get();
 				signal_reporters( &reporter::on_stop, *this, *sc );
-				return sc.get();
+				return stop_condition_;
 			}
 		}
 		return nullptr;

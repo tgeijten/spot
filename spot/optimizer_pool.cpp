@@ -81,7 +81,6 @@ namespace spot
 			for ( int i = 0; i < optimizers_.size(); ++i )
 			{
 				auto& opt = *optimizers_[ i ];
-				auto sc = opt.test_stop_conditions();
 				auto bf = xo::clamped( opt.best_fitness(), -9999.0, 9999.0 );
 				auto pf = xo::clamped( predictions[ i ], -9999.0, 9999.0 );
 				str += stringf( "\t%d/%.0f/%.0f", opt.current_step(), bf, pf );

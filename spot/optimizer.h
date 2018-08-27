@@ -106,6 +106,8 @@ namespace spot
 		int max_threads_;
 		thread_priority thread_priority_;
 
+		stop_condition* stop_condition_;
+
 		template< typename T, typename... Args > void signal_reporters( T fn, Args&&... args );
 	};
 
