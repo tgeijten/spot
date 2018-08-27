@@ -20,7 +20,7 @@ namespace spot
 	optimizer_pool::optimizer_pool( const objective& o, size_t promise_window, size_t min_steps, size_t max_concurrent_optimizers ) :
 	optimizer( o ),
 	prediction_window_size_( promise_window ),
-	prediction_window_min_size_( min_steps > 1 ? min_steps : promise_window ),
+	prediction_start_( min_steps > 1 ? min_steps : promise_window ),
 	max_concurrent_optimizations_( max_concurrent_optimizers )
 	{
 		add_stop_condition< pool_stop_condition >();
@@ -29,7 +29,7 @@ namespace spot
 	void optimizer_pool::push_back( u_ptr< optimizer > opt )
 	{
 		opt->enable_fitness_tracking( prediction_window_size_ );
-		opt->add_stop_condition< predicted_fitness_condition >( info().worst_fitness(), prediction_window_size_, prediction_window_min_size_ );
+		opt->add_stop_condition< predicted_fitness_condition >( info().worst_fitness(), prediction_window_size_, prediction_start_ );
 		optimizers_.push_back( std::move( opt ) );
 	}
 
@@ -49,7 +49,7 @@ namespace spot
 		{
 			if ( active_count < max_concurrent_optimizations_ && o->test_stop_conditions() == nullptr )
 			{
-				if ( o->current_step() >= prediction_window_min_size_ )
+				if ( o->current_step() >= prediction_start_ )
 					priorities.push_back( o->predicted_fitness( prediction_window_size_ ) );
 				else priorities.push_back( info().best_fitness() );
 				++active_count;

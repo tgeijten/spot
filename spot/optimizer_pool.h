@@ -28,7 +28,7 @@ namespace spot
 
 	protected:
 		size_t prediction_window_size_;
-		size_t prediction_window_min_size_;
+		size_t prediction_start_;
 		size_t max_concurrent_optimizations_;
 
 		virtual std::vector< double > compute_predicted_fitnesses();
