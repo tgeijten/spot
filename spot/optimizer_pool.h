@@ -15,7 +15,7 @@ namespace spot
 	class SPOT_API optimizer_pool : public optimizer
 	{
 	public:
-		optimizer_pool( const objective& o, size_t fitness_tracking_window = 100, size_t min_steps = 10, size_t max_concurrent_optimizers = 4 );
+		optimizer_pool( const objective& o, size_t prediction_window = 100, size_t prediction_window_min = 10, size_t max_concurrent_optimizations = 4 );
 		optimizer_pool( const optimizer_pool& ) = delete;
 		optimizer_pool& operator=( const optimizer_pool& ) = delete;
 		virtual ~optimizer_pool() {}
@@ -26,17 +26,14 @@ namespace spot
 
 		virtual void interrupt() const override;
 
-		void set_prediction_window( size_t s ) { window_size_ = s; }
-		void set_min_steps( size_t s ) { min_steps_ = s; }
-		void set_max_concurrent_optimizers( size_t s ) { max_concurrency_ = s; }
-
 	protected:
+		size_t prediction_window_size_;
+		size_t prediction_window_min_size_;
+		size_t max_concurrent_optimizations_;
+
 		virtual std::vector< double > compute_predicted_fitnesses();
 		virtual void internal_step() override;
 
-		size_t window_size_;
-		size_t min_steps_;
-		size_t max_concurrency_;
 		std::vector< u_ptr< optimizer > > optimizers_;
 		std::deque< index_t > step_queue_;
 	};

@@ -19,17 +19,17 @@ namespace spot
 
 	optimizer_pool::optimizer_pool( const objective& o, size_t promise_window, size_t min_steps, size_t max_concurrent_optimizers ) :
 	optimizer( o ),
-	window_size_( promise_window ),
-	min_steps_( min_steps > 1 ? min_steps : promise_window ),
-	max_concurrency_( max_concurrent_optimizers )
+	prediction_window_size_( promise_window ),
+	prediction_window_min_size_( min_steps > 1 ? min_steps : promise_window ),
+	max_concurrent_optimizations_( max_concurrent_optimizers )
 	{
 		add_stop_condition< pool_stop_condition >();
 	}
 
 	void optimizer_pool::push_back( u_ptr< optimizer > opt )
 	{
-		opt->enable_fitness_tracking( window_size_ );
-		opt->add_stop_condition< predicted_fitness_condition >( info().worst_fitness(), window_size_, window_size_ );
+		opt->enable_fitness_tracking( prediction_window_size_ );
+		opt->add_stop_condition< predicted_fitness_condition >( info().worst_fitness(), prediction_window_size_, prediction_window_min_size_ );
 		optimizers_.push_back( std::move( opt ) );
 	}
 
@@ -47,10 +47,10 @@ namespace spot
 		size_t active_count = 0;
 		for ( auto& o : optimizers_ )
 		{
-			if ( active_count < max_concurrency_ && o->test_stop_conditions() == nullptr )
+			if ( active_count < max_concurrent_optimizations_ && o->test_stop_conditions() == nullptr )
 			{
-				if ( o->current_step() >= min_steps_ )
-					priorities.push_back( o->predicted_fitness( window_size_ ) );
+				if ( o->current_step() >= prediction_window_min_size_ )
+					priorities.push_back( o->predicted_fitness( prediction_window_size_ ) );
 				else priorities.push_back( info().best_fitness() );
 				++active_count;
 			}
