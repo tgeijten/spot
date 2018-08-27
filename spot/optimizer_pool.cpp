@@ -68,9 +68,7 @@ namespace spot
 		{
 			// choose best active optimizer
 			auto predictions = compute_predicted_fitnesses();
-			auto best_indices = sort_indices( predictions );
-			if ( info().maximize() )
-				std::reverse( best_indices.begin(), best_indices.end() );
+			auto best_indices = sort_indices( predictions, [&]( fitness_t a, fitness_t b ) { return info().is_better( a, b ); } );
 
 			for ( auto it = best_indices.begin(); it != best_indices.end() && !optimizers_[ *it ]->test_stop_conditions(); ++it )
 			{
@@ -87,9 +85,8 @@ namespace spot
 				auto bf = xo::clamped( opt.best_fitness(), -9999.0, 9999.0 );
 				auto pf = xo::clamped( predictions[ i ], -9999.0, 9999.0 );
 				str += stringf( "\t%d/%.0f/%.0f", opt.current_step(), bf, pf );
-				//log::info( i, ": step=", opt.step_count(), " best=", opt.best_fitness(), " pred=", predictions[ i ], " ", sc ? sc->what() : "" );
 			}
-			log::info( str );
+			//log::info( str );
 		}
 
 		// process a single optimizer from the step queue
