@@ -47,20 +47,16 @@ namespace spot
 
 		template< typename T, typename... Args > T& add_reporter( Args&&... a );
 
-		const fitness_vec_t& evaluate( const search_point_vec& pop );
-
 		void set_max_threads( int val ) { max_threads_ = val; }
 		void set_thread_priority( thread_priority tp ) { thread_priority_ = tp; }
 
 		index_t current_step() const { return step_count_; }
-		fitness_t current_step_median() const;
-		fitness_t current_step_average() const;
-		fitness_vec_t current_step_fitnesses() const { return current_step_fitnesses_; }
-		fitness_t current_step_best() const { return current_step_best_fitness_; }
-		const search_point& current_step_best_point() const { return current_step_best_point_; }
 
-		fitness_t best_fitness() const { return best_fitness_; }
-		const search_point& best_point() const { return best_point_; }
+		virtual const fitness_vec_t& current_step_fitnesses() const = 0;
+		virtual fitness_t current_step_best_fitness() const = 0;
+		virtual const search_point& current_step_best_point() const = 0;
+		virtual fitness_t best_fitness() const = 0;
+		virtual const search_point& best_point() const = 0;
 
 		const objective_info& info() const { return objective_.info(); }
 		const objective& obj() const { return objective_; }
@@ -70,6 +66,7 @@ namespace spot
 		void enable_fitness_tracking( size_t window_size ) { fitness_history_.reserve( window_size ); }
 		linear_function< float > fitness_trend() const;
 		float progress() const;
+		size_t fitness_tracking_window_size() const { return fitness_history_.capacity(); }
 		float predicted_fitness( size_t steps_ahead ) const;
 
 		// state
@@ -86,13 +83,6 @@ namespace spot
 		const objective& objective_;
 
 		index_t step_count_;
-
-		fitness_t current_step_best_fitness_;
-		fitness_vec_t current_step_fitnesses_;
-		search_point current_step_best_point_;
-
-		fitness_t best_fitness_;
-		search_point best_point_;
 
 		size_t fitness_history_samples_;
 		circular_deque< float > fitness_history_;

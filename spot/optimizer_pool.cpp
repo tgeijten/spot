@@ -21,7 +21,9 @@ namespace spot
 	optimizer( o ),
 	prediction_window_size_( promise_window ),
 	prediction_start_( min_steps > 1 ? min_steps : promise_window ),
-	max_concurrent_optimizations_( max_concurrent_optimizers )
+	max_concurrent_optimizations_( max_concurrent_optimizers ),
+	best_optimizer_idx_( no_index ),
+	best_fitness_( o.info().worst_fitness() )
 	{
 		add_stop_condition< pool_stop_condition >();
 	}
@@ -38,6 +40,12 @@ namespace spot
 		for ( auto& o : optimizers_ )
 			o->interrupt();
 		interruptible::interrupt();
+	}
+
+	spot::objective_info optimizer_pool::make_updated_objective_info() const
+	{
+		xo_assert( best_optimizer_idx_ != no_index );
+		return optimizers_[ best_optimizer_idx_ ]->make_updated_objective_info();
 	}
 
 	std::vector< double > optimizer_pool::compute_predicted_fitnesses()
@@ -77,7 +85,7 @@ namespace spot
 					break; // stop if the next one is worse
 			}
 
-			string str = stringf( "%d (%.0f):", current_step(), best_fitness() );
+			string str = stringf( "%d (%.0f):", current_step(), current_step() > 0 ? best_fitness() : 0.0 );
 			for ( int i = 0; i < optimizers_.size(); ++i )
 			{
 				auto& opt = *optimizers_[ i ];
@@ -85,7 +93,6 @@ namespace spot
 				auto pf = xo::clamped( predictions[ i ], -9999.0, 9999.0 );
 				str += stringf( "\t%d/%.0f/%.0f", opt.current_step(), bf, pf );
 			}
-			//log::info( str );
 		}
 
 		// process a single optimizer from the step queue
@@ -95,15 +102,21 @@ namespace spot
 			optimizers_[ idx ]->step();
 
 			// copy results if better
-			if ( is_better( optimizers_[ idx ]->best_fitness(), best_fitness_ ) )
+			bool new_best = best_optimizer_idx_ == no_index || is_better( optimizers_[ idx ]->best_fitness(), best_fitness_ );
+			if ( new_best )
 			{
-				best_fitness_ = optimizers_[ idx ]->best_fitness();
-				best_point_ = optimizers_[ idx ]->best_point();
+				best_optimizer_idx_ = idx;
+				best_fitness_ = best_optimizer().best_fitness();
 
 				// update prediction targets for all optimizers
 				for ( auto& o : optimizers() )
-					o->find_stop_condition< predicted_fitness_condition >().fitness_ = best_fitness_;
+					o->find_stop_condition< predicted_fitness_condition >().fitness_ = best_fitness();
+
+				signal_reporters( &reporter::on_new_best, *this, best_point(), best_fitness() );
 			}
+
+			// run post-evaluate callbacks (AFTER current_best is updated!)
+			signal_reporters( &reporter::on_post_evaluate_population, *this, search_point_vec(), current_step_fitnesses(), new_best );
 
 			step_queue_.pop_front();
 		}

@@ -1149,9 +1149,13 @@ namespace spot
 		search_point_vec bounded_pop;
 	};
 
-	cma_optimizer::cma_optimizer( const objective& obj, int l, int seed, cma_weights w ) :
-	optimizer( obj ),
-	max_sample_count( 100 )
+	cma_optimizer::cma_optimizer( const objective& o, int l, int seed, cma_weights w ) :
+	optimizer( o ),
+	best_fitness_( o.info().worst_fitness() ),
+	best_point_( o.info() ),
+	current_step_best_point_( o.info() ),
+	current_step_best_fitness_( o.info().worst_fitness() ),
+	max_resample_count( 100 )
 	{
 		pimpl = new pimpl_t;
 		auto n = objective_.info().dim();
@@ -1176,7 +1180,7 @@ namespace spot
 
 		pimpl->bounded_pop.resize( lambda(), search_point( objective_.info() ) );
 		cmaes_boundary_trans_init( &pimpl->bounds, lb, ub );
-		name = obj.name() + stringf( ".R%d", random_seed() );
+		name = o.name() + stringf( ".R%d", random_seed() );
 
 		// add flat fitness condition
 		add_stop_condition< flat_fitness_condition >( 1e-9 );
@@ -1195,7 +1199,7 @@ namespace spot
 			par_vec individual( pop[ ind_idx ].begin(), pop[ ind_idx ].begin() + info().dim() );
 			bool found_individual = false;
 
-			for ( size_t attempts = 0; !found_individual && attempts < max_sample_count; ++attempts )
+			for ( size_t attempts = 0; !found_individual && attempts < max_resample_count; ++attempts )
 			{
 				// apply boundary transformation (if any)
 				boundary_transform( individual );
@@ -1209,7 +1213,7 @@ namespace spot
 
 			if ( !found_individual )
 			{
-				log::warning( "cma_optimizer: could not find feasible point after ", max_sample_count, " attempts, clamping values instead. gen=", current_step(), " ind=", ind_idx );
+				log::warning( "cma_optimizer: could not find feasible point after ", max_resample_count, " attempts, clamping values instead. gen=", current_step(), " ind=", ind_idx );
 				info().clamp( individual );
 			}
 
@@ -1291,8 +1295,30 @@ namespace spot
 
 	void cma_optimizer::internal_step()
 	{
+		// sample population and run callbacks
 		auto& pop = sample_population();
-		auto results = evaluate( pop );
-		update_distribution( results );
+		signal_reporters( &reporter::on_pre_evaluate_population, *this, pop );
+
+		// compute fitnesses
+		current_step_fitnesses_ = objective_.evaluate_async( pop, max_threads_, thread_priority_ );
+
+		// update current step best
+		auto best_idx = objective_.info().find_best_fitness( current_step_fitnesses_ );
+		current_step_best_fitness_ = current_step_fitnesses_[ best_idx ];
+		current_step_best_point_ = pop[ best_idx ];
+
+		// update all-time best
+		bool has_new_best = objective_.info().is_better( current_step_fitnesses_[ best_idx ], best_fitness_ );
+		if ( has_new_best )
+		{
+			best_fitness_ = current_step_fitnesses_[ best_idx ];
+			best_point_.set_values( pop[ best_idx ].values() );
+			signal_reporters( &reporter::on_new_best, *this, best_point_, best_fitness_ );
+		}
+
+		// run post-evaluate callbacks (AFTER current_best is updated!)
+		signal_reporters( &reporter::on_post_evaluate_population, *this, pop, current_step_fitnesses_, has_new_best );
+
+		update_distribution( current_step_fitnesses_ );
 	}
 }

@@ -15,11 +15,7 @@ namespace spot
 {
 	optimizer::optimizer( const objective& o ) :
 	objective_( o ),
-	best_fitness_( o.info().worst_fitness() ),
-	best_point_( o.info() ),
-	current_step_best_point_( o.info() ),
 	step_count_( 0 ),
-	current_step_best_fitness_( o.info().worst_fitness() ),
 	fitness_history_samples_( 0 ),
 	fitness_trend_step_( no_index ),
 	max_threads_( xo::max<int>( 4, std::thread::hardware_concurrency() ) ),
@@ -51,6 +47,15 @@ namespace spot
 
 		// perform actual step
 		internal_step();
+
+		// update fitness history
+		if ( fitness_tracking_window_size() > 0 )
+		{
+			if ( fitness_history_.full() ) fitness_history_.pop_front();
+			fitness_history_.push_back( static_cast<float>( current_step_best_fitness() ) );
+			++fitness_history_samples_;
+		}
+
 		++step_count_;
 
 		return nullptr;
@@ -82,53 +87,6 @@ namespace spot
 			}
 		}
 		return nullptr;
-	}
-
-	const fitness_vec_t& optimizer::evaluate( const search_point_vec& pop )
-	{
-		// run pre-evaluate callbacks
-		signal_reporters( &reporter::on_pre_evaluate_population, *this, pop );
-
-		// compute fitnesses
-		current_step_fitnesses_ = objective_.evaluate_async( pop, max_threads_, thread_priority_ );
-
-		// update current step best
-		auto best_idx = objective_.info().find_best_fitness( current_step_fitnesses_ );
-		current_step_best_fitness_ = current_step_fitnesses_[ best_idx ];
-		current_step_best_point_ = pop[ best_idx ];
-
-		// update fitness history
-		if ( fitness_history_.capacity() > 0 )
-		{
-			if ( fitness_history_.full() )
-				fitness_history_.pop_front();
-			fitness_history_.push_back( static_cast<float>( current_step_best_fitness_ ) );
-			++fitness_history_samples_;
-		}
-
-		// update all-time best
-		bool has_new_best = objective_.info().is_better( current_step_fitnesses_[ best_idx ], best_fitness_ );
-		if ( has_new_best )
-		{
-			best_fitness_ = current_step_fitnesses_[ best_idx ];
-			best_point_.set_values( pop[ best_idx ].values() );
-			signal_reporters( &reporter::on_new_best, *this, best_point_, best_fitness_ );
-		}
-
-		// run post-evaluate callbacks (AFTER current_best is updated!)
-		signal_reporters( &reporter::on_post_evaluate_population, *this, pop, current_step_fitnesses_, best_idx, has_new_best );
-
-		return current_step_fitnesses_;
-	}
-
-	spot::fitness_t optimizer::current_step_median() const
-	{
-		return xo::median( current_step_fitnesses_ );
-	}
-
-	spot::fitness_t optimizer::current_step_average() const
-	{
-		return xo::average( current_step_fitnesses_ );
 	}
 
 	xo::linear_function< float > optimizer::fitness_trend() const

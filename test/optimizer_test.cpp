@@ -50,15 +50,7 @@ namespace spot
 			// update cma_optimizer
 			{
 				//printf( "D%03d: ", gen );
-				auto& cma_pop = cma.sample_population();
-				auto results = cma.evaluate( cma_pop );
-				for ( int i = 0; i < cma.lambda(); ++i ) {
-					//printf( "%.2f ", results[ i ] );
-				}
-
-				/* update the search distribution used for cmaes_SamplePopulation() */
-				cma.update_distribution( results );
-				//printf( "\n" );
+				cma.step();
 			}
 		}
 
@@ -86,17 +78,14 @@ namespace spot
 		{
 			// update cma_optimizer
 			{
-				auto& cma_pop = cma.sample_population();
-				auto results = cma.evaluate( cma_pop );
-
+				cma.step();
+				
+				auto results = cma.current_step_fitnesses();
 				printf( "D%03d: ", gen );
 				for ( int i = 0; i < cma.lambda(); ++i ) {
 					printf( "%.2f ", results[ i ] );
 				}
 				printf( "\n" );
-
-				/* update the search distribution used for cmaes_SamplePopulation() */
-				cma.update_distribution( results );
 			}
 		}
 

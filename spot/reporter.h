@@ -17,7 +17,7 @@ namespace spot
 		virtual void on_stop( const optimizer& opt, const stop_condition& s ) {}
 		virtual void on_post_evaluate_point( const optimizer& opt, const search_point& point, fitness_t fitness_t ) {}
 		virtual void on_pre_evaluate_population( const optimizer& opt, const search_point_vec& pop ) {}
-		virtual void on_post_evaluate_population( const optimizer& opt, const search_point_vec& pop, const fitness_vec_t& fitnesses, index_t best_idx, bool new_best ) {}
+		virtual void on_post_evaluate_population( const optimizer& opt, const search_point_vec& pop, const fitness_vec_t& fitnesses, bool new_best ) {}
 		virtual void on_new_best( const optimizer& opt, const search_point& point, fitness_t fitness_t ) {}
 		virtual void on_next_step( const optimizer& opt, size_t gen ) {}
 	};

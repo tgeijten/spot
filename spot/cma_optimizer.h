@@ -3,6 +3,11 @@
 #include "types.h"
 #include "optimizer.h"
 
+#if defined(_MSC_VER)
+#	pragma warning( push )
+#	pragma warning( disable: 4251 )
+#endif
+
 namespace spot
 {
 	enum class cma_weights { equal = 0, linear = 1, log = 2 };
@@ -16,6 +21,13 @@ namespace spot
 		// optimization
 		const search_point_vec& sample_population();
 		void update_distribution( const fitness_vec_t& results );
+
+		// fitness info
+		virtual const fitness_vec_t& current_step_fitnesses() const override { return current_step_fitnesses_; }
+		virtual fitness_t current_step_best_fitness() const override { return current_step_best_fitness_; }
+		virtual const search_point& current_step_best_point() const override { return current_step_best_point_; }
+		virtual fitness_t best_fitness() const override { return best_fitness_; }
+		virtual const search_point& best_point() const override { return best_point_; }
 
 		// analysis
 		par_vec current_mean() const;
@@ -34,8 +46,22 @@ namespace spot
 		double sigma() const;
 
 	protected:
-		size_t max_sample_count;
+
+
+		fitness_t current_step_best_fitness_;
+		fitness_vec_t current_step_fitnesses_;
+		search_point current_step_best_point_;
+
+		fitness_t best_fitness_;
+		search_point best_point_;
+
+		size_t max_resample_count;
+
 		virtual void internal_step() override;
 		struct pimpl_t* pimpl;
 	};
 }
+
+#if defined(_MSC_VER)
+#	pragma warning( pop )
+#endif
