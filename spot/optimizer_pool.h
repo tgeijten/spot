@@ -36,9 +36,11 @@ namespace spot
 		virtual objective_info make_updated_objective_info() const override;
 
 	protected:
-		size_t prediction_window_size_;
+		size_t prediction_window_;
 		size_t prediction_start_;
-		size_t max_concurrent_optimizations_;
+		size_t prediction_look_ahead_;
+
+		size_t concurrent_optimizations_;
 
 		fitness_t best_fitness_;
 
