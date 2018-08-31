@@ -50,8 +50,8 @@ namespace spot
 			}
 		}
 
-		if ( opt.current_step() - last_output_step > max_steps_without_file_output )
-			write_par_file( opt );
+		if ( opt.current_step() - last_output_step >= max_steps_without_file_output )
+			write_par_file( opt, false );
 
 		// update history
 		auto cur_trend = opt.fitness_trend();
@@ -70,10 +70,10 @@ namespace spot
 
 	void file_reporter::on_new_best( const optimizer& opt, const search_point& sp, fitness_t best )
 	{
-		write_par_file( opt );
+		write_par_file( opt, true );
 	}
 
-	void file_reporter::write_par_file( const optimizer& opt )
+	void file_reporter::write_par_file( const optimizer& opt, bool try_cleanup )
 	{
 		auto best = opt.current_step_best_fitness();
 		objective_info updated_info = opt.make_updated_objective_info();
@@ -83,7 +83,7 @@ namespace spot
 		std::ofstream str( filename.str() );
 		str << sp;
 
-		if ( opt.current_step() - last_output_step <= max_steps_without_file_output )
+		if ( try_cleanup )
 		{
 			recent_files.push_back( std::make_pair( filename, best ) );
 			if ( recent_files.size() >= 3 )

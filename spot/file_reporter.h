@@ -22,12 +22,12 @@ namespace spot
 		virtual void on_new_best( const optimizer& opt, const search_point& point, fitness_t fitness_t ) override;
 
 		path root_;
-		size_t max_steps_without_file_output = 200;
+		size_t max_steps_without_file_output = 1000;
 		double min_improvement_factor_for_file_output = 1.05;
 		bool output_temp_files = false;
 
 	private:
-		void write_par_file( const optimizer& opt );
+		void write_par_file( const optimizer& opt, bool try_cleanup );
 
 		index_t last_output_step;
 		circular_deque< std::pair< path, fitness_t > > recent_files;
