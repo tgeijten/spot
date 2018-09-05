@@ -35,13 +35,12 @@ namespace spot
 
 		virtual objective_info make_updated_objective_info() const override;
 
-	protected:
 		size_t prediction_window_;
 		size_t prediction_start_;
 		size_t prediction_look_ahead_;
-
 		size_t concurrent_optimizations_;
 
+	protected:
 		fitness_t best_fitness_;
 
 		virtual std::vector< double > compute_predicted_fitnesses();
