@@ -16,7 +16,7 @@ namespace spot
 	{
 		if ( auto* p = pn.try_get_child( name ) )
 			return T( ps.get( name, *p ) );
-		else if ( auto* p = pn.try_get_child_delimited( name ) )
+		else if ( auto* p = pn.try_get_query( name ) )
 			return T( ps.get( name, *p ) );
 		else return def;
 	}
@@ -26,7 +26,7 @@ namespace spot
 	{
 		if ( auto* p = pn.try_get_child( name ) )
 			return T( ps.get( name, *p ) );
-		else if ( auto* p = pn.try_get_child_delimited( name ) )
+		else if ( auto* p = pn.try_get_query( name ) )
 			return T( ps.get( name, *p ) );
 		else return T( ps.get( name, par_value( mean ), std, lower, upper ) );
 	}
