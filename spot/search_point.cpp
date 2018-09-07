@@ -50,18 +50,26 @@ namespace spot
 	size_t search_point::import_values( const path& filename )
 	{
 		size_t params_read = 0;
-		std::ifstream str( filename.str() );
+		xo::char_stream str( filename );
 		xo_error_if( !str.good(), "Could not open " + filename.string() );
 		while ( str.good() )
 		{
 			string name;
+			str >> name;
+			if ( name.find_first_of( "#;%", 0, 1 ) == 0 ) {
+				// any of these characters can be used for comments (for now)
+				str.get_line();
+				//char buf[ 256 ];
+				//str.getline( buf, sizeof( buf ) );
+				continue;
+			}
+
 			par_value value, mean, stdev;
-			str >> name >> value >> mean >> stdev;
-			if ( str.good() )
-			{
+			str >> value >> mean >> stdev;
+
+			if ( str.good() ) {
 				index_t idx = info().find_index( name );
-				if ( idx != no_index )
-				{
+				if ( idx != no_index ) {
 					values_[ idx ] = value;
 					++params_read;
 				}
