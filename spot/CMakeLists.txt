@@ -6,6 +6,9 @@ use_precompiled_headers( SPOT_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/stdafx.h" "${
 
 add_library(spot SHARED ${SPOT_SOURCES})
 
+set_property(TARGET spot PROPERTY CXX_STANDARD 17)
+set_property(TARGET spot PROPERTY CXX_STANDARD_REQUIRED ON)
+
 if (MSVC)
 	source_group("" FILES ${PRECOMPILED_HEADER_FILES})
 	source_group("spot" FILES ${SPOT_SOURCES})

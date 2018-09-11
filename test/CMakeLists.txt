@@ -9,6 +9,9 @@ include_directories(${SPOT_INCLUDE_DIR})
 
 add_executable(spot_test ${TEST_FILES} ${CCMA_FILES})
 
+set_property(TARGET spot_test PROPERTY CXX_STANDARD 17)
+set_property(TARGET spot_test PROPERTY CXX_STANDARD_REQUIRED ON)
+
 target_link_libraries(spot_test spot)
 
 set_target_properties(spot_test	PROPERTIES
