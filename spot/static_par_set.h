@@ -2,6 +2,7 @@
 
 #include "par_io.h"
 #include "xo/container/flat_map.h"
+#include "xo/filesystem/path.h"
 
 #if defined(_MSC_VER)
 #	pragma warning( push )

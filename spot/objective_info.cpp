@@ -5,6 +5,7 @@
 #include <fstream>
 #include "xo/filesystem/filesystem.h"
 #include "xo/system/log.h"
+#include "xo/serialization/char_stream.h"
 
 namespace spot
 {

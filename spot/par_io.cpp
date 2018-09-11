@@ -1,4 +1,5 @@
 #include "par_io.h"
+#include "xo/serialization/char_stream.h"
 
 namespace spot
 {
@@ -57,30 +58,34 @@ namespace spot
 		else
 		{
 			// parse the string, format mean~std[min,max]
+			// TODO: use string_view instead of char_stream?
 			char_stream str( pn.get_value().c_str() );
 			while ( str.good() )
 			{
 				char c = str.peekc();
-				if ( c == '~' )
+				if ( str.good() )
 				{
-					xo_error_if( std, "Standard deviation already set" );
-					str.getc();
-					str >> std;
-				}
-				else if ( c == '[' || c == '<' || c == '(' )
-				{
-					str.getc();
-					str >> min;
-					xo_error_if( str.getc() != ',', "Error parsing parameter '" + full_name + "': expected ','" );
-					str >> max;
-					char c2 = str.getc();
-					if ( ( c == '[' && c2 != ']' ) || ( c == '<' && c2 != '>' ) || ( c == '(' && c2 != ')' ) )
-						xo_error( "Error parsing parameter '" + full_name + "': opening bracket " + c + " does not match closing bracket " + c2 );
-				}
-				else // just a value, interpret as mean
-				{
-					xo_error_if( mean, "Error parsing parameter '" + full_name + "': mean already defined" );
-					str >> mean;
+					if ( c == '~' )
+					{
+						xo_error_if( std, "Standard deviation already set" );
+						str.getc();
+						str >> std;
+					}
+					else if ( c == '[' || c == '<' || c == '(' )
+					{
+						str.getc();
+						str >> min;
+						xo_error_if( str.getc() != ',', "Error parsing parameter '" + full_name + "': expected ','" );
+						str >> max;
+						char c2 = str.getc();
+						if ( ( c == '[' && c2 != ']' ) || ( c == '<' && c2 != '>' ) || ( c == '(' && c2 != ')' ) )
+							xo_error( "Error parsing parameter '" + full_name + "': opening bracket " + c + " does not match closing bracket " + c2 );
+					}
+					else // just a value, interpret as mean
+					{
+						xo_error_if( mean, "Error parsing parameter '" + full_name + "': mean already defined" );
+						str >> mean;
+					}
 				}
 			}
 		}
