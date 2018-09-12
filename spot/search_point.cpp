@@ -43,9 +43,9 @@ namespace spot
 		else return info_.try_get_locked( full_name );
 	}
 
-	par_value search_point::add( const string& full_name, par_value mean, par_value std, par_value min, par_value max )
+	par_value search_point::add( const par_info& pi )
 	{
-		xo_error( "Previously undefined parameter: " + full_name + "; " + xo_varstr( dim() ) );
+		xo_error( "Previously undefined parameter: " + pi.name + "; " + xo_varstr( dim() ) );
 	}
 
 	size_t search_point::import_values( const path& filename )

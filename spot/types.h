@@ -12,10 +12,13 @@
 
 #include "xo/utility/types.h"
 #include <vector>
+#include <string>
 
 namespace spot
 {
 	using namespace xo;
+
+	using std::string;
 
 	using fitness_t = double;
 	using fitness_vec_t = std::vector< fitness_t >;

@@ -27,7 +27,7 @@ namespace spot
 
 		virtual size_t dim() const override { return info_.dim(); }
 		virtual optional< par_value > try_get( const string& full_name ) const override;
-		virtual par_value add( const string& name, par_value mean, par_value std, par_value min, par_value max ) override;
+		virtual par_value add( const par_info& pi ) override;
 
 		const par_value& operator[]( index_t i ) const { return values_[ i ]; }
 		par_value& operator[]( index_t i ) { return values_[ i ]; }

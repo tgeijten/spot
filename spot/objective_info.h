@@ -22,17 +22,8 @@ namespace spot
 	public:
 		objective_info( bool min = true ) : minimize_( min ), target_fitness_( 0 ) {}
 
-		struct par_info
-		{
-			string name;
-			par_value mean;
-			par_value std;
-			par_value min;
-			par_value max;
-		};
-
 		virtual size_t dim() const override { return par_infos_.size(); }
-		virtual par_value add( const string& name, par_value mean, par_value std, par_value min = -1e15, par_value max = 1e15 ) override;
+		virtual par_value add( const par_info& pi ) override;
 		using par_io::add;
 		virtual optional< par_value > try_get( const string& name ) const override;
 		optional< par_value > try_get_locked( const string& name ) const;

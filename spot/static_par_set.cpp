@@ -50,8 +50,8 @@ namespace spot
 		else return optional< par_value >();
 	}
 
-	par_value static_par_set::add( const string& name, par_value mean, par_value std, par_value min, par_value max )
+	par_value static_par_set::add( const par_info& pi )
 	{
-		return values_[ name ] = mean;
+		return values_[ pi.name ] = pi.mean;
 	}
 }

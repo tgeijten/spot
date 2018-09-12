@@ -19,7 +19,7 @@ namespace spot
 
 		virtual size_t dim() const override { return values_.size(); }
 		virtual optional< par_value > try_get( const string& name ) const override;
-		virtual par_value add( const string& name, par_value mean, par_value std, par_value min = -1e15, par_value max = 1e15 ) override;
+		virtual par_value add( const par_info& pi ) override;
 
 		size_t load( const path& filename );
 		size_t merge( const path& filename, bool overwrite );

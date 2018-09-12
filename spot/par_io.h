@@ -5,6 +5,7 @@
 #include "xo/utility/optional.h"
 #include "xo/string/stack_string.h"
 #include "types.h"
+#include "par_info.h"
 
 #if defined(_MSC_VER)
 #	pragma warning( push )
@@ -22,11 +23,10 @@ namespace spot
 		virtual size_t dim() const = 0;
 
 		virtual optional< par_value > try_get( const string& name ) const = 0;
-		virtual par_value add( const string& full_name, par_value mean, par_value std, par_value min = -1e15, par_value max = 1e15 ) = 0;
+		virtual par_value add( const par_info& pi ) = 0;
 
 		par_value get( const string& name, par_value mean, par_value std, par_value min = -1e15, par_value max = 1e15 );
 		par_value get( const string& name, const prop_node& pn );
-		par_value add( const string& full_name, const prop_node& pn );
 		par_value try_get( const string& name, const prop_node& parent_pn, const string& key, const par_value& default_value );
 
 		void set_prefix( const string& s ) { prefix_.set( s ); }

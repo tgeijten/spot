@@ -32,11 +32,12 @@ namespace spot
 		else return std::max_element( f.begin(), f.end() ) - f.begin();
 	}
 
-	par_value objective_info::add( const string& name, par_value mean, par_value std, par_value min, par_value max )
+	par_value objective_info::add( const par_info& pi )
 	{
-		xo_error_if( find( name ) != par_infos_.end(), "Parameter already exists: " + name );
-		xo_error_if( std <= 0, "Initial STD must be > 0: " + name + " " + xo_varstr( std ) );
-		par_infos_.emplace_back( par_info{ name, mean, std, min, max } );
+		xo_error_if( find( pi.name ) != par_infos_.end(), "Parameter already exists: " + pi.name );
+		xo_error_if( !pi.is_valid(), "Invalid parameter (STD <= 0): " + pi.name + " " + xo_varstr( pi.std ) );
+		log::info( "Added parameter ", pi.name );
+		par_infos_.emplace_back( pi );
 		return par_infos_.back().mean;
 	}
 
@@ -146,23 +147,23 @@ namespace spot
 		}
 	}
 
-	std::vector< objective_info::par_info >::const_iterator objective_info::find( const string& name ) const
+	std::vector< par_info >::const_iterator objective_info::find( const string& name ) const
 	{
 		return xo::find_if( par_infos_, [&]( const par_info& p ) { return p.name == name; } );
 	}
 
-	std::vector< objective_info::par_info >::iterator objective_info::find( const string& name )
+	std::vector< par_info >::iterator objective_info::find( const string& name )
 	{
 		return xo::find_if( par_infos_, [&]( par_info& p ) { return p.name == name; } );
 	}
 
-	const spot::objective_info::par_info* objective_info::try_find( const string& name ) const
+	const par_info* objective_info::try_find( const string& name ) const
 	{
 		auto it = find( name );
 		return it != par_infos_.end() ? &*it : nullptr;
 	}
 
-	spot::objective_info::par_info* objective_info::try_find( const string& name )
+	par_info* objective_info::try_find( const string& name )
 	{
 		auto it = find( name );
 		return it != par_infos_.end() ? &*it : nullptr;
