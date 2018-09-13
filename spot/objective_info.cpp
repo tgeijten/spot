@@ -36,7 +36,6 @@ namespace spot
 	{
 		xo_error_if( find( pi.name ) != par_infos_.end(), "Parameter already exists: " + pi.name );
 		xo_error_if( !pi.is_valid(), "Invalid parameter (STD <= 0): " + pi.name + " " + xo_varstr( pi.std ) );
-		log::info( "Added parameter ", pi.name );
 		par_infos_.emplace_back( pi );
 		return par_infos_.back().mean;
 	}
