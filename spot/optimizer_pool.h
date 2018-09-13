@@ -31,8 +31,6 @@ namespace spot
 		size_t size() const { return optimizers_.size(); }
 
 		virtual void interrupt() const override;
-
-
 		virtual objective_info make_updated_objective_info() const override;
 
 		size_t prediction_window_;
