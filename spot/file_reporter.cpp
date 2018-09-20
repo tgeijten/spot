@@ -52,25 +52,25 @@ namespace spot
 
 		if ( opt.current_step() - last_output_step >= max_steps_without_file_output )
 			write_par_file( opt, false );
-
-		// update history
-		auto cur_trend = opt.fitness_trend();
-		history_ << opt.current_step()
-			<< "\t" << opt.current_step_best_fitness()
-			<< "\t" << xo::median( opt.current_step_fitnesses() );
-
-		if ( opt.fitness_tracking_window_size() > 0 )
-			history_ << "\t" << opt.predicted_fitness( opt.fitness_tracking_window_size() )
-			<< "\t" << opt.progress();
-
-		history_ << "\n";
-		if ( opt.current_step() % 10 == 9 ) // flush every 10 entries
-			history_.flush();
 	}
 
 	void file_reporter::on_new_best( const optimizer& opt, const search_point& sp, fitness_t best )
 	{
 		write_par_file( opt, true );
+	}
+
+	void file_reporter::on_post_step( const optimizer& opt )
+	{
+		// update history
+		auto cur_trend = opt.fitness_trend();
+		history_ << opt.current_step() << "\t" << opt.current_step_best_fitness() << "\t" << xo::median( opt.current_step_fitnesses() );
+
+		if ( opt.fitness_tracking_window_size() > 0 )
+			history_ << "\t" << opt.predicted_fitness( opt.fitness_tracking_window_size() ) << "\t" << opt.progress();
+
+		history_ << "\n";
+		if ( opt.current_step() % 10 == 9 ) // flush every 10 entries
+			history_.flush();
 	}
 
 	void file_reporter::write_par_file( const optimizer& opt, bool try_cleanup )

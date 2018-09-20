@@ -20,6 +20,7 @@ namespace spot
 		virtual void on_pre_evaluate_population( const optimizer& opt, const search_point_vec& pop ) override;
 		virtual void on_post_evaluate_population( const optimizer& opt, const search_point_vec& pop, const fitness_vec_t& fitnesses, bool new_best ) override;
 		virtual void on_new_best( const optimizer& opt, const search_point& point, fitness_t fitness_t ) override;
+		virtual void on_post_step( const optimizer& opt ) override;
 
 		path root_;
 		size_t max_steps_without_file_output = 1000;

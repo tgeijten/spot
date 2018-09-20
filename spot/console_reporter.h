@@ -14,7 +14,7 @@ namespace spot
 		virtual void on_post_evaluate_population( const optimizer& opt, const search_point_vec& pop, const fitness_vec_t& fitnesses, bool new_best ) override;
 
 		virtual void on_stop( const optimizer& opt, const stop_condition& s ) override;
-		virtual void on_next_step( const optimizer& opt, size_t gen ) override;
+		virtual void on_pre_step( const optimizer& opt ) override;
 		virtual void on_start( const optimizer& opt ) override;
 
 	private:

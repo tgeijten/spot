@@ -28,9 +28,9 @@ namespace spot
 		printf( "\nOptimization finished: %s", s.what().c_str() );
 	}
 
-	void console_reporter::on_next_step( const optimizer& opt, size_t gen )
+	void console_reporter::on_pre_step( const optimizer& opt )
 	{
-		printf( "%04d: ", ( int )gen );
+		printf( "%04d: ", ( int )opt.current_step() );
 	}
 
 	void console_reporter::on_start( const optimizer& opt )

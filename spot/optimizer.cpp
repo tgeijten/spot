@@ -43,7 +43,7 @@ namespace spot
 			signal_reporters( &reporter::on_start, *this );
 
 		// signal reporters
-		signal_reporters( &reporter::on_next_step, *this, step_count_ );
+		signal_reporters( &reporter::on_pre_step, *this );
 
 		// perform actual step
 		internal_step();
@@ -55,6 +55,9 @@ namespace spot
 			fitness_history_.push_back( static_cast<float>( current_step_best_fitness() ) );
 			++fitness_history_samples_;
 		}
+
+		// signal reporters
+		signal_reporters( &reporter::on_post_step, *this );
 
 		++step_count_;
 
