@@ -24,7 +24,7 @@ namespace spot
 
 		path root_;
 		size_t max_steps_without_file_output = 1000;
-		double min_improvement_factor_for_file_output = 1.05;
+		double min_improvement_for_file_output = 0.05;
 		bool output_temp_files = false;
 
 	private:

@@ -86,20 +86,26 @@ namespace spot
 		if ( try_cleanup )
 		{
 			recent_files.push_back( std::make_pair( filename, best ) );
-			if ( recent_files.size() >= 3 )
+			xo_assert( recent_files.size() <= 3 );
+			if ( recent_files.size() == 3 )
 			{
 				// see if we should delete the second last file
-				auto testIt = recent_files.end() - 2;
-				double imp1 = testIt->second / ( testIt - 1 )->second;
-				double imp2 = ( testIt + 1 )->second / testIt->second;
-				if ( opt.info().minimize() ) { imp1 = 1.0 / imp1; imp2 = 1.0 / imp2; }
+				auto& f1 = recent_files[ 0 ].second;
+				auto& f2 = recent_files[ 1 ].second;
+				auto& f3 = recent_files[ 2 ].second;
 
-				if ( imp1 < min_improvement_factor_for_file_output && imp2 < min_improvement_factor_for_file_output )
+				double imp1 = ( f2 - f1 ) / abs( f1 );
+				double imp2 = ( f3 - f2 ) / abs( f2 );
+				if ( opt.info().minimize() )
+					imp1 = -imp1, imp2 = -imp2;
+
+				if ( imp1 < min_improvement_for_file_output && imp2 < min_improvement_for_file_output )
 				{
-					xo::remove( testIt->first );
-					*testIt = *recent_files.begin();
+					xo::remove( recent_files[ 1 ].first );
+					recent_files[ 1 ] = recent_files[ 2 ];
+					recent_files.pop_back();
 				}
-				recent_files.pop_front();
+				else recent_files.pop_front();
 			}
 		}
 
