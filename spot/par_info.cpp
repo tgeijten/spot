@@ -36,7 +36,7 @@ namespace spot
 				{
 					if ( c == '~' )
 					{
-						xo_error_if( !std::isnan( std ), "Standard deviation already set" );
+						xo_error_if( !std::isnan( std ), "Error parsing parameter '" + full_name + "': Standard deviation already set" );
 						str.getc();
 						str >> std;
 					}
