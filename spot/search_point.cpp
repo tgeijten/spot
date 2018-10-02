@@ -48,9 +48,10 @@ namespace spot
 		xo_error( "Previously undefined parameter: " + pi.name + "; " + xo_varstr( dim() ) );
 	}
 
-	size_t search_point::import_values( const path& filename )
+	std::pair< size_t, size_t > search_point::import_values( const path& filename )
 	{
-		size_t params_read = 0;
+		size_t params_set = 0;
+		size_t params_skipped = 0;
 		xo::char_stream str( filename );
 
 		xo_error_if( !str.good(), "Could not open " + filename.string() );
@@ -60,15 +61,18 @@ namespace spot
 			par_value value, mean, stdev;
 			str >> name >> value >> mean >> stdev;
 
-			if ( str.good() ) {
+			if ( str.good() )
+			{
 				index_t idx = info().find_index( name );
-				if ( idx != no_index ) {
+				if ( idx != no_index )
+				{
 					values_[ idx ] = value;
-					++params_read;
+					++params_set;
 				}
+				else ++params_skipped;
 			}
 		}
-		return params_read;
+		return { params_set, params_skipped };
 	}
 
 	void search_point::set_values( const par_vec& values )

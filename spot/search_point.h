@@ -35,7 +35,7 @@ namespace spot
 
 		const objective_info& info() const { return info_; }
 		size_t size() const { return info_.size(); }
-		size_t import_values( const path& filename );
+		std::pair< size_t, size_t > import_values( const path& filename );
 
 		void set_values( const par_vec& values );
 		const par_vec& values() const { return values_; }
