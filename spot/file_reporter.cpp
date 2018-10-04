@@ -7,6 +7,7 @@
 #include "xo/container/container_tools.h"
 
 #include "optimizer.h"
+#include "xo/system/log.h"
 
 namespace spot
 {
@@ -75,11 +76,12 @@ namespace spot
 
 	void file_reporter::write_par_file( const optimizer& opt, bool try_cleanup )
 	{
+		const fitness_t replim = 999999.999;
 		auto best = opt.current_step_best_fitness();
 		objective_info updated_info = opt.make_updated_objective_info();
 		auto sp = search_point( updated_info, opt.current_step_best_point().values() );
 		auto avg = xo::median( opt.current_step_fitnesses() );
-		path filename = root_ / xo::stringf( "%04d_%.3f_%.3f.par", opt.current_step(), avg, best );
+		path filename = root_ / xo::stringf( "%04d_%.3f_%.3f.par", opt.current_step(), xo::clamped( avg, -replim, replim ), xo::clamped( best, -replim, replim ) );
 		std::ofstream str( filename.str() );
 		str << sp;
 
@@ -101,6 +103,7 @@ namespace spot
 
 				if ( imp1 < min_improvement_for_file_output && imp2 < min_improvement_for_file_output )
 				{
+					//xo::log::info( "Cleaning up file ", recent_files[ 1 ].first );
 					xo::remove( recent_files[ 1 ].first );
 					recent_files[ 1 ] = recent_files[ 2 ];
 					recent_files.pop_back();
