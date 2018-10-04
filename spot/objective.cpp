@@ -30,7 +30,7 @@ namespace spot
 		}
 		catch ( std::exception& e )
 		{
-			log::error( "error evaluating objective: ", e.what() );
+			log::error( "Exception during object evaluation, returning worst fitness. ", e.what() );
 			return info_.worst_fitness();
 		}
 	}
