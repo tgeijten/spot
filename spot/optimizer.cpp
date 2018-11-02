@@ -115,7 +115,7 @@ namespace spot
 		xo_error_if( fitness_history_.capacity() == 0, "fitness tracking must be enabled for this method" );
 		if ( fitness_history_.size() >= 2 )
 		{
-			auto& reg = fitness_trend();
+			const auto reg = fitness_trend();
 			auto imp = reg.slope() / reg( fitness_history_samples_ - 0.5f * fitness_history_.size() );
 			return info().minimize() ? -imp : imp;
 		}

@@ -20,11 +20,11 @@ namespace spot
 		optimizer_pool& operator=( const optimizer_pool& ) = delete;
 		virtual ~optimizer_pool() {}
 
-		virtual const fitness_vec_t& current_step_fitnesses() const { return best_optimizer().current_step_fitnesses(); }
-		virtual fitness_t current_step_best_fitness() const { return best_optimizer().current_step_best_fitness(); }
-		virtual const search_point& current_step_best_point() const { return best_optimizer().current_step_best_point(); }
-		virtual fitness_t best_fitness() const { return best_optimizer().best_fitness(); }
-		virtual const search_point& best_point() const { return best_optimizer().best_point(); }
+		virtual const fitness_vec_t& current_step_fitnesses() const override { return best_optimizer().current_step_fitnesses(); }
+		virtual fitness_t current_step_best_fitness() const override { return best_optimizer().current_step_best_fitness(); }
+		virtual const search_point& current_step_best_point() const override { return best_optimizer().current_step_best_point(); }
+		virtual fitness_t best_fitness() const override { return best_optimizer().best_fitness(); }
+		virtual const search_point& best_point() const override { return best_optimizer().best_point(); }
 
 		void push_back( u_ptr< optimizer > opt );
 		const std::vector< u_ptr< optimizer > >& optimizers() const { return optimizers_; }
