@@ -36,7 +36,7 @@ namespace spot
 
 		// state
 		virtual void save_state( const path& filename ) const override;
-		virtual objective_info make_updated_objective_info() const;
+		virtual objective_info make_updated_objective_info() const override;
 
 		// actual parameters
 		int dim() const;

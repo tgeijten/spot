@@ -3,6 +3,7 @@
 #include "xo/container/circular_deque.h"
 #include "reporter.h"
 #include <iosfwd>
+#include <fstream>
 
 #if defined(_MSC_VER)
 #	pragma warning( push )
