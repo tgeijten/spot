@@ -1,4 +1,5 @@
 #include "par_io.h"
+#include <cctype>
 #include "xo/serialization/char_stream.h"
 
 namespace spot
@@ -23,10 +24,10 @@ namespace spot
 		if ( auto val = try_get( full_name ) )
 			return *val;
 
-		// see if this is a reference to another parameter
-		if ( !pn.get_value().empty() && pn.get_value().front() == '@' )
+		// if value starts with a letter: must be a reference to another parameter
+		if ( !pn.get_value().empty() && std::isalpha( pn.get_value().front() ) )
 		{
-			auto val = try_get( pn.get_value().substr( 1 ) );
+			auto val = try_get( pn.get_value() );
 			xo_error_if( !val, "Could not find " + pn.get_value() );
 			return *val;
 		}
