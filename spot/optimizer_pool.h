@@ -12,6 +12,7 @@
 
 namespace spot
 {
+	/// Pool of independent optimizations, prioritized based on their predicted fitness.
 	class SPOT_API optimizer_pool : public optimizer
 	{
 	public:
@@ -33,9 +34,16 @@ namespace spot
 		virtual void interrupt() const override;
 		virtual objective_info make_updated_objective_info() const override;
 
+		/// Number of generations on which to base the prediction.
 		size_t prediction_window_;
+
+		/// Number of generations after which prediction starts.
 		size_t prediction_start_;
+
+		/// Prediction look-ahead.
 		size_t prediction_look_ahead_;
+
+		/// Maximum number of optimizations running concurrently.
 		size_t concurrent_optimizations_;
 
 	protected:
