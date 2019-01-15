@@ -8,7 +8,7 @@
 #include "xo/utility/types.h"
 #include "xo/container/flat_map.h"
 #include "xo/filesystem/path.h"
-#include "xo/numerical/constants.h"
+#include "xo/numerical/numconst.h"
 
 #if defined(_MSC_VER)
 #	pragma warning( push )

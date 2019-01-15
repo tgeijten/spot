@@ -1,6 +1,6 @@
 #include "par_info.h"
 #include "xo/serialization/char_stream.h"
-#include "xo/numerical/constants.h"
+#include "xo/numerical/numconst.h"
 #include "xo/numerical/math.h"
 
 namespace spot
