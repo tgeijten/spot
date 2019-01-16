@@ -1,6 +1,6 @@
 #include "par_info.h"
 #include "xo/serialization/char_stream.h"
-#include "xo/numerical/numconst.h"
+#include "xo/numerical/constants.h"
 #include "xo/numerical/math.h"
 
 namespace spot
@@ -11,8 +11,8 @@ namespace spot
 
 	par_info::par_info( string full_name, const prop_node& pn ) :
 	name( full_name ),
-	mean( const_NaN<par_value>() ),
-	std( const_NaN<par_value>() ),
+	mean( constants<par_value>::NaN() ),
+	std( constants<par_value>::NaN() ),
 	min( -1e12 ),
 	max( 1e12 )
 	{

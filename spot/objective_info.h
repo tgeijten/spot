@@ -8,7 +8,7 @@
 #include "xo/utility/types.h"
 #include "xo/container/flat_map.h"
 #include "xo/filesystem/path.h"
-#include "xo/numerical/numconst.h"
+#include "xo/numerical/constants.h"
 
 #if defined(_MSC_VER)
 #	pragma warning( push )
@@ -36,8 +36,8 @@ namespace spot
 		bool maximize() const { return !minimize_; }
 		bool is_better( fitness_t a, fitness_t b ) const { return minimize() ? a < b : a > b; }
 		index_t find_best_fitness( const fitness_vec_t& f ) const;
-		template< typename T > T worst() const { return minimize() ? const_max<T>() : const_lowest<T>(); }
-		template< typename T > T best() const { return minimize() ? const_lowest<T>() : const_max<T>(); }
+		template< typename T > T worst() const { return minimize() ? constants<T>::max() : constants<T>::lowest(); }
+		template< typename T > T best() const { return minimize() ? constants<T>::lowest() : constants<T>::max(); }
 		fitness_t worst_fitness() const { return worst< fitness_t >(); }
 		fitness_t best_fitness() const { return best< fitness_t >(); }
 		void set_minimize( bool m ) { minimize_ = m; }
