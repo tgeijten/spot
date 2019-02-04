@@ -34,7 +34,7 @@ namespace spot
 			for ( index_t i = 0; i < pop.size(); ++i )
 			{
 				path p = root_ / stringf( "%04d_%02d.tmp", opt.current_step(), i );
-				std::ofstream( p.str() ) << pop[ i ];
+				std::ofstream( p.string() ) << pop[ i ];
 			}
 		}
 	}
@@ -82,7 +82,7 @@ namespace spot
 		auto sp = search_point( updated_info, opt.current_step_best_point().values() );
 		auto avg = xo::median( opt.current_step_fitnesses() );
 		path filename = root_ / xo::stringf( "%04d_%.3f_%.3f.par", opt.current_step(), xo::clamped( avg, -replim, replim ), xo::clamped( best, -replim, replim ) );
-		std::ofstream str( filename.str() );
+		std::ofstream str( filename.string() );
 		str << sp;
 
 		if ( try_cleanup )
