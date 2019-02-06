@@ -140,7 +140,7 @@ namespace spot
 			auto& pi = par_infos_[ i ];
 			if ( !xo::is_between( vec[ i ], pi.min, pi.max ) )
 			{
-				xo::log::debug( "Clamping parameter ", pi.name, "; value=", vec[ i ], " min=", pi.min, " max=", pi.max );
+				xo::log::info( "Clamping parameter ", pi.name, "; value=", vec[ i ], " min=", pi.min, " max=", pi.max );
 				xo::clamp( vec[ i ], pi.min, pi.max );
 			}
 		}

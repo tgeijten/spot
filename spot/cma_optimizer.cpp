@@ -877,7 +877,15 @@ namespace spot
 		return  t->current_pop;
 	}
 
+	const std::vector< dbl_vec >& cmaes_OverwriteSingle( cmaes_t *t, index_t iindex, dbl_vec params )
+	{
+		// TG: overwrite parameters of a single individual
+		// This is required in case of clamping when no individual can be found
+		for ( int i = 0; i < t->sp.N; ++i )
+			t->current_pop[ iindex ][ i ] = params[ i ];
 
+		return  t->current_pop;
+	}
 
 	static void Sorted_index( const dbl_vec& rgFunVal, std::vector< int >& iindex, int n )
 	{
@@ -1213,8 +1221,9 @@ namespace spot
 
 			if ( !found_individual )
 			{
-				log::warning( "cma_optimizer: could not find feasible point after ", max_resample_count, " attempts, clamping values instead. gen=", current_step(), " ind=", ind_idx );
+				log::warning( "cma_optimizer: no feasible individual found after ", max_resample_count, " attempts, clamping values instead. gen=", current_step(), " ind=", ind_idx );
 				info().clamp( individual );
+				cmaes_OverwriteSingle( &pimpl->cmaes, ind_idx, individual );
 			}
 
 			pimpl->bounded_pop[ ind_idx ].set_values( individual );
