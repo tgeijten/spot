@@ -12,6 +12,7 @@
 
 #include "xo/utility/types.h"
 #include <string>
+#include <vector>
 
 namespace spot
 {
