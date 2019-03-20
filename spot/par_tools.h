@@ -2,6 +2,7 @@
 
 #include "search_point.h"
 #include "xo/geometry/vec3_type.h"
+#include "xo/string/string_tools.h"
 
 #define INIT_PAR( _pn_, _ps_, _var_, _default_ ) \
 	_var_ = (decltype( _var_ ))::spot::try_get_par( _ps_, ::xo::tidy_identifier( #_var_ ), _pn_, decltype( _var_ )( _default_ ) )
@@ -32,9 +33,9 @@ namespace spot
 	}
 
 	template< typename T >
-	inline vec3_<T> try_get_par( par_io& ps, const string& name, const prop_node& pn, const vec3_<T>& def )
+	inline xo::vec3_<T> try_get_par( par_io& ps, const string& name, const prop_node& pn, const xo::vec3_<T>& def )
 	{
-		vec3_<T> r;
+		xo::vec3_<T> r;
 		r.x = try_get_par( ps, name + ".x", pn, def.x );
 		r.y = try_get_par( ps, name + ".y", pn, def.y );
 		r.z = try_get_par( ps, name + ".z", pn, def.z );
@@ -46,7 +47,7 @@ namespace spot
 	{
 		std::array< T, N > r;
 		for ( int i = 0; i < N; ++i )
-			r[ i ] = T( try_get_par( ps, name + stringf( ".%d", i ), pn, def[ i ] ) );
+			r[ i ] = T( try_get_par( ps, name + xo::stringf( ".%d", i ), pn, def[ i ] ) );
 
 		return r;
 	}

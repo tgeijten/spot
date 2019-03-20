@@ -1,9 +1,13 @@
 #pragma once
+
 #include "test_functions.h"
+
 #include "spot/cma_optimizer.h"
 #include "spot/console_reporter.h"
-#include <memory>
+
 #include "xo/container/storage.h"
+#include "xo/system/log.h"
+
 #include "spot/tools.h"
 #include "spot/optimizer_pool.h"
 
@@ -26,7 +30,7 @@ namespace spot
 			auto f1 = opt1.best_fitness();
 			auto f2 = opt2.best_fitness();
 
-			log::messagef( log::info_level, "%3d: f1=%8.3f s1=%4d f2=%8.3f s2=%4d improvement=%5.3f", i, f1, opt1.current_step(), f2, opt2.current_step(), f1 / f2 );
+			xo::log::infof( "%3d: f1=%8.3f s1=%4d f2=%8.3f s2=%4d improvement=%5.3f", i, f1, opt1.current_step(), f2, opt2.current_step(), f1 / f2 );
 		}
 	}
 
