@@ -18,14 +18,14 @@ namespace spot
 		static_par_set( const path& filename ) : par_io() { load( filename ); }
 
 		virtual size_t dim() const override { return values_.size(); }
-		virtual optional< par_value > try_get( const string& name ) const override;
+		virtual xo::optional< par_value > try_get( const string& name ) const override;
 		virtual par_value add( const par_info& pi ) override;
 
 		size_t load( const path& filename );
 		size_t merge( const path& filename, bool overwrite );
 
 	private:
-		flat_map< string, par_value > values_;
+		xo::flat_map< string, par_value > values_;
 	};
 }
 

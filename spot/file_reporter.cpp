@@ -33,7 +33,7 @@ namespace spot
 			// create temp files for debugging purposes
 			for ( index_t i = 0; i < pop.size(); ++i )
 			{
-				path p = root_ / stringf( "%04d_%02d.tmp", opt.current_step(), i );
+				path p = root_ / xo::stringf( "%04d_%02d.tmp", opt.current_step(), i );
 				std::ofstream( p.string() ) << pop[ i ];
 			}
 		}
@@ -46,7 +46,7 @@ namespace spot
 			// remove temp files
 			for ( index_t i = 0; i < pop.size(); ++i )
 			{
-				path p = root_ / stringf( "%04d_%02d.tmp", opt.current_step(), i );
+				path p = root_ / xo::stringf( "%04d_%02d.tmp", opt.current_step(), i );
 				remove( p );
 			}
 		}

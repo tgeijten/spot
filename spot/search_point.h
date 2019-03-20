@@ -26,7 +26,7 @@ namespace spot
 		search_point& operator=( const search_point& other ) { xo_assert( info_.dim() == other.info_.dim() ); values_ = other.values_; return *this; }
 
 		virtual size_t dim() const override { return info_.dim(); }
-		virtual optional< par_value > try_get( const string& full_name ) const override;
+		virtual xo::optional< par_value > try_get( const string& full_name ) const override;
 		virtual par_value add( const par_info& pi ) override;
 
 		const par_value& operator[]( index_t i ) const { return values_[ i ]; }

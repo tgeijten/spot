@@ -1,6 +1,5 @@
 #pragma once
 
-#include "xo/string/string_tools.h"
 #include "xo/container/prop_node.h"
 #include "xo/utility/optional.h"
 #include "xo/string/stack_string.h"
@@ -22,7 +21,7 @@ namespace spot
 
 		virtual size_t dim() const = 0;
 
-		virtual optional< par_value > try_get( const string& name ) const = 0;
+		virtual xo::optional< par_value > try_get( const string& name ) const = 0;
 		virtual par_value add( const par_info& pi ) = 0;
 
 		par_value get( const string& name, par_value mean, par_value std, par_value min = -1e15, par_value max = 1e15 );
@@ -35,7 +34,7 @@ namespace spot
 		const string& prefix() const { return prefix_.str(); }
 
 	private:
-		stack_string prefix_;
+		xo::stack_string prefix_;
 	};
 
 	struct scoped_prefix

@@ -77,7 +77,7 @@ namespace spot
 		{
 			// choose best active optimizer
 			auto predictions = compute_predicted_fitnesses();
-			auto best_indices = sort_indices( predictions, [&]( fitness_t a, fitness_t b ) { return info().is_better( a, b ); } );
+			auto best_indices = xo::sort_indices( predictions, [&]( fitness_t a, fitness_t b ) { return info().is_better( a, b ); } );
 
 			for ( auto it = best_indices.begin(); it != best_indices.end() && !optimizers_[ *it ]->test_stop_conditions(); ++it )
 			{
@@ -86,13 +86,13 @@ namespace spot
 					break; // stop if the next one is worse
 			}
 
-			string str = stringf( "%d (%.0f):", current_step(), current_step() > 0 ? best_fitness() : 0.0 );
+			string str = xo::stringf( "%d (%.0f):", current_step(), current_step() > 0 ? best_fitness() : 0.0 );
 			for ( int i = 0; i < optimizers_.size(); ++i )
 			{
 				auto& opt = *optimizers_[ i ];
 				auto bf = xo::clamped( opt.best_fitness(), -9999.0, 9999.0 );
 				auto pf = xo::clamped( predictions[ i ], -9999.0, 9999.0 );
-				str += stringf( "\t%d/%.0f/%.0f", opt.current_step(), bf, pf );
+				str += xo::stringf( "\t%d/%.0f/%.0f", opt.current_step(), bf, pf );
 			}
 		}
 

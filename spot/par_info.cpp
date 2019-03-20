@@ -11,8 +11,8 @@ namespace spot
 
 	par_info::par_info( string full_name, const prop_node& pn ) :
 	name( full_name ),
-	mean( constants<par_value>::NaN() ),
-	std( constants<par_value>::NaN() ),
+	mean( xo::constants<par_value>::NaN() ),
+	std( xo::constants<par_value>::NaN() ),
 	min( -1e12 ),
 	max( 1e12 )
 	{
@@ -28,7 +28,7 @@ namespace spot
 		{
 			// parse the string, format mean~std[min,max]
 			// TODO: use string_view instead of char_stream?
-			char_stream str( pn.get_value().c_str() );
+			xo::char_stream str( pn.get_value().c_str() );
 			while ( str.good() )
 			{
 				char c = str.peekc();

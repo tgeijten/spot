@@ -19,7 +19,7 @@ namespace spot
 	fitness_history_samples_( 0 ),
 	fitness_trend_step_( no_index ),
 	max_threads_( xo::max<int>( 4, std::thread::hardware_concurrency() ) ),
-	thread_priority_( thread_priority::lowest ),
+	thread_priority_( xo::thread_priority::lowest ),
 	stop_condition_( nullptr )
 	{
 		xo_error_if( o.dim() <= 0, "Objective has no free parameters" );
@@ -67,7 +67,7 @@ namespace spot
 	const stop_condition* optimizer::run( size_t number_of_steps )
 	{
 		if ( number_of_steps == 0 )
-			number_of_steps = constants<size_t>::max();
+			number_of_steps = xo::constants<size_t>::max();
 
 		const stop_condition* sc = nullptr;
 		for ( size_t n = 0; n < number_of_steps && !sc; ++n )
@@ -98,7 +98,7 @@ namespace spot
 		{
 			if ( fitness_history_.size() >= 2 )
 			{
-				auto range = make_irange< int >( int( fitness_history_samples_ - fitness_history_.size() ), int( fitness_history_samples_ ) );
+				auto range = xo::make_irange< int >( int( fitness_history_samples_ - fitness_history_.size() ), int( fitness_history_samples_ ) );
 				//auto start = fitness_history_samples_ - fitness_history_.size();
 				fitness_trend_ = xo::repeated_median_regression( range.begin(), range.end(), fitness_history_.begin(), fitness_history_.end() );
 			}

@@ -9,6 +9,7 @@
 #include "xo/container/flat_map.h"
 #include "xo/filesystem/path.h"
 #include "xo/numerical/constants.h"
+#include <utility>
 
 #if defined(_MSC_VER)
 #	pragma warning( push )
@@ -24,8 +25,8 @@ namespace spot
 
 		virtual size_t dim() const override { return par_infos_.size(); }
 		virtual par_value add( const par_info& pi ) override;
-		virtual optional< par_value > try_get( const string& name ) const override;
-		optional< par_value > try_get_locked( const string& name ) const;
+		virtual xo::optional< par_value > try_get( const string& name ) const override;
+		xo::optional< par_value > try_get_locked( const string& name ) const;
 		const string& name() const { return name_; }
 
 		fitness_t target_fitness() const { return target_fitness_; }
@@ -36,8 +37,8 @@ namespace spot
 		bool maximize() const { return !minimize_; }
 		bool is_better( fitness_t a, fitness_t b ) const { return minimize() ? a < b : a > b; }
 		index_t find_best_fitness( const fitness_vec_t& f ) const;
-		template< typename T > T worst() const { return minimize() ? constants<T>::max() : constants<T>::lowest(); }
-		template< typename T > T best() const { return minimize() ? constants<T>::lowest() : constants<T>::max(); }
+		template< typename T > T worst() const { return minimize() ? xo::constants<T>::max() : xo::constants<T>::lowest(); }
+		template< typename T > T best() const { return minimize() ? xo::constants<T>::lowest() : xo::constants<T>::max(); }
 		fitness_t worst_fitness() const { return worst< fitness_t >(); }
 		fitness_t best_fitness() const { return best< fitness_t >(); }
 		void set_minimize( bool m ) { minimize_ = m; }
@@ -69,7 +70,7 @@ namespace spot
 
 	private:
 		std::vector< par_info > par_infos_;
-		flat_map< string, par_value > locked_pars_;
+		xo::flat_map< string, par_value > locked_pars_;
 		bool minimize_;
 		fitness_t target_fitness_;
 		string name_;

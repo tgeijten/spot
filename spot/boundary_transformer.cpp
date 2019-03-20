@@ -77,7 +77,7 @@ namespace spot
 				y -= 2 * ( y - ub - au );
 
 			if ( ( y < lb - al - 1e-15 ) || ( y > ub + au + 1e-15 ) ) {
-				log::error( stringf( "BUG in cmaes_boundary_transformation_shift_into_feasible_preimage: lb=%f, ub=%f, al=%f au=%f, x=%f, y=%f, i=%d\n", lb, ub, al, au, x[ i ], y, i ) );
+				xo::log::error( xo::stringf( "BUG in cmaes_boundary_transformation_shift_into_feasible_preimage: lb=%f, ub=%f, al=%f au=%f, x=%f, y=%f, i=%d\n", lb, ub, al, au, x[ i ], y, i ) );
 			}
 			else x[ i ] = y;
 		}

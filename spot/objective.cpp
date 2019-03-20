@@ -11,36 +11,36 @@ namespace spot
 	func_( func )
 	{
 		for ( size_t i = 0; i < d; ++i )
-			info_.add( par_info( stringf( "%d", i ), start[ i ], start_std[ i ], lower[ i ], upper[ i ] ) );
+			info_.add( par_info( xo::stringf( "%d", i ), start[ i ], start_std[ i ], lower[ i ], upper[ i ] ) );
 	}
 
 	function_objective::function_objective( size_t d, objective_function_t func, par_value start, par_value start_std, par_value lower, par_value upper ) :
 	func_( func )
 	{
 		for ( size_t i = 0; i < d; ++i )
-			info_.add( par_info( stringf( "%d", i ), start, start_std, lower, upper ) );
+			info_.add( par_info( xo::stringf( "%d", i ), start, start_std, lower, upper ) );
 	}
 
-	fitness_t objective::evaluate_noexcept( const search_point& point, thread_priority prio ) const
+	fitness_t objective::evaluate_noexcept( const search_point& point, xo::thread_priority prio ) const
 	{
 		try
 		{
-			set_thread_priority( prio );
+			xo::set_thread_priority( prio );
 			return evaluate( point );
 		}
 		catch ( std::exception& e )
 		{
-			log::error( "Exception during object evaluation, returning worst fitness. ", e.what() );
+			xo::log::error( "Exception during object evaluation, returning worst fitness. ", e.what() );
 			return info_.worst_fitness();
 		}
 	}
 
-	std::future< double > objective::evaluate_async( const search_point& point, thread_priority prio ) const
+	std::future< double > objective::evaluate_async( const search_point& point, xo::thread_priority prio ) const
 	{
 		return std::async( std::launch::async, &objective::evaluate_noexcept, this, point, prio );
 	}
 
-	fitness_vec_t objective::evaluate_async( const search_point_vec& pop, size_t max_threads, thread_priority prio ) const
+	fitness_vec_t objective::evaluate_async( const search_point_vec& pop, size_t max_threads, xo::thread_priority prio ) const
 	{
 		fitness_vec_t results( pop.size(), info().worst_fitness() );
 		std::vector< std::pair< std::future< double >, index_t > > threads;

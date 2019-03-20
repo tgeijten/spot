@@ -164,7 +164,7 @@ namespace spot
 				t->weights[ i ] = std::log( t->mu + 1. ) - std::log( i + 1. );
 			break;
 		default:
-			xo_error( "Invalid weighting mode " + to_str( t->weigh_mode ) );
+			xo_error( "Invalid weighting mode " + xo::to_str( t->weigh_mode ) );
 			break;
 		}
 
@@ -754,12 +754,12 @@ namespace spot
 					&& fabs( cc - C[ i > j ? i : j ][ i > j ? j : i ] ) > 3e-14 ) {
 					sprintf( s, "%d %d: %.17e %.17e, %e",
 						i, j, cc, C[ i > j ? i : j ][ i > j ? j : i ], cc - C[ i > j ? i : j ][ i > j ? j : i ] );
-					log::error( "pimpl_t:Eigen(): imprecise result detected ", s );
+					xo::log::error( "pimpl_t:Eigen(): imprecise result detected ", s );
 					++res;
 				}
 				if ( fabs( dd - ( i == j ) ) > 1e-10 ) {
 					sprintf( s, "%d %d %.17e ", i, j, dd );
-					log::error( "pimpl_t:Eigen(): imprecise result detected (Q not orthog.) ", s );
+					xo::log::error( "pimpl_t:Eigen(): imprecise result detected (Q not orthog.) ", s );
 					++res;
 				}
 			}
@@ -968,7 +968,7 @@ namespace spot
 		if ( t->rgFuncValue[ t->index[ 0 ] ] ==
 			t->rgFuncValue[ t->index[ (int)t->sp.lambda / 2 ] ] ) {
 			t->sigma *= exp( 0.2 + t->sp.cs / t->sp.damps );
-			log::warning( "Warning: sigma increased due to equal function values. Reconsider the formulation of the objective function" );
+			xo::log::warning( "Warning: sigma increased due to equal function values. Reconsider the formulation of the objective function" );
 		}
 
 		/* update function value history */
@@ -1073,7 +1073,7 @@ namespace spot
 		auto& ub = t->upper_bounds;
 		for ( int i = 0; i < l; ++i ) {
 			if ( lb[ i ] == ub[ i ] )
-				xo_error( "Invalid upper and lower bounds for parameter " + to_str( i ) );
+				xo_error( "Invalid upper and lower bounds for parameter " + xo::to_str( i ) );
 
 			/* between lb+al and ub-au transformation is the identity */
 			t->al[ i ] = fmin( ( ub[ i ] - lb[ i ] ) / 2., ( 1. + fabs( lb[ i ] ) ) / 20. );
@@ -1109,7 +1109,7 @@ namespace spot
 				y[ i ] -= 2 * ( y[ i ] - ub - au );
 
 			if ( ( y[ i ] < lb - al - 1e-15 ) || ( y[ i ] > ub + au + 1e-15 ) ) {
-				xo_error( stringf( "BUG in cmaes_boundary_transformation_shift_into_feasible_preimage: lb=%f, ub=%f, al=%f au=%f, x=%f, y=%f, i=%d\n", lb, ub, al, au, x[ i ], y[ i ], i ) );
+				xo_error( xo::stringf( "BUG in cmaes_boundary_transformation_shift_into_feasible_preimage: lb=%f, ub=%f, al=%f au=%f, x=%f, y=%f, i=%d\n", lb, ub, al, au, x[ i ], y[ i ], i ) );
 			}
 		}
 	}
@@ -1188,7 +1188,7 @@ namespace spot
 
 		pimpl->bounded_pop.resize( lambda(), search_point( objective_.info() ) );
 		cmaes_boundary_trans_init( &pimpl->bounds, lb, ub );
-		name = o.name() + stringf( ".R%d", random_seed() );
+		name = o.name() + xo::stringf( ".R%d", random_seed() );
 
 		// add flat fitness condition
 		add_stop_condition< flat_fitness_condition >( 1e-9 );
@@ -1221,7 +1221,7 @@ namespace spot
 
 			if ( !found_individual )
 			{
-				log::warning( "cma_optimizer: no feasible individual found after ", max_resample_count, " attempts, clamping values instead. gen=", current_step(), " ind=", ind_idx );
+				xo::log::warning( "cma_optimizer: no feasible individual found after ", max_resample_count, " attempts, clamping values instead. gen=", current_step(), " ind=", ind_idx );
 				info().clamp( individual );
 				cmaes_OverwriteSingle( &pimpl->cmaes, ind_idx, individual );
 			}

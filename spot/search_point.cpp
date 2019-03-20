@@ -34,7 +34,7 @@ namespace spot
 		import_values( filename );
 	}
 
-	optional< par_value > search_point::try_get( const string& full_name ) const
+	xo::optional< par_value > search_point::try_get( const string& full_name ) const
 	{
 		// see if this is a parameter
 		auto idx = info_.find_index( full_name );
@@ -126,7 +126,7 @@ namespace spot
 		for ( index_t pop_idx = 0; pop_idx < pop.size(); ++pop_idx )
 		{
 			for ( index_t i = 0; i < info.dim(); ++i )
-				stds[ i ] += squared( pop[ pop_idx ][ i ] - mean[ i ] ) / pop.size();
+				stds[ i ] += xo::squared( pop[ pop_idx ][ i ] - mean[ i ] ) / pop.size();
 		}
 		for ( index_t i = 0; i < info.dim(); ++i )
 			stds[ i ] = sqrt( stds[ i ] );

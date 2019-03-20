@@ -34,7 +34,7 @@ namespace spot
 
 	xo::string predicted_fitness_condition::what() const
 	{
-		return stringf( "Predicted fitness %f is worse than %f", prediction_, fitness_ );
+		return xo::stringf( "Predicted fitness %f is worse than %f", prediction_, fitness_ );
 	}
 
 	bool predicted_fitness_condition::test( const optimizer& opt )

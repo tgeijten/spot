@@ -32,7 +32,7 @@ namespace spot
 		void write_par_file( const optimizer& opt, bool try_cleanup );
 
 		index_t last_output_step;
-		circular_deque< std::pair< path, fitness_t > > recent_files;
+		xo::circular_deque< std::pair< path, fitness_t > > recent_files;
 		std::ofstream history_;
 	};
 }

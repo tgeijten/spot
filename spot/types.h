@@ -11,14 +11,18 @@
 #endif
 
 #include "xo/utility/types.h"
-#include <vector>
 #include <string>
 
 namespace spot
 {
-	using namespace xo;
+	class par_io;
 
 	using std::string;
+
+	using xo::prop_node;
+	using xo::path;
+	using xo::index_t;
+	using xo::no_index;
 
 	using fitness_t = double;
 	using fitness_vec_t = std::vector< fitness_t >;

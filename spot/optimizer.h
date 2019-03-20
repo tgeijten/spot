@@ -49,7 +49,7 @@ namespace spot
 		template< typename T, typename... Args > T& add_reporter( Args&&... a );
 
 		void set_max_threads( int val ) { max_threads_ = val; }
-		void set_thread_priority( thread_priority tp ) { thread_priority_ = tp; }
+		void set_thread_priority( xo::thread_priority tp ) { thread_priority_ = tp; }
 
 		index_t current_step() const { return step_count_; }
 
@@ -65,7 +65,7 @@ namespace spot
 
 		// more statistics
 		void enable_fitness_tracking( size_t window_size ) { fitness_history_.reserve( window_size ); }
-		linear_function< float > fitness_trend() const;
+		xo::linear_function< float > fitness_trend() const;
 		float progress() const;
 		size_t fitness_tracking_window_size() const { return fitness_history_.capacity(); }
 		float predicted_fitness( size_t steps_ahead ) const;
@@ -86,8 +86,8 @@ namespace spot
 		index_t step_count_;
 
 		size_t fitness_history_samples_;
-		circular_deque< float > fitness_history_;
-		mutable linear_function< float > fitness_trend_;
+		xo::circular_deque< float > fitness_history_;
+		mutable xo::linear_function< float > fitness_trend_;
 		mutable index_t fitness_trend_step_;
 
 		std::vector< s_ptr< reporter > > reporters_;
@@ -95,7 +95,7 @@ namespace spot
 		u_ptr< boundary_transformer > boundary_transformer_;
 
 		int max_threads_;
-		thread_priority thread_priority_;
+		xo::thread_priority thread_priority_;
 
 		stop_condition* stop_condition_;
 
@@ -113,7 +113,7 @@ namespace spot
 				std::mem_fn( fn )( *r, std::forward< Args >( args )... );
 		}
 		catch ( std::exception& e ) {
-			log::error( "Error in reporter: ", e.what() );
+			xo::log::error( "Error in reporter: ", e.what() );
 		}
 	}
 

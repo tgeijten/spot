@@ -9,7 +9,7 @@ namespace spot
 		xo_assert( a.size() == b.size() && b.size() == covariance.size() );
 		par_value dist = 0;
 		for ( index_t i = 0; i < a.size(); ++i )
-			dist += squared( a[ i ] - b[ i ] ) / covariance[ i ][ i ];
+			dist += xo::squared( a[ i ] - b[ i ] ) / covariance[ i ][ i ];
 		return sqrt( dist );
 	}
 
@@ -18,7 +18,7 @@ namespace spot
 		xo_assert( a.size() == b.size() && b.size() == var.size() );
 		par_value dist = 0;
 		for ( index_t i = 0; i < a.size(); ++i )
-			dist += squared( a[ i ] - b[ i ] ) / var[ i ];
+			dist += xo::squared( a[ i ] - b[ i ] ) / var[ i ];
 		return sqrt( dist );
 	}
 }
