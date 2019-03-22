@@ -2,6 +2,8 @@
 
 #include "xo/system/assert.h"
 #include "xo/system/log.h"
+#include "xo/numerical/math.h"
+#include "xo/string/string_tools.h"
 
 namespace spot
 {

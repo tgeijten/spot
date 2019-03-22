@@ -2,6 +2,8 @@
 
 namespace spot
 {
+	using xo::squared;
+
 	double cigtab_c( double const *x, int N )
 	{
 		double sum = 1e4*x[ 0 ] * x[ 0 ] + 1e-4*x[ 1 ] * x[ 1 ];

@@ -2,6 +2,8 @@
 
 #include "xo/container/container_tools.h"
 #include "xo/serialization/char_stream.h"
+#include "xo/string/string_tools.h"
+#include "xo/numerical/math.h"
 
 #include <fstream>
 #include <iomanip>

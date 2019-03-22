@@ -2,11 +2,10 @@
 
 #include "spot/types.h"
 #include "spot/objective.h"
+#include "xo/numerical/math.h"
 
 namespace spot
 {
-	using xo::squared;
-
 	double cigtab_c( double const *x, int N );
 	double cigtab( const par_vec& x );
 

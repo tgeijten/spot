@@ -19,7 +19,7 @@
 #include "xo/numerical/polynomial.h"
 #include "xo/utility/memory_tools.h"
 #include "boundary_transformer.h"
-#include "xo/utility/pointer_type.h"
+#include "xo/utility/pointer_types.h"
 
 #if defined(_MSC_VER)
 #	pragma warning( push )

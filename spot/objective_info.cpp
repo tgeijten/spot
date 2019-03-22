@@ -6,6 +6,8 @@
 #include "xo/filesystem/filesystem.h"
 #include "xo/system/log.h"
 #include "xo/serialization/char_stream.h"
+#include "xo/string/string_tools.h"
+#include "xo/numerical/math.h"
 
 namespace spot
 {
