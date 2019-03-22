@@ -10,7 +10,7 @@
 #	define SPOT_API
 #endif
 
-#include "xo/utility/types.h"
+#include "xo/xo_types.h"
 #include <string>
 #include <vector>
 

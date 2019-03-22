@@ -1,6 +1,6 @@
 #pragma once
 
-#include "xo/utility/types.h"
+#include "xo/xo_types.h"
 #include "xo/system/assert.h"
 #include "search_point.h"
 #include <functional>

@@ -4,7 +4,7 @@
 #include "reporter.h"
 
 #include "xo/container/prop_node.h"
-#include "xo/utility/types.h"
+#include "xo/xo_types.h"
 
 #include "xo/utility/optional.h"
 #include "xo/system/system_tools.h"

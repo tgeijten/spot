@@ -1,7 +1,7 @@
 #include "static_par_set.h"
 
 #include "xo/serialization/char_stream.h"
-#include "xo/utility/types.h"
+#include "xo/xo_types.h"
 
 namespace spot
 {

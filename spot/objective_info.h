@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "xo/system/platform.h"
-#include "xo/utility/types.h"
+#include "xo/xo_types.h"
 #include "xo/container/flat_map.h"
 #include "xo/filesystem/path.h"
 #include "xo/numerical/constants.h"
