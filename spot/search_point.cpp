@@ -6,6 +6,7 @@
 #include "xo/numerical/math.h"
 
 #include <fstream>
+#include <sstream>
 #include <iomanip>
 
 namespace spot
