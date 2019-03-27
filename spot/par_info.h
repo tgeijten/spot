@@ -3,11 +3,6 @@
 #include "types.h"
 #include "xo/container/prop_node.h"
 
-#if defined(_MSC_VER)
-#	pragma warning( push )
-#	pragma warning( disable: 4251 )
-#endif
-
 namespace spot
 {
 	const par_value default_std_factor = 0.1;
@@ -30,7 +25,3 @@ namespace spot
 		par_value max;
 	};
 }
-
-#if defined(_MSC_VER)
-#	pragma warning( pop )
-#endif

@@ -3,11 +3,6 @@
 #include "types.h"
 #include "optimizer.h"
 
-#if defined(_MSC_VER)
-#	pragma warning( push )
-#	pragma warning( disable: 4251 )
-#endif
-
 namespace spot
 {
 	enum class cma_weights { equal = 0, linear = 1, log = 2 };
@@ -61,7 +56,3 @@ namespace spot
 		struct pimpl_t* pimpl;
 	};
 }
-
-#if defined(_MSC_VER)
-#	pragma warning( pop )
-#endif

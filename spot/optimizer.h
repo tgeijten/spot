@@ -21,11 +21,6 @@
 #include "boundary_transformer.h"
 #include "xo/utility/pointer_types.h"
 
-#if defined(_MSC_VER)
-#	pragma warning( push )
-#	pragma warning( disable: 4251 )
-#endif
-
 namespace spot
 {
 	// TODO: this class is a bit of mess and should be cleaned up
@@ -144,7 +139,3 @@ namespace spot
 		xo_error( "Could not find stop condition" );
 	}
 }
-
-#if defined(_MSC_VER)
-#	pragma warning( pop )
-#endif

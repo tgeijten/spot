@@ -7,11 +7,6 @@
 #include <future>
 #include "xo/system/system_tools.h"
 
-#if defined(_MSC_VER)
-#	pragma warning( push )
-#	pragma warning( disable: 4251 )
-#endif
-
 namespace spot
 {
 	class SPOT_API objective
@@ -50,7 +45,3 @@ namespace spot
 		objective_function_t func_;
 	};
 }
-
-#if defined(_MSC_VER)
-#	pragma warning( pop )
-#endif

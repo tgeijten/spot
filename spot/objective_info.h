@@ -10,11 +10,6 @@
 #include "xo/numerical/constants.h"
 #include <utility>
 
-#if defined(_MSC_VER)
-#	pragma warning( push )
-#	pragma warning( disable: 4251 )
-#endif
-
 namespace spot
 {
 	class SPOT_API objective_info : public par_io
@@ -81,7 +76,3 @@ namespace spot
 		bool lock_parameter( const string& name, par_value value );
 	};
 }
-
-#if defined(_MSC_VER)
-#	pragma warning( pop )
-#endif

@@ -4,11 +4,6 @@
 #include "xo/container/flat_map.h"
 #include "xo/filesystem/path.h"
 
-#if defined(_MSC_VER)
-#	pragma warning( push )
-#	pragma warning( disable: 4251 )
-#endif
-
 namespace spot
 {
 	class SPOT_API static_par_set : public par_io
@@ -28,7 +23,3 @@ namespace spot
 		xo::flat_map< string, par_value > values_;
 	};
 }
-
-#if defined(_MSC_VER)
-#	pragma warning( pop )
-#endif

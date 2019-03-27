@@ -4,11 +4,6 @@
 #include "reporter.h"
 #include <iosfwd>
 
-#if defined(_MSC_VER)
-#	pragma warning( push )
-#	pragma warning( disable: 4251 )
-#endif
-
 namespace spot
 {
 	struct SPOT_API file_reporter : public reporter
@@ -35,7 +30,3 @@ namespace spot
 		std::ofstream history_;
 	};
 }
-
-#if defined(_MSC_VER)
-#	pragma warning( pop )
-#endif

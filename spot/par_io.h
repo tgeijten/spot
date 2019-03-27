@@ -6,11 +6,6 @@
 #include "types.h"
 #include "par_info.h"
 
-#if defined(_MSC_VER)
-#	pragma warning( push )
-#	pragma warning( disable: 4251 )
-#endif
-
 namespace spot
 {
 	class SPOT_API par_io
@@ -56,7 +51,3 @@ namespace spot
 		string previous_;
 	};
 }
-
-#if defined(_MSC_VER)
-#	pragma warning( pop )
-#endif

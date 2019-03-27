@@ -7,11 +7,6 @@
 #include "search_point.h"
 #include "tools.h"
 
-#if defined(_MSC_VER)
-#	pragma warning( push )
-#	pragma warning( disable: 4251 )
-#endif
-
 namespace spot
 {
 	class optimizer;
@@ -82,7 +77,3 @@ namespace spot
 		par_value min_distance_ = 1.0;
 	};
 }
-
-#if defined(_MSC_VER)
-#	pragma warning( pop )
-#endif

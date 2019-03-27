@@ -5,11 +5,6 @@
 #include "xo/utility/interruptible.h"
 #include <deque>
 
-#if defined(_MSC_VER)
-#	pragma warning( push )
-#	pragma warning( disable: 4251 )
-#endif
-
 namespace spot
 {
 	/// Pool of independent optimizations, prioritized based on their predicted fitness.
@@ -58,7 +53,3 @@ namespace spot
 		const optimizer& best_optimizer() const { xo_assert( best_optimizer_idx_ < optimizers_.size() ); return *optimizers_[ best_optimizer_idx_ ]; }
 	};
 }
-
-#if defined(_MSC_VER)
-#	pragma warning( pop )
-#endif

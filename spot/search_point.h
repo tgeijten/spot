@@ -8,11 +8,6 @@
 #include "par_io.h"
 #include "types.h"
 
-#if defined(_MSC_VER)
-#	pragma warning( push )
-#	pragma warning( disable: 4251 )
-#endif
-
 namespace spot
 {
 	class SPOT_API search_point : public par_io
@@ -57,7 +52,3 @@ namespace spot
 	SPOT_API std::pair< par_vec, par_vec > compute_mean_std( const search_point_vec& pop );
 	SPOT_API std::ostream& operator<<( std::ostream& str, const search_point& ps );
 }
-
-#if defined(_MSC_VER)
-#	pragma warning( pop )
-#endif
