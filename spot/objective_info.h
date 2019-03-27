@@ -4,7 +4,6 @@
 
 #include <vector>
 
-#include "xo/system/xo_api.h"
 #include "xo/xo_types.h"
 #include "xo/container/flat_map.h"
 #include "xo/filesystem/path.h"
