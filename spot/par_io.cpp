@@ -25,10 +25,11 @@ namespace spot
 			return *val;
 
 		// if value starts with a letter: must be a reference to another parameter
-		if ( !pn.get_value().empty() && std::isalpha( pn.get_value().front() ) )
+		if ( !pn.raw_value().empty() && std::isalpha( pn.raw_value().front() ) )
 		{
-			auto val = try_get( pn.get_value() );
-			xo_error_if( !val, "Could not find " + pn.get_value() );
+			auto par_ref = pn.get<string>();
+			auto val = try_get( par_ref );
+			xo_error_if( !val, "Could not find " + par_ref );
 			return *val;
 		}
 

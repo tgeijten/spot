@@ -28,7 +28,7 @@ namespace spot
 		{
 			// parse the string, format mean~std[min,max]
 			// TODO: use string_view instead of char_stream?
-			xo::char_stream str( pn.get_value().c_str() );
+			xo::char_stream str( pn.raw_value().c_str() );
 			while ( str.good() )
 			{
 				char c = str.peekc();
