@@ -19,7 +19,7 @@ namespace spot
 		xo::create_directories( root_ );
 
 		// setup history.txt
-		history_ = std::ofstream( ( root_ / "history.txt" ).string() );
+		history_ = std::ofstream( ( root_ / "history.txt" ).to_string() );
 		history_ << "Step\tBest\tMedian\tPredicted\tProgress" << std::endl;
 	}
 
@@ -34,7 +34,7 @@ namespace spot
 			for ( index_t i = 0; i < pop.size(); ++i )
 			{
 				path p = root_ / xo::stringf( "%04d_%02d.tmp", opt.current_step(), i );
-				std::ofstream( p.string() ) << pop[ i ];
+				std::ofstream( p.to_string() ) << pop[ i ];
 			}
 		}
 	}
@@ -82,7 +82,7 @@ namespace spot
 		auto sp = search_point( updated_info, opt.current_step_best_point().values() );
 		auto avg = xo::median( opt.current_step_fitnesses() );
 		path filename = root_ / xo::stringf( "%04d_%.3f_%.3f.par", opt.current_step(), xo::clamped( avg, -replim, replim ), xo::clamped( best, -replim, replim ) );
-		std::ofstream str( filename.string() );
+		std::ofstream str( filename.to_string() );
 		str << sp;
 
 		if ( try_cleanup )
