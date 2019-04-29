@@ -53,8 +53,8 @@ namespace spot
 		size_t params_set = 0;
 		size_t params_not_found = 0;
 
-		std::ifstream str( xo::find_file( { filename, filename.filename() } ).string() );
-		xo_error_if( !str.good(), "Error opening file: " + filename.string() );
+		std::ifstream str( xo::find_file( { filename, filename.filename() } ).str() );
+		xo_error_if( !str.good(), "Error opening file: " + filename.str() );
 		while ( str.good() )
 		{
 			std::string name;

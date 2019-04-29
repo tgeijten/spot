@@ -57,7 +57,7 @@ namespace spot
 		size_t params_skipped = 0;
 		xo::char_stream str( filename );
 
-		xo_error_if( !str.good(), "Could not open " + filename.string() );
+		xo_error_if( !str.good(), "Could not open " + filename.str() );
 		while ( str.good() )
 		{
 			string name;
