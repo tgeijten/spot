@@ -37,11 +37,13 @@ namespace spot
 		const stop_condition* run( size_t number_of_steps = 0 );
 
 		virtual stop_condition* test_stop_conditions();
-		template< typename T, typename... Args > T& add_stop_condition( Args&&... a );
+		s_ptr< stop_condition > add_stop_condition( s_ptr< stop_condition > new_sc ) { return stop_conditions_.emplace_back( new_sc ); }
+		template< typename T, typename... Args > s_ptr<T> add_new_stop_condition( Args&&... a );
 		template< typename T > const T& find_stop_condition() const;
 		template< typename T > T& find_stop_condition();
 
-		template< typename T, typename... Args > T& add_reporter( Args&&... a );
+		s_ptr< reporter > add_reporter( s_ptr< reporter > new_rep ) { return reporters_.emplace_back( new_rep ); }
+		template< typename T, typename... Args > s_ptr<T> add_new_reporter( Args&&... a );
 
 		void set_max_threads( int val ) { max_threads_ = val; }
 		void set_thread_priority( xo::thread_priority tp ) { thread_priority_ = tp; }
@@ -113,26 +115,26 @@ namespace spot
 	}
 
 	template< typename T, typename... Args >
-	T& spot::optimizer::add_stop_condition( Args&&... a ) {
-		stop_conditions_.emplace_back( std::make_unique< T >( std::forward< Args >( a )... ) );
-		return static_cast<T&>( *stop_conditions_.back() );
+	s_ptr<T> optimizer::add_new_stop_condition( Args&&... a ) {
+		stop_conditions_.emplace_back( std::make_shared< T >( std::forward< Args >( a )... ) );
+		return std::dynamic_pointer_cast<T>( stop_conditions_.back() );
 	}
 
 	template< typename T, typename... Args >
-	T& spot::optimizer::add_reporter( Args&&... a )
+	s_ptr<T> optimizer::add_new_reporter( Args&&... a )
 	{
 		reporters_.emplace_back( std::make_unique< T >( std::forward< Args >( a )... ) );
-		return static_cast<T&>( *reporters_.back() );
+		return std::dynamic_pointer_cast<T>( reporters_.back() );
 	}
 
-	template< typename T > T& spot::optimizer::find_stop_condition() {
+	template< typename T > T& optimizer::find_stop_condition() {
 		for ( auto& s : stop_conditions_ )
 			if ( auto sp = dynamic_cast<T*>( s.get() ) )
 				return *sp;
 		xo_error( "Could not find stop condition" );
 	}
 
-	template< typename T > const T& spot::optimizer::find_stop_condition() const {
+	template< typename T > const T& optimizer::find_stop_condition() const {
 		for ( auto& s : stop_conditions_ )
 			if ( auto sp = dynamic_cast<const T*>( s.get() ) )
 				return *sp;

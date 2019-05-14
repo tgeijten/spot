@@ -24,7 +24,7 @@ namespace spot
 	{
 		xo_error_if( o.dim() <= 0, "Objective has no free parameters" );
 
-		add_stop_condition< abort_condition >();
+		add_new_stop_condition< abort_condition >();
 		//boundary_transformer_ = std::make_unique< cmaes_boundary_transformer >( o.info() );
 	}
 

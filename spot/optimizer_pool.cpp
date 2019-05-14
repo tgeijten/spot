@@ -26,13 +26,13 @@ namespace spot
 	best_optimizer_idx_( no_index ),
 	best_fitness_( o.info().worst_fitness() )
 	{
-		add_stop_condition< pool_stop_condition >();
+		add_new_stop_condition< pool_stop_condition >();
 	}
 
 	void optimizer_pool::push_back( u_ptr< optimizer > opt )
 	{
 		opt->enable_fitness_tracking( prediction_window_ );
-		opt->add_stop_condition< predicted_fitness_condition >( info().worst_fitness(), prediction_look_ahead_, prediction_start_ );
+		opt->add_new_stop_condition< predicted_fitness_condition >( info().worst_fitness(), prediction_look_ahead_, prediction_start_ );
 		optimizers_.push_back( std::move( opt ) );
 	}
 
