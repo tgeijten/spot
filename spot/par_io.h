@@ -34,7 +34,11 @@ namespace spot
 
 	struct scoped_prefix
 	{
-		scoped_prefix( par_io& ps, const string& prefix ) : ps_( ps ) { ps_.push_prefix( prefix ); }
+		scoped_prefix( par_io& ps, const string& prefix, bool add_dot = false ) : ps_( ps ) {
+			if ( add_dot && !prefix.empty() && prefix.back() != '.' )
+				ps_.push_prefix( prefix + '.' );
+			else ps_.push_prefix( prefix );
+		}
 		operator par_io&( ) { return ps_; }
 		~scoped_prefix() { ps_.pop_prefix(); }
 	private:
