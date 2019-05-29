@@ -1,4 +1,6 @@
 #include "par_info.h"
+
+#include <cctype>
 #include "xo/serialization/char_stream.h"
 #include "xo/numerical/constants.h"
 #include "xo/numerical/math.h"
@@ -52,12 +54,13 @@ namespace spot
 						if ( ( c == '[' && c2 != ']' ) || ( c == '<' && c2 != '>' ) || ( c == '(' && c2 != ')' ) )
 							xo_error( "Error parsing parameter '" + full_name + "': opening bracket " + c + " does not match closing bracket " + c2 );
 					}
-					else // just a value, interpret as mean
+					else if ( std::isdigit( c ) )// just a value, interpret as mean
 					{
 						xo_error_if( !std::isnan( std ), "Error parsing parameter '" + full_name + "': mean already defined" );
 						str >> mean;
 						xo_error_if( str.fail(), "Error parsing parameter '" + full_name + "': Could not read mean value" );
 					}
+					else xo_error( "Error parsing parameter '" + full_name + "': unexpected character '" + c + "'" );
 				}
 			}
 		}
