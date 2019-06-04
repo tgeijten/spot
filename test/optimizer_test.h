@@ -1,6 +1,6 @@
 #pragma once
 
-#include "xo/diagnose/test_framework.h"
+#include "xo/system/test_framework.h"
 #include "c-cmaes/cmaes_interface.h"
 #include "spot/cma_optimizer.h"
 
