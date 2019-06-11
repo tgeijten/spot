@@ -8,7 +8,6 @@
 
 #include "xo/system/assert.h"
 #include "xo/container/container_tools.h"
-#include "xo/string/string_cast_enum.h"
 #include "xo/system/log.h"
 #include "boundary_transformer.h"
 #include "xo/system/version.h"
@@ -166,7 +165,7 @@ namespace spot
 				t->weights[ i ] = std::log( t->mu + 1. ) - std::log( i + 1. );
 			break;
 		default:
-			xo_error( "Invalid weighting mode " + xo::to_str( t->weigh_mode ) );
+			xo_error( "Invalid weighting mode " + xo::to_str( int( t->weigh_mode ) ) );
 			break;
 		}
 
