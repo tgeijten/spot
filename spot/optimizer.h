@@ -23,7 +23,7 @@
 
 namespace spot
 {
-	// TODO: this class is a bit of mess and should be cleaned up
+	// #todo: this class is a bit of mess and should be cleaned up
 	// Perhaps take step / threading out of this class?
 	class SPOT_API optimizer : public xo::interruptible
 	{
@@ -72,7 +72,7 @@ namespace spot
 		virtual objective_info make_updated_objective_info() const { XO_NOT_IMPLEMENTED; }
 
 		// properties
-		mutable string name; // TODO: not this, name should be const
+		mutable string name; // #todo: not this, name should be const
 
 	protected:
 		virtual void internal_step() = 0;

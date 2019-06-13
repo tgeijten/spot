@@ -29,7 +29,7 @@ namespace spot
 		else
 		{
 			// parse the string, format mean~std[min,max]
-			// TODO: use string_view instead of char_stream?
+			// #todo: use string_view instead of char_stream?
 			xo::char_stream str( pn.get<string>() );
 			while ( str.good() )
 			{
