@@ -3,6 +3,7 @@
 #include "search_point.h"
 #include "xo/geometry/vec3_type.h"
 #include "xo/string/string_tools.h"
+#include <array>
 
 #define INIT_PAR( _pn_, _ps_, _var_, _default_ ) \
 	_var_ = (decltype( _var_ ))::spot::try_get_par( _ps_, ::xo::tidy_identifier( #_var_ ), _pn_, decltype( _var_ )( _default_ ) )
