@@ -8,8 +8,6 @@ add_library(spot SHARED ${SPOT_SOURCES})
 
 set_target_properties(spot PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
 
-target_compile_definitions( spot PRIVATE SPOT_EXPORTS )
-
 target_include_directories( spot PUBLIC ${SPOT_INCLUDE_DIR})
 
 target_link_libraries( spot xo )
@@ -17,6 +15,8 @@ target_link_libraries( spot xo )
 if (MSVC)
 	source_group("" FILES ${PRECOMPILED_HEADER_FILES})
 	source_group("spot" FILES ${SPOT_SOURCES})
+	target_compile_definitions( spot PRIVATE SPOT_EXPORTS )
+	target_compile_options( spot PRIVATE "/MP" ) # multithreaded compilation on MSVC
 endif()
 
 set_target_properties(spot PROPERTIES 
