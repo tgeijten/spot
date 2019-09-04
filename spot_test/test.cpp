@@ -1,6 +1,6 @@
 #include "test.h"
 #include "xo/system/log_sink.h"
-#include "xo/system/test_framework.h"
+#include "xo/system/test_case.h"
 #include "test_functions.h"
 #include "optimization_test.h"
 #include <iostream>
