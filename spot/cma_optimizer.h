@@ -42,13 +42,12 @@ namespace spot
 
 	protected:
 
+		fitness_t best_fitness_;
+		search_point best_point_;
 
 		fitness_t current_step_best_fitness_;
 		fitness_vec_t current_step_fitnesses_;
 		search_point current_step_best_point_;
-
-		fitness_t best_fitness_;
-		search_point best_point_;
 
 		size_t max_resample_count;
 

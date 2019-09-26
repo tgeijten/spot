@@ -1162,8 +1162,8 @@ namespace spot
 	optimizer( o ),
 	best_fitness_( o.info().worst_fitness() ),
 	best_point_( o.info() ),
-	current_step_best_point_( o.info() ),
 	current_step_best_fitness_( o.info().worst_fitness() ),
+	current_step_best_point_( o.info() ),
 	max_resample_count( 100 )
 	{
 		pimpl = new pimpl_t;

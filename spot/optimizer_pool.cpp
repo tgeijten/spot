@@ -23,8 +23,8 @@ namespace spot
 	prediction_start_( min_steps > 1 ? min_steps : promise_window ),
 	prediction_look_ahead_( promise_window ),
 	concurrent_optimizations_( max_concurrent_optimizers ),
-	best_optimizer_idx_( no_index ),
-	best_fitness_( o.info().worst_fitness() )
+	best_fitness_( o.info().worst_fitness() ),
+	best_optimizer_idx_( no_index )
 	{
 		add_new_stop_condition< pool_stop_condition >();
 	}
