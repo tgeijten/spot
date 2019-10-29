@@ -36,11 +36,15 @@ namespace spot
 	template< typename T >
 	inline xo::vec3_<T> try_get_par( par_io& ps, const string& name, const prop_node& pn, const xo::vec3_<T>& def )
 	{
-		xo::vec3_<T> r;
-		r.x = try_get_par( ps, name + ".x", pn, def.x );
-		r.y = try_get_par( ps, name + ".y", pn, def.y );
-		r.z = try_get_par( ps, name + ".z", pn, def.z );
-		return r;
+		if ( auto vec3pn = pn.try_get< xo::vec3_<prop_node> >( name ) )
+		{
+			// if the node exists, then all vector elements must be defined
+			return xo::vec3_<T>(
+				ps.get( name + ".x", vec3pn->x ),
+				ps.get( name + ".y", vec3pn->y ),
+				ps.get( name + ".z", vec3pn->z ) );
+		}
+		else return def;
 	}
 
 	template< typename T, size_t N >
