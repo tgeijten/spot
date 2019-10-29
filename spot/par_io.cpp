@@ -35,12 +35,12 @@ namespace spot
 
 		// parameter not found, try adding a new one
 		par_info pi = par_info( full_name, pn );
-		if ( pi.is_valid() )
-			return add( pi );
-		else return pi.mean;
+		if ( pi.is_constant() )
+			return pi.mean;
+		else return add( pi );
 	}
 
-	spot::par_value par_io::try_get( const string& name, const prop_node& parent_pn, const string& key, const par_value& default_value )
+	par_value par_io::try_get( const string& name, const prop_node& parent_pn, const string& key, const par_value& default_value )
 	{
 		if ( auto* pn = parent_pn.try_get_child( key ) )
 			return get( name, *pn );

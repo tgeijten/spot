@@ -16,7 +16,8 @@ namespace spot
 		par_info( string name, par_value mean, par_value std, par_value min = default_lower_boundaray, par_value max = default_upper_boundaray );
 		par_info( string name, const prop_node& pn );
 
-		bool is_valid() const { return std > 0; }
+		bool is_constant() const { return std == 0; }
+		bool is_valid() const { return mean == mean && std >= 0 && min <= max; }
 
 		string name;
 		par_value mean;

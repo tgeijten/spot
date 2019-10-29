@@ -14,7 +14,7 @@ namespace spot
 	par_info::par_info( string full_name, const prop_node& pn ) :
 	name( full_name ),
 	mean( xo::constants<par_value>::NaN() ),
-	std( xo::constants<par_value>::NaN() ),
+	std( 0 ),
 	min( -1e12 ),
 	max( 1e12 )
 	{
@@ -38,7 +38,7 @@ namespace spot
 				{
 					if ( c == '~' )
 					{
-						xo_error_if( !std::isnan( std ), "Error parsing parameter '" + full_name + "': Standard deviation already set" );
+						xo_error_if( std != 0, "Error parsing parameter '" + full_name + "': Standard deviation already set" );
 						str.getc();
 						str >> std;
 					}
