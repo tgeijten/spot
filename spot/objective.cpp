@@ -21,29 +21,39 @@ namespace spot
 			info_.add( par_info( xo::stringf( "%d", i ), start, start_std, lower, upper ) );
 	}
 
-	fitness_t objective::evaluate_noexcept( const search_point& point, xo::thread_priority prio ) const
+	fitness_t objective::evaluate_in_thread_noexcept( const search_point& point, xo::thread_priority prio ) const
+	{
+		xo::set_thread_priority( prio );
+		return evaluate_noexcept( point );
+	}
+
+	fitness_t objective::evaluate_noexcept( const search_point& point ) const noexcept
 	{
 		try
 		{
-			xo::set_thread_priority( prio );
 			return evaluate( point );
 		}
 		catch ( std::exception& e )
 		{
-			xo::log::error( "Exception during object evaluation, returning worst fitness. ", e.what() );
+			xo::log::error( "Exception caught during object evaluation, returning worst fitness: ", e.what() );
+			return info_.worst_fitness();
+		}
+		catch ( ... )
+		{
+			xo::log::error( "Unknown exception caught during object evaluation, returning worst fitness" );
 			return info_.worst_fitness();
 		}
 	}
 
-	std::future< double > objective::evaluate_async( const search_point& point, xo::thread_priority prio ) const
+	std::future< fitness_t > objective::evaluate_async( const search_point& point, xo::thread_priority prio ) const
 	{
-		return std::async( std::launch::async, &objective::evaluate_noexcept, this, point, prio );
+		return std::async( std::launch::async, &objective::evaluate_in_thread_noexcept, this, point, prio );
 	}
 
 	fitness_vec_t objective::evaluate_async( const search_point_vec& pop, size_t max_threads, xo::thread_priority prio ) const
 	{
 		fitness_vec_t results( pop.size(), info().worst_fitness() );
-		std::vector< std::pair< std::future< double >, index_t > > threads;
+		std::vector< std::pair< std::future< fitness_t >, index_t > > threads;
 
 		for ( index_t eval_idx = 0; eval_idx < pop.size(); ++eval_idx )
 		{
