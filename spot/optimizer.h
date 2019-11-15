@@ -1,25 +1,24 @@
 #pragma once
 
+#include "boundary_transformer.h"
 #include "objective.h"
 #include "reporter.h"
+#include "stop_condition.h"
 
-#include "xo/container/prop_node.h"
-#include "xo/xo_types.h"
-
-#include "xo/utility/optional.h"
-#include "xo/system/system_tools.h"
-#include "xo/system/log.h"
 #include "xo/container/circular_deque.h"
+#include "xo/container/prop_node.h"
+#include "xo/numerical/polynomial.h"
+#include "xo/system/log.h"
+#include "xo/system/system_tools.h"
+#include "xo/utility/interruptible.h"
+#include "xo/utility/memory_tools.h"
+#include "xo/utility/optional.h"
+#include "xo/utility/pointer_types.h"
+#include "xo/xo_types.h"
 
 #include <atomic>
 #include <functional>
 #include <thread>
-#include "stop_condition.h"
-#include "xo/utility/interruptible.h"
-#include "xo/numerical/polynomial.h"
-#include "xo/utility/memory_tools.h"
-#include "boundary_transformer.h"
-#include "xo/utility/pointer_types.h"
 
 namespace spot
 {
