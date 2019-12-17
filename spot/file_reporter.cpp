@@ -11,7 +11,11 @@
 
 namespace spot
 {
-	file_reporter::file_reporter( const path& root_folder ) : root_( root_folder ), last_output_step( -1 )
+	file_reporter::file_reporter( const path& root_folder, double min_improvement, size_t max_steps ) :
+		root_( root_folder ),
+		min_improvement_for_file_output_( min_improvement ),
+		max_steps_without_file_output_( max_steps ),
+		last_output_step( -1 )
 	{}
 
 	void file_reporter::on_start( const optimizer& opt )
@@ -51,7 +55,7 @@ namespace spot
 			}
 		}
 
-		if ( opt.current_step() - last_output_step >= max_steps_without_file_output )
+		if ( opt.current_step() - last_output_step >= max_steps_without_file_output_ )
 			write_par_file( opt, false );
 	}
 
@@ -101,7 +105,7 @@ namespace spot
 				if ( opt.info().minimize() )
 					imp1 = -imp1, imp2 = -imp2;
 
-				if ( imp1 < min_improvement_for_file_output && imp2 < min_improvement_for_file_output )
+				if ( imp1 < min_improvement_for_file_output_ && imp2 < min_improvement_for_file_output_ )
 				{
 					//xo::log::info( "Cleaning up file ", recent_files[ 1 ].first );
 					xo::remove( recent_files[ 1 ].first );

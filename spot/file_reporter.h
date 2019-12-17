@@ -9,7 +9,7 @@ namespace spot
 	struct SPOT_API file_reporter : public reporter
 	{
 	public:
-		file_reporter( const path& root_folder );
+		file_reporter( const path& root_folder, double min_improvement = 0.05, size_t max_steps = 1000 );
 		virtual void on_start( const optimizer& opt ) override;
 		virtual void on_stop( const optimizer& opt, const stop_condition& s ) override;
 		virtual void on_pre_evaluate_population( const optimizer& opt, const search_point_vec& pop ) override;
@@ -18,8 +18,8 @@ namespace spot
 		virtual void on_post_step( const optimizer& opt ) override;
 
 		path root_;
-		size_t max_steps_without_file_output = 1000;
-		double min_improvement_for_file_output = 0.05;
+		double min_improvement_for_file_output_;
+		size_t max_steps_without_file_output_;
 		bool output_temp_files = false;
 
 	private:
