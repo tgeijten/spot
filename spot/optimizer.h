@@ -36,13 +36,11 @@ namespace spot
 		const stop_condition* run( size_t number_of_steps = 0 );
 
 		virtual stop_condition* test_stop_conditions();
-		s_ptr< stop_condition > add_stop_condition( s_ptr< stop_condition > new_sc ) { return stop_conditions_.emplace_back( new_sc ); }
-		template< typename T, typename... Args > s_ptr<T> add_new_stop_condition( Args&&... a );
+		stop_condition& add_stop_condition( u_ptr<stop_condition> new_sc );
 		template< typename T > const T& find_stop_condition() const;
 		template< typename T > T& find_stop_condition();
 
-		s_ptr< reporter > add_reporter( s_ptr< reporter > new_rep ) { return reporters_.emplace_back( new_rep ); }
-		template< typename T, typename... Args > s_ptr<T> add_new_reporter( Args&&... a );
+		reporter& add_reporter( u_ptr<reporter> new_rep );
 
 		void set_max_threads( int val ) { max_threads_ = val; }
 		void set_thread_priority( xo::thread_priority tp ) { thread_priority_ = tp; }
@@ -86,8 +84,8 @@ namespace spot
 		mutable xo::linear_function< float > fitness_trend_;
 		mutable index_t fitness_trend_step_;
 
-		std::vector< s_ptr< reporter > > reporters_;
-		std::vector< s_ptr< stop_condition > > stop_conditions_;
+		std::vector< u_ptr<reporter> > reporters_;
+		std::vector< u_ptr<stop_condition> > stop_conditions_;
 		u_ptr< boundary_transformer > boundary_transformer_;
 
 		int max_threads_;
@@ -111,19 +109,6 @@ namespace spot
 		catch ( std::exception& e ) {
 			xo::log::error( "Error in reporter: ", e.what() );
 		}
-	}
-
-	template< typename T, typename... Args >
-	s_ptr<T> optimizer::add_new_stop_condition( Args&&... a ) {
-		stop_conditions_.emplace_back( std::make_shared< T >( std::forward< Args >( a )... ) );
-		return std::dynamic_pointer_cast<T>( stop_conditions_.back() );
-	}
-
-	template< typename T, typename... Args >
-	s_ptr<T> optimizer::add_new_reporter( Args&&... a )
-	{
-		reporters_.emplace_back( std::make_unique< T >( std::forward< Args >( a )... ) );
-		return std::dynamic_pointer_cast<T>( reporters_.back() );
 	}
 
 	template< typename T > T& optimizer::find_stop_condition() {

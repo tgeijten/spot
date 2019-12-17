@@ -1192,7 +1192,7 @@ namespace spot
 		name = o.name() + xo::stringf( ".R%d", random_seed() );
 
 		// add flat fitness condition
-		add_new_stop_condition< flat_fitness_condition >( 1e-9 );
+		add_stop_condition( std::make_unique< flat_fitness_condition >( 1e-9 ) );
 	}
 
 	cma_optimizer::~cma_optimizer()

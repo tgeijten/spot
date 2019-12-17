@@ -4,9 +4,7 @@ namespace spot
 {
 	
 	console_reporter::console_reporter( int individual_precision, int summary_precision ) : individual_precision_( individual_precision ), summary_precision_( summary_precision )
-	{
-
-	}
+	{}
 
 	void console_reporter::on_post_evaluate_point( const optimizer& opt, const search_point& point, fitness_t fitness )
 	{

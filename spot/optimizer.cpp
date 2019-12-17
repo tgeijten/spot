@@ -24,7 +24,7 @@ namespace spot
 	{
 		xo_error_if( o.dim() <= 0, "Objective has no free parameters" );
 
-		add_new_stop_condition< abort_condition >();
+		add_stop_condition( std::make_unique< abort_condition >() );
 		//boundary_transformer_ = std::make_unique< cmaes_boundary_transformer >( o.info() );
 	}
 
@@ -90,6 +90,16 @@ namespace spot
 			}
 		}
 		return nullptr;
+	}
+
+	stop_condition& optimizer::add_stop_condition( u_ptr<stop_condition> new_sc )
+	{
+		return *stop_conditions_.emplace_back( std::move( new_sc ) );
+	}
+
+	reporter& optimizer::add_reporter( u_ptr<reporter> new_rep )
+	{
+		return *reporters_.emplace_back( std::move( new_rep ) );
 	}
 
 	xo::linear_function< float > optimizer::fitness_trend() const
