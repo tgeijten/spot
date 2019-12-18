@@ -22,7 +22,7 @@ namespace spot
 	prediction_window_( promise_window ),
 	prediction_start_( min_steps > 1 ? min_steps : promise_window ),
 	prediction_look_ahead_( promise_window ),
-	concurrent_optimizations_( max_concurrent_optimizers ),
+	active_optimizations_( max_concurrent_optimizers ),
 	best_fitness_( o.info().worst_fitness() ),
 	best_optimizer_idx_( no_index )
 	{
@@ -58,7 +58,7 @@ namespace spot
 		size_t active_count = 0;
 		for ( auto& o : optimizers_ )
 		{
-			if ( active_count < concurrent_optimizations_ && o->test_stop_conditions() == nullptr )
+			if ( active_count < active_optimizations_ && o->test_stop_conditions() == nullptr )
 			{
 				if ( o->current_step() >= prediction_start_ )
 					priorities.push_back( o->predicted_fitness( prediction_look_ahead_ ) );

@@ -39,7 +39,7 @@ namespace spot
 		size_t prediction_look_ahead_;
 
 		/// Maximum number of optimizations running concurrently.
-		size_t concurrent_optimizations_;
+		size_t active_optimizations_;
 
 	protected:
 		fitness_t best_fitness_;
