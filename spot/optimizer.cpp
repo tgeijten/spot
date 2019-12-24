@@ -32,7 +32,7 @@ namespace spot
 	{
 	}
 
-	const spot::stop_condition* optimizer::step()
+	const stop_condition* optimizer::step()
 	{
 		// test stop conditions and report finish
 		if ( auto* sc = test_stop_conditions() )

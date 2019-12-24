@@ -11,7 +11,7 @@ namespace spot
 	class SPOT_API optimizer_pool : public optimizer
 	{
 	public:
-		optimizer_pool( const objective& o, size_t prediction_window = 100, size_t prediction_window_min = 10, size_t max_concurrent_optimizations = 4 );
+		optimizer_pool( const objective& o, const prop_node& pn );
 		optimizer_pool( const optimizer_pool& ) = delete;
 		optimizer_pool& operator=( const optimizer_pool& ) = delete;
 		virtual ~optimizer_pool() {}
@@ -38,8 +38,11 @@ namespace spot
 		/// Prediction look-ahead.
 		size_t prediction_look_ahead_;
 
-		/// Maximum number of optimizations running concurrently.
+		/// Maximum number of active optimizations.
 		size_t active_optimizations_;
+
+		/// Maximum number of optimizations running concurrently.
+		size_t concurrent_optimizations_;
 
 	protected:
 		fitness_t best_fitness_;

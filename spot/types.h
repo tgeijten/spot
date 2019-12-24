@@ -21,6 +21,7 @@ namespace spot
 
 	using xo::string;
 	using xo::vector;
+	using xo::prop_node;
 
 	using xo::prop_node;
 	using xo::path;

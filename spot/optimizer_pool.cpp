@@ -2,6 +2,7 @@
 #include "xo/numerical/regression.h"
 #include "xo/system/log.h"
 #include "stop_condition.h"
+#include "xo/container/prop_node_tools.h"
 
 namespace spot
 {
@@ -17,14 +18,15 @@ namespace spot
 		}
 	};
 
-	optimizer_pool::optimizer_pool( const objective& o, size_t promise_window, size_t min_steps, size_t max_concurrent_optimizers ) :
-	optimizer( o ),
-	prediction_window_( promise_window ),
-	prediction_start_( min_steps > 1 ? min_steps : promise_window ),
-	prediction_look_ahead_( promise_window ),
-	active_optimizations_( max_concurrent_optimizers ),
-	best_fitness_( o.info().worst_fitness() ),
-	best_optimizer_idx_( no_index )
+	optimizer_pool::optimizer_pool( const objective& o, const prop_node& pn ) :
+		optimizer( o ),
+		INIT_MEMBER( pn, prediction_window_, 100 ),
+		INIT_MEMBER( pn, prediction_start_, prediction_window_ ),
+		INIT_MEMBER( pn, prediction_look_ahead_, prediction_window_ ),
+		INIT_MEMBER( pn, active_optimizations_, 6 ),
+		INIT_MEMBER( pn, concurrent_optimizations_, 3 ),
+		best_fitness_( o.info().worst_fitness() ),
+		best_optimizer_idx_( no_index )
 	{
 		add_stop_condition( std::make_unique< pool_stop_condition >() );
 	}
@@ -45,7 +47,7 @@ namespace spot
 		interruptible::interrupt();
 	}
 
-	spot::objective_info optimizer_pool::make_updated_objective_info() const
+	objective_info optimizer_pool::make_updated_objective_info() const
 	{
 		xo_assert( best_optimizer_idx_ != no_index );
 		return optimizers_[ best_optimizer_idx_ ]->make_updated_objective_info();
@@ -84,7 +86,9 @@ namespace spot
 			for ( auto it = best_indices.begin(); it != best_indices.end() && !optimizers_[ *it ]->test_stop_conditions(); ++it )
 			{
 				step_queue_.push_back( *it );
-				if ( ( it < best_indices.end() - 1 ) && predictions[ *it ] != predictions[ *( it + 1 ) ] )
+				if ( ( it < best_indices.end() - 1 )
+					&& predictions[ *it ] != predictions[ *( it + 1 ) ] // next one is worse
+					&& step_queue_.size() >= concurrent_optimizations_ )
 					break; // stop if the next one is worse
 			}
 
@@ -98,16 +102,20 @@ namespace spot
 			}
 		}
 
-		// process a single optimizer from the step queue
-		if ( !step_queue_.empty() )
+		std::vector< std::future<index_t> > futures;
+		while ( !step_queue_.empty() && futures.size() < concurrent_optimizations_ )
 		{
-			auto idx = step_queue_.front();
-			optimizers_[ idx ]->step();
+			futures.push_back( std::async( [&]( index_t i ) { optimizers_[ i ]->step(); return i; }, step_queue_.front() ) );
+			step_queue_.pop_front();
+		}
 
-			// copy results if better
+		for ( auto& f : futures )
+		{
+			auto idx = f.get();
 			bool new_best = best_optimizer_idx_ == no_index || is_better( optimizers_[ idx ]->best_fitness(), best_fitness_ );
 			if ( new_best )
 			{
+				// copy results if better
 				best_optimizer_idx_ = idx;
 				best_fitness_ = best_optimizer().best_fitness();
 
@@ -120,8 +128,6 @@ namespace spot
 
 			// run post-evaluate callbacks (AFTER current_best is updated!)
 			signal_reporters( &reporter::on_post_evaluate_population, *this, search_point_vec(), current_step_fitnesses(), new_best );
-
-			step_queue_.pop_front();
 		}
 	}
 }
