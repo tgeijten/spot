@@ -18,6 +18,8 @@
 namespace spot
 {
 	class par_io;
+	class search_point;
+	class objective;
 
 	using xo::string;
 	using xo::vector;
