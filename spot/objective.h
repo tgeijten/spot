@@ -1,7 +1,6 @@
 #pragma once
 
 #include "xo/xo_types.h"
-#include "xo/system/assert.h"
 #include "search_point.h"
 #include <functional>
 #include <future>
@@ -25,7 +24,7 @@ namespace spot
 		virtual fitness_t evaluate( const search_point& point ) const = 0;
 		fitness_t evaluate_noexcept( const search_point& point ) const noexcept;
 		std::future< fitness_t > evaluate_async( const search_point& point, xo::thread_priority prio ) const;
-		fitness_vec_t evaluate_async( const search_point_vec& pop, size_t max_threads, xo::thread_priority prio ) const;
+		fitness_vec evaluate_async( const search_point_vec& pop, size_t max_threads, xo::thread_priority prio ) const;
 
 	protected:
 		objective_info info_;
@@ -38,7 +37,7 @@ namespace spot
 	{
 	public:
 		function_objective( size_t d, objective_function_t func, const par_vec& start, const par_vec& start_std, const par_vec& lower, const par_vec& upper );
-		function_objective( size_t d, objective_function_t func, par_value start, par_value std, par_value lower, par_value upper );
+		function_objective( size_t d, objective_function_t func, par_t start, par_t std, par_t lower, par_t upper );
 
 		virtual fitness_t evaluate( const search_point& point ) const override { return func_( point.values() ); }
 

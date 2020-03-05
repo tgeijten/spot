@@ -11,7 +11,7 @@ namespace spot
 		printf( "%.*f ", individual_precision_, fitness );
 	}
 
-	void console_reporter::on_post_evaluate_population( const optimizer& opt, const search_point_vec& pop, const fitness_vec_t& fitnesses, bool new_best )
+	void console_reporter::on_post_evaluate_population( const optimizer& opt, const search_point_vec& pop, const fitness_vec& fitnesses, bool new_best )
 	{
 		auto avg = xo::average( fitnesses );
 		auto med = xo::median( fitnesses );

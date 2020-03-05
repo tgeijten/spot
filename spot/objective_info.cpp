@@ -11,7 +11,7 @@
 
 namespace spot
 {
-	xo::optional< par_value > objective_info::try_get( const string& name ) const
+	xo::optional< par_t > objective_info::try_get( const string& name ) const
 	{
 		auto it = find( name );
 		if ( it != par_infos_.end() )
@@ -19,22 +19,22 @@ namespace spot
 		else return try_get_locked( name );
 	}
 
-	xo::optional< par_value > objective_info::try_get_locked( const string& name ) const
+	xo::optional< par_t > objective_info::try_get_locked( const string& name ) const
 	{
 		auto it = locked_pars_.find( name );
 		if ( it != locked_pars_.end() )
 			return it->second;
-		else return xo::optional< par_value >();
+		else return xo::optional< par_t >();
 	}
 
-	index_t objective_info::find_best_fitness( const fitness_vec_t& f ) const
+	index_t objective_info::find_best_fitness( const fitness_vec& f ) const
 	{
 		if ( minimize() )
 			return std::min_element( f.begin(), f.end() ) - f.begin();
 		else return std::max_element( f.begin(), f.end() ) - f.begin();
 	}
 
-	par_value objective_info::add( const par_info& pi )
+	par_t objective_info::add( const par_info& pi )
 	{
 		xo_error_if( find( pi.name ) != par_infos_.end(), "Parameter already exists: " + pi.name );
 		xo_error_if( pi.is_constant(), "Invalid parameter (STD <= 0): " + pi.name + " " + xo_varstr( pi.std ) );
@@ -48,7 +48,7 @@ namespace spot
 		return it != par_infos_.end() ? it - par_infos_.begin() : no_index;
 	}
 
-	std::pair< size_t, size_t > objective_info::import_mean_std( const path& filename, bool import_std, double std_factor, double std_offset )
+	pair< size_t, size_t > objective_info::import_mean_std( const path& filename, bool import_std, double std_factor, double std_offset )
 	{
 		size_t params_set = 0;
 		size_t params_not_found = 0;
@@ -90,7 +90,7 @@ namespace spot
 		return { params_set, params_not_found };
 	}
 
-	std::pair< size_t, size_t > objective_info::import_locked( const path& filename )
+	pair< size_t, size_t > objective_info::import_locked( const path& filename )
 	{
 		size_t params_locked = 0;
 		size_t params_not_found = 0;
@@ -148,12 +148,12 @@ namespace spot
 		}
 	}
 
-	std::vector< par_info >::const_iterator objective_info::find( const string& name ) const
+	vector< par_info >::const_iterator objective_info::find( const string& name ) const
 	{
 		return xo::find_if( par_infos_, [&]( const par_info& p ) { return p.name == name; } );
 	}
 
-	std::vector< par_info >::iterator objective_info::find( const string& name )
+	vector< par_info >::iterator objective_info::find( const string& name )
 	{
 		return xo::find_if( par_infos_, [&]( par_info& p ) { return p.name == name; } );
 	}
@@ -170,7 +170,7 @@ namespace spot
 		return it != par_infos_.end() ? &*it : nullptr;
 	}
 
-	bool objective_info::lock_parameter( const string& name, par_value value )
+	bool objective_info::lock_parameter( const string& name, par_t value )
 	{
 		auto iter = find( name );
 		if ( iter != par_infos_.end() )

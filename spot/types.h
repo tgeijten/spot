@@ -13,7 +13,9 @@
 #include "xo/xo_types.h"
 #include "xo/string/string_type.h"
 #include "xo/container/vector_type.h"
+#include "xo/container/pair_type.h"
 #include "xo/utility/pointer_types.h"
+#include <future>
 
 namespace spot
 {
@@ -23,6 +25,7 @@ namespace spot
 
 	using xo::string;
 	using xo::vector;
+	using xo::pair;
 	using xo::prop_node;
 
 	using xo::prop_node;
@@ -34,8 +37,10 @@ namespace spot
 	using xo::s_ptr;
 
 	using fitness_t = double;
-	using fitness_vec_t = std::vector< fitness_t >;
+	using fitness_vec = vector<fitness_t>;
 
-	using par_value = double;
-	using par_vec = std::vector< par_value >;
+	using par_t = double;
+	using par_vec = vector<par_t>;
+
+	using priority_t = double;
 }

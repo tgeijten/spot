@@ -13,7 +13,7 @@ namespace spot
 		virtual void on_start( const optimizer& opt ) override;
 		virtual void on_stop( const optimizer& opt, const stop_condition& s ) override;
 		virtual void on_pre_evaluate_population( const optimizer& opt, const search_point_vec& pop ) override;
-		virtual void on_post_evaluate_population( const optimizer& opt, const search_point_vec& pop, const fitness_vec_t& fitnesses, bool new_best ) override;
+		virtual void on_post_evaluate_population( const optimizer& opt, const search_point_vec& pop, const fitness_vec& fitnesses, bool new_best ) override;
 		virtual void on_new_best( const optimizer& opt, const search_point& point, fitness_t fitness_t ) override;
 		virtual void on_post_step( const optimizer& opt ) override;
 
@@ -26,7 +26,7 @@ namespace spot
 		void write_par_file( const optimizer& opt, bool try_cleanup );
 
 		index_t last_output_step;
-		xo::circular_deque< std::pair< path, fitness_t > > recent_files;
+		xo::circular_deque< pair< path, fitness_t > > recent_files;
 		std::ofstream history_;
 	};
 }

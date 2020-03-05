@@ -16,14 +16,14 @@ namespace spot
 		optimizer_pool& operator=( const optimizer_pool& ) = delete;
 		virtual ~optimizer_pool() {}
 
-		virtual const fitness_vec_t& current_step_fitnesses() const override { return best_optimizer().current_step_fitnesses(); }
+		virtual const fitness_vec& current_step_fitnesses() const override { return best_optimizer().current_step_fitnesses(); }
 		virtual fitness_t current_step_best_fitness() const override { return best_optimizer().current_step_best_fitness(); }
 		virtual const search_point& current_step_best_point() const override { return best_optimizer().current_step_best_point(); }
 		virtual fitness_t best_fitness() const override { return best_optimizer().best_fitness(); }
 		virtual const search_point& best_point() const override { return best_optimizer().best_point(); }
 
 		void push_back( u_ptr< optimizer > opt );
-		const std::vector< u_ptr< optimizer > >& optimizers() const { return optimizers_; }
+		const vector< u_ptr< optimizer > >& optimizers() const { return optimizers_; }
 		size_t size() const { return optimizers_.size(); }
 
 		virtual void interrupt() const override;
@@ -47,10 +47,10 @@ namespace spot
 	protected:
 		fitness_t best_fitness_;
 
-		virtual std::vector< double > compute_predicted_fitnesses();
+		virtual vector< double > compute_predicted_fitnesses();
 		virtual void internal_step() override;
 
-		std::vector< u_ptr< optimizer > > optimizers_;
+		vector< u_ptr< optimizer > > optimizers_;
 		std::deque< index_t > step_queue_;
 		index_t best_optimizer_idx_;
 		const optimizer& best_optimizer() const { xo_assert( best_optimizer_idx_ < optimizers_.size() ); return *optimizers_[ best_optimizer_idx_ ]; }

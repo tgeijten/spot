@@ -37,7 +37,7 @@ namespace spot
 		import_values( filename );
 	}
 
-	xo::optional< par_value > search_point::try_get( const string& full_name ) const
+	xo::optional< par_t > search_point::try_get( const string& full_name ) const
 	{
 		// see if this is a parameter
 		auto idx = info_.find_index( full_name );
@@ -46,12 +46,12 @@ namespace spot
 		else return info_.try_get_locked( full_name );
 	}
 
-	par_value search_point::add( const par_info& pi )
+	par_t search_point::add( const par_info& pi )
 	{
 		xo_error( "Previously undefined parameter: " + pi.name + "; " + xo_varstr( dim() ) );
 	}
 
-	std::pair< size_t, size_t > search_point::import_values( const path& filename )
+	pair< size_t, size_t > search_point::import_values( const path& filename )
 	{
 		size_t params_set = 0;
 		size_t params_skipped = 0;
@@ -61,7 +61,7 @@ namespace spot
 		while ( str.good() )
 		{
 			string name;
-			par_value value, mean, stdev;
+			par_t value, mean, stdev;
 			str >> name >> value >> mean >> stdev;
 
 			if ( str.good() )
@@ -91,7 +91,7 @@ namespace spot
 			v = rounded( v );
 	}
 
-	par_value search_point::rounded( par_value v )
+	par_t search_point::rounded( par_t v )
 	{
 		std::stringstream str;
 		str << std::setprecision( 8 ) << v;
@@ -114,18 +114,18 @@ namespace spot
 		return str;
 	}
 
-	std::pair< par_vec, par_vec > SPOT_API compute_mean_std( const search_point_vec& pop )
+	pair< par_vec, par_vec > SPOT_API compute_mean_std( const search_point_vec& pop )
 	{
 		const auto& info = pop.front().info();
 
-		std::vector< par_value > mean( info.dim() );
+		vector< par_t > mean( info.dim() );
 		for ( auto& ind : pop )
 		{
 			for ( index_t i = 0; i < info.dim(); ++i )
 				mean[ i ] += ind[ i ] / pop.size();
 		}
 
-		std::vector< par_value > stds( info.dim() );
+		vector< par_t > stds( info.dim() );
 		for ( index_t pop_idx = 0; pop_idx < pop.size(); ++pop_idx )
 		{
 			for ( index_t i = 0; i < info.dim(); ++i )

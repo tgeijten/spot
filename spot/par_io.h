@@ -16,12 +16,12 @@ namespace spot
 
 		virtual size_t dim() const = 0;
 
-		virtual xo::optional< par_value > try_get( const string& name ) const = 0;
-		virtual par_value add( const par_info& pi ) = 0;
+		virtual xo::optional< par_t > try_get( const string& name ) const = 0;
+		virtual par_t add( const par_info& pi ) = 0;
 
-		par_value get( const string& name, par_value mean, par_value std, par_value min = -1e15, par_value max = 1e15 );
-		par_value get( const string& name, const prop_node& pn );
-		par_value try_get( const string& name, const prop_node& parent_pn, const string& key, const par_value& default_value );
+		par_t get( const string& name, par_t mean, par_t std, par_t min = -1e15, par_t max = 1e15 );
+		par_t get( const string& name, const prop_node& pn );
+		par_t try_get( const string& name, const prop_node& parent_pn, const string& key, const par_t& default_value );
 
 		void set_prefix( const string& s ) { prefix_.set( s ); }
 		void push_prefix( const string& s ) { prefix_.push_back( s ); }

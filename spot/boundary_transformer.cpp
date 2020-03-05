@@ -8,7 +8,7 @@
 namespace spot
 {
 
-	soft_limit_boundary_transformer::soft_limit_boundary_transformer( const objective_info& i, par_value threshold ) :
+	soft_limit_boundary_transformer::soft_limit_boundary_transformer( const objective_info& i, par_t threshold ) :
 	boundary_transformer( i ),
 	boundary_limit_threshold_( threshold )
 	{

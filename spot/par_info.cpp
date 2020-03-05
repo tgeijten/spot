@@ -7,13 +7,13 @@
 
 namespace spot
 {
-	par_info::par_info( string pname, par_value pmean, par_value pstd, par_value pmin, par_value pmax ) :
+	par_info::par_info( string pname, par_t pmean, par_t pstd, par_t pmin, par_t pmax ) :
 		name( pname ), mean( pmean ), std( pstd ), min( pmin ), max( pmax )
 	{}
 
 	par_info::par_info( string full_name, const prop_node& pn ) :
 	name( full_name ),
-	mean( xo::constants<par_value>::NaN() ),
+	mean( xo::constants<par_t>::NaN() ),
 	std( 0 ),
 	min( -1e12 ),
 	max( 1e12 )
@@ -21,10 +21,10 @@ namespace spot
 		// check if the prop_node has children
 		if ( pn.size() > 0 )
 		{
-			mean = pn.get_any< par_value >( { "mean", "init_mean" } );
-			std = pn.get_any< par_value >( { "std", "init_std" } );
-			min = pn.get< par_value >( "min", -1e12 );
-			max = pn.get< par_value >( "max", 1e12 );
+			mean = pn.get_any< par_t >( { "mean", "init_mean" } );
+			std = pn.get_any< par_t >( { "std", "init_std" } );
+			min = pn.get< par_t >( "min", -1e12 );
+			max = pn.get< par_t >( "max", 1e12 );
 		}
 		else
 		{
@@ -56,7 +56,7 @@ namespace spot
 					}
 					else // just a value, interpret as mean
 					{
-						par_value v;
+						par_t v;
 						str >> v;
 						xo_error_if( str.fail(), "Error parsing parameter '" + full_name + "': Could not read value starting at '" + c + "'" );
 						xo_error_if( !std::isnan( mean ), "Error parsing parameter '" + full_name + "': mean already defined" );

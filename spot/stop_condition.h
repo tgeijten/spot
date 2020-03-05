@@ -13,8 +13,8 @@ namespace spot
 
 	struct SPOT_API stop_condition
 	{
-		stop_condition() {}
-		virtual ~stop_condition() {}
+		stop_condition() = default;
+		virtual ~stop_condition() = default;
 		virtual string what() const { return ""; }
 		virtual bool test( const optimizer& opt ) = 0;
 	};
@@ -69,11 +69,11 @@ namespace spot
 		virtual string what() const override { return "Similar search point"; }
 		virtual bool test( const optimizer& opt ) override;
 
-		std::vector< par_vec > similarity_points;
-		std::vector< double > similarities;
+		vector<par_vec> similarity_points;
+		vector< double > similarities;
 		index_t similar_idx;
 
 		int min_steps_ = 10;
-		par_value min_distance_ = 1.0;
+		par_t min_distance_ = 1.0;
 	};
 }

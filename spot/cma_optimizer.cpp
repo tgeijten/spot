@@ -14,7 +14,7 @@
 
 namespace spot
 {
-	typedef std::vector< double > dbl_vec;
+	typedef vector< double > dbl_vec;
 
 	struct cmaes_random_t
 	{
@@ -22,7 +22,7 @@ namespace spot
 		long int startseed;
 		long int aktseed;
 		long int aktrand;
-		std::vector< long int > rgrand;
+		vector< long int > rgrand;
 
 		/* Variables for Gauss() */
 		short flgstored;
@@ -72,16 +72,16 @@ namespace spot
 
 		dbl_vec current_mean;  /* mean x vector, "parent" */
 		dbl_vec current_best;
-		std::vector< dbl_vec > current_pop;   /* range of x-vectors, lambda offspring */
-		std::vector< int > index;       /* sorting index of sample pop. */
+		vector< dbl_vec > current_pop;   /* range of x-vectors, lambda offspring */
+		vector< int > index;       /* sorting index of sample pop. */
 		dbl_vec arFuncValueHist;
 
 		short flgIniphase; /* not really in use anymore */
 		short flgStop;
 
 		double chiN;
-		std::vector< dbl_vec > C;  /* lower triangular matrix: i>=j for C[i][j] */
-		std::vector< dbl_vec > B;  /* matrix with normalize eigenvectors in columns */
+		vector< dbl_vec > C;  /* lower triangular matrix: i>=j for C[i][j] */
+		vector< dbl_vec > B;  /* matrix with normalize eigenvectors in columns */
 		dbl_vec rgD; /* axis lengths */
 
 		dbl_vec rgpc;
@@ -443,7 +443,7 @@ namespace spot
 	}
 
 	/* ========================================================= */
-	static void QLalgo2( int n, dbl_vec& d, dbl_vec& e, std::vector< dbl_vec >& V ) {
+	static void QLalgo2( int n, dbl_vec& d, dbl_vec& e, vector< dbl_vec >& V ) {
 		/*
 		  -> n     : Dimension.
 		  -> d     : Diagonale of tridiagonal matrix.
@@ -579,7 +579,7 @@ namespace spot
 #endif 
 	} /* QLalgo2 */
 
-	static void Householder2( int n, std::vector< dbl_vec >& V, dbl_vec& d, dbl_vec& e )
+	static void Householder2( int n, vector< dbl_vec >& V, dbl_vec& d, dbl_vec& e )
 	{
 		/*
 		   Householder transformation of a symmetric matrix V into tridiagonal form.
@@ -704,7 +704,7 @@ namespace spot
 
 	} /* Housholder() */
 
-	static void Eigen( int N, std::vector< dbl_vec >& C, dbl_vec& diag, std::vector< dbl_vec >& Q, dbl_vec& rgtmp )
+	static void Eigen( int N, vector< dbl_vec >& C, dbl_vec& diag, vector< dbl_vec >& Q, dbl_vec& rgtmp )
 		/*
 		   Calculating eigenvalues and vectors.
 		   Input:
@@ -730,7 +730,7 @@ namespace spot
 		QLalgo2( N, diag, rgtmp, Q );
 	}
 
-	static int Check_Eigen( int N, std::vector< dbl_vec >& C, dbl_vec& diag, std::vector< dbl_vec >& Q )
+	static int Check_Eigen( int N, vector< dbl_vec >& C, dbl_vec& diag, vector< dbl_vec >& Q )
 		/*
 		   exhaustive test of the output of the eigendecomposition
 		   needs O(n^3) operations
@@ -812,7 +812,7 @@ namespace spot
 
 	} /* cmaes_TestMinStdDevs() */
 
-	const std::vector< dbl_vec >& cmaes_SamplePopulation( cmaes_t *t )
+	const vector< dbl_vec >& cmaes_SamplePopulation( cmaes_t *t )
 	{
 		int iNk, i, j, N = t->sp.N;
 		int flgdiag = ( ( t->sp.diagonalCov == 1 ) || ( t->sp.diagonalCov >= t->gen ) );
@@ -859,7 +859,7 @@ namespace spot
 		return( t->current_pop );
 	} /* SamplePopulation() */
 
-	const std::vector< dbl_vec >& cmaes_ReSampleSingle( cmaes_t *t, index_t iindex )
+	const vector< dbl_vec >& cmaes_ReSampleSingle( cmaes_t *t, index_t iindex )
 	{
 		int N = t->sp.N;
 
@@ -878,7 +878,7 @@ namespace spot
 		return  t->current_pop;
 	}
 
-	const std::vector< dbl_vec >& cmaes_OverwriteSingle( cmaes_t *t, index_t iindex, dbl_vec params )
+	const vector< dbl_vec >& cmaes_OverwriteSingle( cmaes_t *t, index_t iindex, dbl_vec params )
 	{
 		// TG: overwrite parameters of a single individual
 		// This is required in case of clamping when no individual can be found
@@ -888,7 +888,7 @@ namespace spot
 		return  t->current_pop;
 	}
 
-	static void Sorted_index( const dbl_vec& rgFunVal, std::vector< int >& iindex, int n )
+	static void Sorted_index( const dbl_vec& rgFunVal, vector< int >& iindex, int n )
 	{
 		int i, j;
 		for ( i = 1, iindex[ 0 ] = 0; i < n; ++i ) {
@@ -1169,7 +1169,7 @@ namespace spot
 		pimpl = new pimpl_t;
 		auto n = objective_.info().dim();
 
-		std::vector< double > mean( n ), std( n ), lb( n ), ub( n );
+		vector< double > mean( n ), std( n ), lb( n ), ub( n );
 		for ( index_t i = 0; i < n; ++i )
 		{
 			auto& p = objective_.info()[ i ];
@@ -1233,35 +1233,35 @@ namespace spot
 		return pimpl->bounded_pop;
 	}
 
-	void cma_optimizer::update_distribution( const fitness_vec_t& results )
+	void cma_optimizer::update_distribution( const fitness_vec& results )
 	{
 		if ( objective_.info().maximize() )
 		{
 			// negate first, since c-cmaes always minimizes
-			fitness_vec_t neg_results( results.size() );
+			fitness_vec neg_results( results.size() );
 			std::transform( results.begin(), results.end(), neg_results.begin(), [&]( const double& v ) { return -v; } );
 			cmaes_UpdateDistribution( &pimpl->cmaes, neg_results );
 		}
 		else cmaes_UpdateDistribution( &pimpl->cmaes, results );
 	}
 
-	std::vector< double > cma_optimizer::current_mean() const
+	vector< double > cma_optimizer::current_mean() const
 	{
 		par_vec individual( pimpl->cmaes.current_mean.begin(), pimpl->cmaes.current_mean.begin() + info().dim() );
 		return boundary_transform( individual );
 	}
 
-	std::vector< double > cma_optimizer::current_std() const
+	vector< double > cma_optimizer::current_std() const
 	{
 		// get from covariance matrix
-		std::vector< double > stds( dim() );
+		vector< double > stds( dim() );
 		for ( index_t i = 0; i < dim(); ++i )
 			stds[ i ] = pimpl->cmaes.sigma * sqrt( pimpl->cmaes.C[ i ][ i ] );
 
 		return stds;
 	}
 
-	std::vector< par_vec > cma_optimizer::current_covariance() const
+	vector< par_vec > cma_optimizer::current_covariance() const
 	{
 		return pimpl->cmaes.C;
 	}

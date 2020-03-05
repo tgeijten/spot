@@ -47,7 +47,7 @@ namespace spot
 
 		index_t current_step() const { return step_count_; }
 
-		virtual const fitness_vec_t& current_step_fitnesses() const = 0;
+		virtual const fitness_vec& current_step_fitnesses() const = 0;
 		virtual fitness_t current_step_best_fitness() const = 0;
 		virtual const search_point& current_step_best_point() const = 0;
 		virtual fitness_t best_fitness() const = 0;
@@ -84,8 +84,8 @@ namespace spot
 		mutable xo::linear_function< float > fitness_trend_;
 		mutable index_t fitness_trend_step_;
 
-		std::vector< u_ptr<reporter> > reporters_;
-		std::vector< u_ptr<stop_condition> > stop_conditions_;
+		vector< u_ptr<reporter> > reporters_;
+		vector< u_ptr<stop_condition> > stop_conditions_;
 		u_ptr< boundary_transformer > boundary_transformer_;
 
 		int max_threads_;

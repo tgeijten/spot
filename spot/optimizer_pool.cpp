@@ -53,9 +53,9 @@ namespace spot
 		return optimizers_[ best_optimizer_idx_ ]->make_updated_objective_info();
 	}
 
-	std::vector< double > optimizer_pool::compute_predicted_fitnesses()
+	vector< double > optimizer_pool::compute_predicted_fitnesses()
 	{
-		std::vector< double > priorities;
+		vector< double > priorities;
 
 		size_t active_count = 0;
 		for ( auto& o : optimizers_ )
@@ -102,7 +102,7 @@ namespace spot
 			}
 		}
 
-		std::vector< std::future<index_t> > futures;
+		vector< std::future< index_t > > futures;
 		while ( !step_queue_.empty() && futures.size() < concurrent_optimizations_ )
 		{
 			futures.push_back( std::async( [&]( index_t i ) { optimizers_[ i ]->step(); return i; }, step_queue_.front() ) );

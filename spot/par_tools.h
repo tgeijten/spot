@@ -33,7 +33,7 @@ namespace spot
 			return T( ps.get( name, *p ) );
 		else if ( auto* p = pn.try_get_query( name ) )
 			return T( ps.get( name, *p ) );
-		else return T( ps.get( name, par_value( mean ), std, lower, upper ) );
+		else return T( ps.get( name, par_t( mean ), std, lower, upper ) );
 	}
 
 	template< typename T >

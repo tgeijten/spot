@@ -43,7 +43,7 @@ namespace spot
 		}
 	}
 
-	void file_reporter::on_post_evaluate_population( const optimizer& opt, const search_point_vec& pop, const fitness_vec_t& fitnesses, bool new_best )
+	void file_reporter::on_post_evaluate_population( const optimizer& opt, const search_point_vec& pop, const fitness_vec& fitnesses, bool new_best )
 	{
 		if ( output_temp_files )
 		{

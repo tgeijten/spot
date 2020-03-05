@@ -4,7 +4,7 @@
 
 namespace spot
 {
-	par_value par_io::get( const string& name, par_value mean, par_value std, par_value min, par_value max )
+	par_t par_io::get( const string& name, par_t mean, par_t std, par_t min, par_t max )
 	{
 		auto full_name = prefix() + name;
 
@@ -16,7 +16,7 @@ namespace spot
 		return add( par_info( full_name, mean, std, min, max ) );
 	}
 
-	par_value par_io::get( const string& name, const prop_node& pn )
+	par_t par_io::get( const string& name, const prop_node& pn )
 	{
 		auto full_name = prefix() + name;
 
@@ -40,7 +40,7 @@ namespace spot
 		else return add( pi );
 	}
 
-	par_value par_io::try_get( const string& name, const prop_node& parent_pn, const string& key, const par_value& default_value )
+	par_t par_io::try_get( const string& name, const prop_node& parent_pn, const string& key, const par_t& default_value )
 	{
 		if ( auto* pn = parent_pn.try_get_child( key ) )
 			return get( name, *pn );

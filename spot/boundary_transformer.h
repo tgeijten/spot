@@ -19,11 +19,11 @@ namespace spot
 	class soft_limit_boundary_transformer : public boundary_transformer
 	{
 	public:
-		soft_limit_boundary_transformer( const objective_info& i, par_value threshold = 0.1 );
+		soft_limit_boundary_transformer( const objective_info& i, par_t threshold = 0.1 );
 		virtual void apply( par_vec& v );
 		virtual void apply_inverse( par_vec& v );
 	private:
-		par_value boundary_limit_threshold_;
+		par_t boundary_limit_threshold_;
 	};
 
 	class cmaes_boundary_transformer : public boundary_transformer

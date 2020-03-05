@@ -18,9 +18,9 @@ namespace spot
 		objective_info( bool min = true ) : minimize_( min ), target_fitness_( 0 ) {}
 
 		virtual size_t dim() const override { return par_infos_.size(); }
-		virtual par_value add( const par_info& pi ) override;
-		virtual xo::optional< par_value > try_get( const string& name ) const override;
-		xo::optional< par_value > try_get_locked( const string& name ) const;
+		virtual par_t add( const par_info& pi ) override;
+		virtual xo::optional< par_t > try_get( const string& name ) const override;
+		xo::optional< par_t > try_get_locked( const string& name ) const;
 		const string& name() const { return name_; }
 
 		fitness_t target_fitness() const { return target_fitness_; }
@@ -30,7 +30,7 @@ namespace spot
 		bool minimize() const { return minimize_; }
 		bool maximize() const { return !minimize_; }
 		bool is_better( fitness_t a, fitness_t b ) const { return minimize() ? a < b : a > b; }
-		index_t find_best_fitness( const fitness_vec_t& f ) const;
+		index_t find_best_fitness( const fitness_vec& f ) const;
 		template< typename T > T worst() const { return minimize() ? xo::constants<T>::max() : xo::constants<T>::lowest(); }
 		template< typename T > T best() const { return minimize() ? xo::constants<T>::lowest() : xo::constants<T>::max(); }
 		fitness_t worst_fitness() const { return worst< fitness_t >(); }
@@ -44,16 +44,16 @@ namespace spot
 		index_t find_index( const string& name ) const;
 
 		/// iterator access
-		std::vector< par_info >::const_iterator begin() const { return par_infos_.begin(); }
-		std::vector< par_info >::const_iterator end() const { return par_infos_.end(); }
+		vector< par_info >::const_iterator begin() const { return par_infos_.begin(); }
+		vector< par_info >::const_iterator end() const { return par_infos_.end(); }
 
 		/// properties
 		size_t size() const { return par_infos_.size(); }
 		bool empty() const { return par_infos_.empty(); }
 
 		/// import / export
-		std::pair< size_t, size_t > import_mean_std( const path& filename, bool import_std, double std_factor = 1.0, double std_offset = 0.0 );
-		std::pair< size_t, size_t > import_locked( const path& filename );
+		pair< size_t, size_t > import_mean_std( const path& filename, bool import_std, double std_factor = 1.0, double std_offset = 0.0 );
+		pair< size_t, size_t > import_locked( const path& filename );
 		void set_std_minimum( double value, double factor );
 		void set_mean_std( const par_vec& mean, const par_vec& std );
 		void set_name( const string& name ) { name_ = name; }
@@ -63,16 +63,16 @@ namespace spot
 		void clamp( par_vec& vec ) const;
 
 	private:
-		std::vector< par_info > par_infos_;
-		xo::flat_map< string, par_value > locked_pars_;
+		vector< par_info > par_infos_;
+		xo::flat_map< string, par_t > locked_pars_;
 		bool minimize_;
 		fitness_t target_fitness_;
 		string name_;
 
-		std::vector< par_info >::const_iterator find( const string& name ) const;
-		std::vector< par_info >::iterator find( const string& name );
+		vector< par_info >::const_iterator find( const string& name ) const;
+		vector< par_info >::iterator find( const string& name );
 		const par_info* try_find( const string& name ) const;
 		par_info* try_find( const string& name );
-		bool lock_parameter( const string& name, par_value value );
+		bool lock_parameter( const string& name, par_t value );
 	};
 }
