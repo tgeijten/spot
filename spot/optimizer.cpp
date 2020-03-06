@@ -14,13 +14,13 @@
 namespace spot
 {
 	optimizer::optimizer( const objective& o ) :
-	objective_( o ),
-	step_count_( 0 ),
-	fitness_history_samples_( 0 ),
-	fitness_trend_step_( no_index ),
-	max_threads_( xo::max<int>( 4, std::thread::hardware_concurrency() ) ),
-	thread_priority_( xo::thread_priority::lowest ),
-	stop_condition_( nullptr )
+		objective_( o ),
+		step_count_( 0 ),
+		fitness_history_samples_( 0 ),
+		fitness_trend_step_( no_index ),
+		max_threads_( xo::max<int>( 4, std::thread::hardware_concurrency() ) ),
+		thread_priority_( xo::thread_priority::lowest ),
+		stop_condition_( nullptr )
 	{
 		xo_error_if( o.dim() <= 0, "Objective has no free parameters" );
 
@@ -137,7 +137,7 @@ namespace spot
 		xo_error_if( fitness_history_.capacity() == 0, "fitness tracking must be enabled for this method" );
 
 		if ( fitness_history_.size() >= 2 )
-			return fitness_trend()( static_cast< float >( current_step() + steps_ahead ) );
+			return fitness_trend()( static_cast<float>( current_step() + steps_ahead ) );
 		else return 0.0f;
 	}
 
@@ -146,5 +146,10 @@ namespace spot
 		if ( boundary_transformer_ )
 			boundary_transformer_->apply( v );
 		return v;
+	}
+
+	fitness_vec optimizer::evaluate( const search_point_vec& point_vec ) const
+	{
+		return objective_.evaluate_async( point_vec, max_threads_, thread_priority_ );
 	}
 }

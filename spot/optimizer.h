@@ -74,6 +74,7 @@ namespace spot
 	protected:
 		virtual void internal_step() = 0;
 		par_vec& boundary_transform( par_vec& v ) const;
+		fitness_vec evaluate( const search_point_vec& point_vec ) const;
 
 		const objective& objective_;
 
