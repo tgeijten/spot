@@ -15,11 +15,11 @@ namespace spot
 		}
 		catch ( std::exception& e )
 		{
-			return string( e.what() );
+			return xo::error_message( e.what() );
 		}
 		catch ( ... )
 		{
-			return "Error evaluating objective";
+			return xo::error_message( "Error evaluating objective" );
 		}
 	}
 
