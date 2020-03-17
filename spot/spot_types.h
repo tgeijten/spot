@@ -1,27 +1,19 @@
 #pragma once
 
-#if defined(_MSC_VER)
-#	ifdef SPOT_EXPORTS
-#		define SPOT_API __declspec(dllexport)
-#	else
-#		define SPOT_API __declspec(dllimport)
-#	endif
-#else
-#	define SPOT_API
-#endif
-
+#include "spot_config.h"
 #include "xo/xo_types.h"
 #include "xo/string/string_type.h"
 #include "xo/container/vector_type.h"
 #include "xo/container/pair_type.h"
 #include "xo/utility/pointer_types.h"
-#include <future>
 
 namespace spot
 {
 	class par_io;
 	class search_point;
 	class objective;
+	class optimizer;
+	struct stop_condition;
 
 	using xo::string;
 	using xo::vector;

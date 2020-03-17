@@ -1,8 +1,8 @@
 #include "evaluator.h"
 
 #include "objective.h"
-#include <thread>
 #include "xo/system/system_tools.h"
+#include "spot/search_point.h"
 #include "async_evaluator.h"
 
 namespace spot

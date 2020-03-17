@@ -4,6 +4,7 @@
 #include "xo/numerical/regression.h"
 #include "xo/numerical/polynomial.h"
 #include "xo/container/circular_deque.h"
+#include "xo/utility/result.h"
 #include "search_point.h"
 #include "tools.h"
 
@@ -23,6 +24,14 @@ namespace spot
 	{
 		virtual string what() const override { return "Aborted by user"; }
 		virtual bool test( const optimizer& opt ) override;
+	};
+
+	struct SPOT_API error_condition : public stop_condition
+	{
+		virtual string what() const override { return error_.message(); }
+		virtual bool test( const optimizer& opt ) override { return !error_.good(); }
+		stop_condition* set( const xo::error_message& e ) { error_ = e; return this; }
+		xo::error_message error_;
 	};
 
 	struct SPOT_API flat_fitness_condition : public stop_condition
@@ -54,7 +63,7 @@ namespace spot
 
 	struct SPOT_API predicted_fitness_condition : public stop_condition
 	{
-		predicted_fitness_condition( fitness_t fitness, size_t look_ahead, size_t min_samples = 100 ) : fitness_( fitness ), look_ahead_( look_ahead ), min_samples_( min_samples ) {}
+		predicted_fitness_condition( fitness_t fitness, size_t look_ahead, size_t min_samples = 100 ) : prediction_(), fitness_( fitness ), look_ahead_( look_ahead ), min_samples_( min_samples ) {}
 		virtual string what() const override;
 		virtual bool test( const optimizer& opt ) override;
 

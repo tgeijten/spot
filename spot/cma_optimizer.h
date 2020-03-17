@@ -1,6 +1,6 @@
 #pragma once
 
-#include "types.h"
+#include "spot_types.h"
 #include "optimizer.h"
 
 namespace spot
@@ -51,7 +51,7 @@ namespace spot
 
 		size_t max_resample_count;
 
-		virtual void internal_step() override;
+		virtual xo::error_message internal_step() override;
 		struct pimpl_t* pimpl;
 	};
 }

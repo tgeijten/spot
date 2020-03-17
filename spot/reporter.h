@@ -1,13 +1,10 @@
 #pragma once
 
-#include "types.h"
+#include "spot_types.h"
 #include "search_point.h"
 
 namespace spot
 {
-	class optimizer;
-	struct stop_condition;
-
 	struct SPOT_API reporter
 	{
 		reporter() {}

@@ -13,8 +13,9 @@
 
 namespace spot
 {
-	optimizer::optimizer( const objective& o ) :
+	optimizer::optimizer( const objective& o, const evaluator& e ) :
 		objective_( o ),
+		evaluator_( e ),
 		step_count_( 0 ),
 		fitness_history_samples_( 0 ),
 		fitness_trend_step_( no_index ),
@@ -46,22 +47,22 @@ namespace spot
 		signal_reporters( &reporter::on_pre_step, *this );
 
 		// perform actual step
-		internal_step();
-
-		// update fitness history
-		if ( fitness_tracking_window_size() > 0 )
+		if ( auto result = internal_step() )
 		{
-			if ( fitness_history_.full() ) fitness_history_.pop_front();
-			fitness_history_.push_back( static_cast<float>( current_step_best_fitness() ) );
-			++fitness_history_samples_;
+			// update fitness history
+			if ( fitness_tracking_window_size() > 0 )
+			{
+				if ( fitness_history_.full() ) fitness_history_.pop_front();
+				fitness_history_.push_back( static_cast<float>( current_step_best_fitness() ) );
+				++fitness_history_samples_;
+			}
+
+			// signal reporters
+			signal_reporters( &reporter::on_post_step, *this );
+			++step_count_;
+			return nullptr;
 		}
-
-		// signal reporters
-		signal_reporters( &reporter::on_post_step, *this );
-
-		++step_count_;
-
-		return nullptr;
+		else return error_stop_condition_.set( result.message() );
 	}
 
 	const stop_condition* optimizer::run( size_t number_of_steps )
@@ -148,8 +149,12 @@ namespace spot
 		return v;
 	}
 
-	fitness_vec optimizer::evaluate( const search_point_vec& point_vec ) const
+	xo::result<fitness_vec> optimizer::evaluate( const search_point_vec& point_vec, priority_t prio ) const
 	{
+#if SPOT_EVALUATOR_ENABLED
+		return evaluator_.evaluate( objective_, point_vec, prio );
+#else
 		return objective_.evaluate_async( point_vec, max_threads_, thread_priority_ );
+#endif // SPOT_EVALUATOR_ENABLED
 	}
 }

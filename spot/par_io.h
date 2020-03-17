@@ -3,7 +3,7 @@
 #include "xo/container/prop_node.h"
 #include "xo/utility/optional.h"
 #include "xo/string/stack_string.h"
-#include "types.h"
+#include "spot_types.h"
 #include "par_info.h"
 
 namespace spot

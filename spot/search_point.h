@@ -6,7 +6,7 @@
 
 #include "objective_info.h"
 #include "par_io.h"
-#include "types.h"
+#include "spot_types.h"
 
 namespace spot
 {

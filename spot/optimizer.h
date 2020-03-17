@@ -1,8 +1,10 @@
 #pragma once
 
+#include "spot_types.h"
 #include "boundary_transformer.h"
 #include "objective.h"
 #include "reporter.h"
+#include "evaluator.h"
 #include "stop_condition.h"
 
 #include "xo/container/circular_deque.h"
@@ -14,11 +16,10 @@
 #include "xo/utility/memory_tools.h"
 #include "xo/utility/optional.h"
 #include "xo/utility/pointer_types.h"
-#include "xo/xo_types.h"
+#include "xo/utility/result.h"
 
-#include <atomic>
-#include <functional>
 #include <thread>
+#include <functional>
 
 namespace spot
 {
@@ -27,7 +28,7 @@ namespace spot
 	class SPOT_API optimizer : public xo::interruptible
 	{
 	public:
-		optimizer( const objective& o );
+		optimizer( const objective& o, const evaluator& e = global_evaluator() );
 		optimizer( const optimizer& ) = delete;
 		optimizer& operator=( const optimizer& ) = delete;
 		virtual ~optimizer();
@@ -42,8 +43,10 @@ namespace spot
 
 		reporter& add_reporter( u_ptr<reporter> new_rep );
 
+#if !SPOT_EVALUATOR_ENABLED
 		void set_max_threads( int val ) { max_threads_ = val; }
 		void set_thread_priority( xo::thread_priority tp ) { thread_priority_ = tp; }
+#endif
 
 		index_t current_step() const { return step_count_; }
 
@@ -72,11 +75,12 @@ namespace spot
 		mutable string name; // #todo: not this, name should be const
 
 	protected:
-		virtual void internal_step() = 0;
+		virtual xo::error_message internal_step() = 0;
 		par_vec& boundary_transform( par_vec& v ) const;
-		fitness_vec evaluate( const search_point_vec& point_vec ) const;
+		xo::result<fitness_vec> evaluate( const search_point_vec& point_vec, priority_t prio = 0.0 ) const;
 
 		const objective& objective_;
+		const evaluator& evaluator_;
 
 		index_t step_count_;
 
@@ -93,6 +97,7 @@ namespace spot
 		xo::thread_priority thread_priority_;
 
 		stop_condition* stop_condition_;
+		error_condition error_stop_condition_;
 
 		template< typename T, typename... Args > void signal_reporters( T fn, Args&&... args );
 	};

@@ -1,5 +1,8 @@
 #include "console_reporter.h"
 
+#include "optimizer.h"
+#include "xo/container/container_algorithms.h"
+
 namespace spot
 {
 	

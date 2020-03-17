@@ -1,8 +1,9 @@
 #pragma once
 
-#include "spot/types.h"
+#include "spot/spot_types.h"
 #include "spot/search_point.h"
 #include "evaluator.h"
+#include <future>
 
 namespace spot
 {

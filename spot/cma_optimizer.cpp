@@ -1303,32 +1303,37 @@ namespace spot
 		return pimpl->cmaes.sigma;
 	}
 
-	void cma_optimizer::internal_step()
+	xo::error_message cma_optimizer::internal_step()
 	{
 		// sample population and run callbacks
 		auto& pop = sample_population();
 		signal_reporters( &reporter::on_pre_evaluate_population, *this, pop );
 
 		// compute fitnesses
-		current_step_fitnesses_ = objective_.evaluate_async( pop, max_threads_, thread_priority_ );
-
-		// update current step best
-		auto best_idx = objective_.info().find_best_fitness( current_step_fitnesses_ );
-		current_step_best_fitness_ = current_step_fitnesses_[ best_idx ];
-		current_step_best_point_ = pop[ best_idx ];
-
-		// update all-time best
-		bool has_new_best = objective_.info().is_better( current_step_fitnesses_[ best_idx ], best_fitness_ );
-		if ( has_new_best )
+		if ( auto result = evaluate( pop ) )
 		{
-			best_fitness_ = current_step_fitnesses_[ best_idx ];
-			best_point_.set_values( pop[ best_idx ].values() );
-			signal_reporters( &reporter::on_new_best, *this, best_point_, best_fitness_ );
+			current_step_fitnesses_ = result.value();
+
+			// update current step best
+			auto best_idx = objective_.info().find_best_fitness( current_step_fitnesses_ );
+			current_step_best_fitness_ = current_step_fitnesses_[ best_idx ];
+			current_step_best_point_ = pop[ best_idx ];
+
+			// update all-time best
+			bool has_new_best = objective_.info().is_better( current_step_fitnesses_[ best_idx ], best_fitness_ );
+			if ( has_new_best )
+			{
+				best_fitness_ = current_step_fitnesses_[ best_idx ];
+				best_point_.set_values( pop[ best_idx ].values() );
+				signal_reporters( &reporter::on_new_best, *this, best_point_, best_fitness_ );
+			}
+
+			// run post-evaluate callbacks (AFTER current_best is updated!)
+			signal_reporters( &reporter::on_post_evaluate_population, *this, pop, current_step_fitnesses_, has_new_best );
+
+			update_distribution( current_step_fitnesses_ );
+			return {};
 		}
-
-		// run post-evaluate callbacks (AFTER current_best is updated!)
-		signal_reporters( &reporter::on_post_evaluate_population, *this, pop, current_step_fitnesses_, has_new_best );
-
-		update_distribution( current_step_fitnesses_ );
+		else return result.error();
 	}
 }

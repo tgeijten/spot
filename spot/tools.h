@@ -1,6 +1,6 @@
 #pragma once
 
-#include "types.h"
+#include "spot_types.h"
 
 namespace spot
 {

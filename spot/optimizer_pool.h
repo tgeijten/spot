@@ -1,8 +1,7 @@
 #pragma once
 
+#include "spot_types.h"
 #include "optimizer.h"
-#include "types.h"
-#include "xo/utility/interruptible.h"
 #include <deque>
 
 namespace spot
@@ -48,7 +47,7 @@ namespace spot
 		fitness_t best_fitness_;
 
 		virtual vector< double > compute_predicted_fitnesses();
-		virtual void internal_step() override;
+		virtual xo::error_message internal_step() override;
 
 		vector< u_ptr< optimizer > > optimizers_;
 		std::deque< index_t > step_queue_;

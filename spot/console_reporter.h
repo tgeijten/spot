@@ -1,8 +1,6 @@
 #pragma once
 
 #include "reporter.h"
-#include "xo/container/container_tools.h"
-#include "optimizer.h"
 
 namespace spot
 {

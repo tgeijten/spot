@@ -25,7 +25,7 @@ namespace spot
 		return squared( squared( v[ 0 ] ) + v[ 1 ] - 11 ) + squared( v[ 0 ] + squared( v[ 1 ] ) - 7 );
 	}
 
-	spot::function_objective make_himmelblau_objective()
+	function_objective make_himmelblau_objective()
 	{
 		return function_objective( 2, himmelblau, 0, 2.5, -5, 5 );
 	}
@@ -38,7 +38,7 @@ namespace spot
 		return sum;
 	}
 
-	spot::function_objective make_rosenbrock_objective( size_t d )
+	function_objective make_rosenbrock_objective( size_t d )
 	{
 		return function_objective( d, rosenbrock, 2.5, 3.75, -5, 10 );
 	}
@@ -51,7 +51,7 @@ namespace spot
 		return 418.9829 * v.size() - sum;
 	}
 
-	spot::function_objective make_schwefel_objective( size_t d )
+	function_objective make_schwefel_objective( size_t d )
 	{
 		return function_objective( d, schwefel, 0, 250, -500, 500 );
 	}
@@ -64,7 +64,7 @@ namespace spot
 		return sum;
 	}
 
-	spot::function_objective make_rastrigin_objective( size_t d )
+	function_objective make_rastrigin_objective( size_t d )
 	{
 		return function_objective( d, rastrigin, 0, 2.56, -5.12, 5.12 );
 	}
