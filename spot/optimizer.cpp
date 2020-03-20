@@ -47,7 +47,7 @@ namespace spot
 		signal_reporters( &reporter::on_pre_step, *this );
 
 		// perform actual step
-		if ( auto result = internal_step() )
+		if ( auto result = internal_step(); result.good() )
 		{
 			// update fitness history
 			if ( fitness_tracking_window_size() > 0 )

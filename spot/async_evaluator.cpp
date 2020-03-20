@@ -32,12 +32,12 @@ namespace spot
 		xo::error_message error;
 		vector< pair< std::future< xo::result< fitness_t > >, index_t > > threads;
 
-		for ( index_t eval_idx = 0; eval_idx < point_vec.size() && !error; ++eval_idx )
+		for ( index_t eval_idx = 0; eval_idx < point_vec.size() && error.good(); ++eval_idx )
 		{
 			// wait for threads to finish
-			while ( threads.size() >= max_threads_ && !error )
+			while ( threads.size() >= max_threads_ && error.good() )
 			{
-				for ( auto it = threads.begin(); it != threads.end() && !error; )
+				for ( auto it = threads.begin(); it != threads.end() && error.good(); )
 				{
 					if ( it->first.wait_for( std::chrono::milliseconds( 1 ) ) == std::future_status::ready )
 					{
@@ -52,16 +52,16 @@ namespace spot
 			}
 
 			// add new thread
-			if ( !error )
+			if ( error.good() )
 				threads.push_back( std::make_pair( evaluate_async( o, point_vec[ eval_idx ] ), eval_idx ) );
 		}
 
 		// wait for remaining threads
-		for ( auto it = threads.begin(); it != threads.end() && !error; ++it )
+		for ( auto it = threads.begin(); it != threads.end() && error.good(); ++it )
 			set_result( it->first.get(), &results[ it->second ], &error );
 
-		if ( error )
-			return std::move( error );
-		else return std::move( results );
+		if ( error.good() )
+			return std::move( results );
+		else return std::move( error );
 	}
 }
