@@ -7,10 +7,16 @@ namespace spot
 {
 	enum class cma_weights { equal = 0, linear = 1, log = 2 };
 
+	struct cma_options {
+		int lambda = 0;
+		int random_seed = 123;
+		cma_weights weights = cma_weights::log; // #todo: this setting is currently ignored :S
+	};
+
 	class SPOT_API cma_optimizer : public optimizer
 	{
 	public:
-		cma_optimizer( const objective& obj, int lambda = 0, int seed = 123, cma_weights weights = cma_weights::log );
+		cma_optimizer( const objective& o, const cma_options& options = cma_options(), evaluator& e = global_evaluator() );
 		virtual ~cma_optimizer();
 
 		// optimization

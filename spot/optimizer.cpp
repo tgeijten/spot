@@ -15,7 +15,7 @@
 
 namespace spot
 {
-	optimizer::optimizer( const objective& o, const evaluator& e ) :
+	optimizer::optimizer( const objective& o, evaluator& e ) :
 		objective_( o ),
 		evaluator_( e ),
 		step_count_( 0 ),
@@ -151,7 +151,7 @@ namespace spot
 		return v;
 	}
 
-	vector< result<fitness_t> > optimizer::evaluate( const search_point_vec& point_vec, priority_t prio ) const
+	vector< result<fitness_t> > optimizer::evaluate( const search_point_vec& point_vec, priority_t prio )
 	{
 #if SPOT_EVALUATOR_ENABLED
 		return evaluator_.evaluate( objective_, point_vec, prio );

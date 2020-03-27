@@ -34,7 +34,7 @@ namespace spot
 		unsigned int seed;
 		dbl_vec xstart;
 		dbl_vec rgInitialStds;
-		double * rgDiffMinChange; // Minimal coordinate wise standard deviation. Not used.
+		double* rgDiffMinChange; // Minimal coordinate wise standard deviation. Not used.
 
 		/* termination parameters */
 		double stopMaxFunEvals;
@@ -61,7 +61,7 @@ namespace spot
 
 	struct cmaes_t
 	{
-		const char *version;
+		const char* version;
 		/* char *signalsFilename; */
 		cmaes_readpara_t sp;
 		cmaes_random_t rand; /* random number generator */
@@ -110,7 +110,7 @@ namespace spot
 
 
 
-	long cmaes_random_init( cmaes_random_t *t, long unsigned inseed )
+	long cmaes_random_init( cmaes_random_t* t, long unsigned inseed )
 	{
 		t->flgstored = 0;
 		t->rgrand.resize( 32 );
@@ -142,7 +142,7 @@ namespace spot
 
 
 
-	void cmaes_readpara_SetWeights( cmaes_readpara_t *t )
+	void cmaes_readpara_SetWeights( cmaes_readpara_t* t )
 	{
 		double s1, s2;
 		int i;
@@ -172,7 +172,7 @@ namespace spot
 			s1 += t->weights[ i ];
 			s2 += t->weights[ i ] * t->weights[ i ];
 		}
-		t->mueff = s1*s1 / s2;
+		t->mueff = s1 * s1 / s2;
 		for ( i = 0; i < t->mu; ++i )
 			t->weights[ i ] /= s1;
 
@@ -183,7 +183,7 @@ namespace spot
 
 
 
-	double cmaes_random_Uniform( cmaes_random_t *t )
+	double cmaes_random_Uniform( cmaes_random_t* t )
 	{
 		long tmp;
 
@@ -197,7 +197,7 @@ namespace spot
 		return (double)( t->aktrand ) / ( 2.147483647e9 );
 	}
 
-	double cmaes_random_Gauss( cmaes_random_t *t )
+	double cmaes_random_Gauss( cmaes_random_t* t )
 	{
 		double x1, x2, rquad, fac;
 
@@ -210,10 +210,9 @@ namespace spot
 		{
 			x1 = 2.0 * cmaes_random_Uniform( t ) - 1.0;
 			x2 = 2.0 * cmaes_random_Uniform( t ) - 1.0;
-			rquad = x1*x1 + x2*x2;
-		}
-		while ( rquad >= 1 || rquad <= 0 );
-		fac = sqrt( -2.0*std::log( rquad ) / rquad );
+			rquad = x1 * x1 + x2 * x2;
+		} while ( rquad >= 1 || rquad <= 0 );
+		fac = sqrt( -2.0 * std::log( rquad ) / rquad );
 		t->flgstored = 1;
 		t->hold = fac * x1;
 		return fac * x2;
@@ -221,7 +220,7 @@ namespace spot
 
 
 
-	void cmaes_init( cmaes_t *t,
+	void cmaes_init( cmaes_t* t,
 		int dim,
 		const dbl_vec& inxstart,
 		const dbl_vec& inrgsigma,
@@ -274,7 +273,7 @@ namespace spot
 		}
 	}
 
-	void cmaes_readpara_SupplementDefaults( cmaes_t *t )
+	void cmaes_readpara_SupplementDefaults( cmaes_t* t )
 	{
 		int N = t->sp.N;
 		double t1, t2;
@@ -301,8 +300,8 @@ namespace spot
 		if ( t->sp.mucov < 1 ) {
 			t->sp.mucov = t->sp.mueff;
 		}
-		t1 = 2. / ( ( N + 1.4142 )*( N + 1.4142 ) );
-		t2 = ( 2.*t->sp.mueff - 1. ) / ( ( N + 2. )*( N + 2. ) + t->sp.mueff );
+		t1 = 2. / ( ( N + 1.4142 ) * ( N + 1.4142 ) );
+		t2 = ( 2. * t->sp.mueff - 1. ) / ( ( N + 2. ) * ( N + 2. ) + t->sp.mueff );
 		t2 = ( t2 > 1 ) ? 1 : t2;
 		t2 = ( 1. / t->sp.mucov ) * t1 + ( 1. - 1. / t->sp.mucov ) * t2;
 		if ( t->sp.ccov >= 0 ) /* ccov holds the read factor */
@@ -314,7 +313,7 @@ namespace spot
 			t->sp.diagonalCov = 2 + 100. * N / sqrt( (double)t->sp.lambda );
 
 		if ( t->sp.stopMaxFunEvals == -1 )  /* may depend on ccov in near future */
-			t->sp.stopMaxFunEvals = t->sp.facmaxeval * 900 * ( N + 3 )*( N + 3 );
+			t->sp.stopMaxFunEvals = t->sp.facmaxeval * 900 * ( N + 3 ) * ( N + 3 );
 		else
 			t->sp.stopMaxFunEvals *= t->sp.facmaxeval;
 
@@ -336,7 +335,7 @@ namespace spot
 			t->sp.updateCmode.maxtime = 0.20; /* maximal 20% of CPU-time */
 	}
 
-	void cmaes_init_final( cmaes_t *t )
+	void cmaes_init_final( cmaes_t* t )
 	{
 		int N = t->sp.N;
 		int i, j;
@@ -351,7 +350,7 @@ namespace spot
 			trace += t->sp.rgInitialStds[ i ] * t->sp.rgInitialStds[ i ];
 		t->sigma = sqrt( trace / N ); /* t->sp.mueff/(0.2*t->sp.mueff+sqrt(N)) * sqrt(trace/N); */
 
-		t->chiN = sqrt( (double)N ) * ( 1. - 1. / ( 4.*N ) + 1. / ( 21.*N*N ) );
+		t->chiN = sqrt( (double)N ) * ( 1. - 1. / ( 4. * N ) + 1. / ( 21. * N * N ) );
 		t->flgEigensysIsUptodate = 1;
 		t->flgCheckEigen = 0;
 		t->genOfEigensysUpdate = 0;
@@ -381,7 +380,7 @@ namespace spot
 		t->B.resize( N );
 		t->publicFitness.resize( t->sp.lambda );
 		t->rgFuncValue.resize( t->sp.lambda ); // WTF? t->rgFuncValue[ 0 ] = t->sp.lambda; ++t->rgFuncValue; fixed!
-		t->arFuncValueHist.resize( 10 + (int)ceil( 3.*10.*N / t->sp.lambda ) );
+		t->arFuncValueHist.resize( 10 + (int)ceil( 3. * 10. * N / t->sp.lambda ) );
 		// WTF? t->arFuncValueHist[ 0 ] = (double)( 10 + (int)ceil( 3.*10.*N / t->sp.lambda ) ); t->arFuncValueHist++; fixed!
 
 		for ( i = 0; i < N; ++i ) {
@@ -431,11 +430,11 @@ namespace spot
 		double r = 0;
 		if ( fabs( a ) > fabs( b ) ) {
 			r = b / a;
-			r = fabs( a )*sqrt( 1 + r*r );
+			r = fabs( a ) * sqrt( 1 + r * r );
 		}
 		else if ( b != 0 ) {
 			r = a / b;
-			r = fabs( b )*sqrt( 1 + r*r );
+			r = fabs( b ) * sqrt( 1 + r * r );
 		}
 		return r;
 	}
@@ -475,7 +474,7 @@ namespace spot
 				tst1 = fabs( d[ l ] ) + fabs( e[ l ] );
 			m = l;
 			while ( m < n ) {
-				if ( fabs( e[ m ] ) <= eps*tst1 ) {
+				if ( fabs( e[ m ] ) <= eps * tst1 ) {
 					break;
 				}
 				m++;
@@ -541,8 +540,7 @@ namespace spot
 					}
 
 					/* Check for convergence. */
-				}
-				while ( fabs( e[ l ] ) > eps*tst1 );
+				} while ( fabs( e[ l ] ) > eps* tst1 );
 			}
 			d[ l ] = d[ l ] + f;
 			e[ l ] = 0.0;
@@ -765,7 +763,7 @@ namespace spot
 		return res;
 	}
 
-	void cmaes_UpdateEigensystem( cmaes_t *t, int flgforce )
+	void cmaes_UpdateEigensystem( cmaes_t* t, int flgforce )
 	{
 		int i, N = t->sp.N;
 
@@ -797,7 +795,7 @@ namespace spot
 		t->genOfEigensysUpdate = t->gen;
 	} /* cmaes_UpdateEigensystem() */
 
-	static void TestMinStdDevs( cmaes_t *t )
+	static void TestMinStdDevs( cmaes_t* t )
 		/* increases sigma */
 	{
 		int i, N = t->sp.N;
@@ -810,7 +808,7 @@ namespace spot
 
 	} /* cmaes_TestMinStdDevs() */
 
-	const vector< dbl_vec >& cmaes_SamplePopulation( cmaes_t *t )
+	const vector< dbl_vec >& cmaes_SamplePopulation( cmaes_t* t )
 	{
 		int iNk, i, j, N = t->sp.N;
 		int flgdiag = ( ( t->sp.diagonalCov == 1 ) || ( t->sp.diagonalCov >= t->gen ) );
@@ -857,7 +855,7 @@ namespace spot
 		return( t->current_pop );
 	} /* SamplePopulation() */
 
-	const vector< dbl_vec >& cmaes_ReSampleSingle( cmaes_t *t, index_t iindex )
+	const vector< dbl_vec >& cmaes_ReSampleSingle( cmaes_t* t, index_t iindex )
 	{
 		int N = t->sp.N;
 
@@ -876,7 +874,7 @@ namespace spot
 		return  t->current_pop;
 	}
 
-	const vector< dbl_vec >& cmaes_OverwriteSingle( cmaes_t *t, index_t iindex, dbl_vec params )
+	const vector< dbl_vec >& cmaes_OverwriteSingle( cmaes_t* t, index_t iindex, dbl_vec params )
 	{
 		// TG: overwrite parameters of a single individual
 		// This is required in case of clamping when no individual can be found
@@ -899,7 +897,7 @@ namespace spot
 		}
 	}
 
-	static void Adapt_C2( cmaes_t *t, int hsig )
+	static void Adapt_C2( cmaes_t* t, int hsig )
 	{
 		int i, j, k, N = t->sp.N;
 		int flgdiag = ( ( t->sp.diagonalCov == 1 ) || ( t->sp.diagonalCov >= t->gen ) );
@@ -908,7 +906,7 @@ namespace spot
 
 			/* definitions for speeding up inner-most loop */
 			double ccov1 = std::min( t->sp.ccov * ( 1. / t->sp.mucov ) * ( flgdiag ? ( N + 1.5 ) / 3. : 1. ), 1. );
-			double ccovmu = std::min( t->sp.ccov * ( 1 - 1. / t->sp.mucov )* ( flgdiag ? ( N + 1.5 ) / 3. : 1. ), 1. - ccov1 );
+			double ccovmu = std::min( t->sp.ccov * ( 1 - 1. / t->sp.mucov ) * ( flgdiag ? ( N + 1.5 ) / 3. : 1. ), 1. - ccov1 );
 			double sigmasquare = t->sigma * t->sigma;
 
 			t->flgEigensysIsUptodate = 0;
@@ -919,7 +917,7 @@ namespace spot
 					t->C[ i ][ j ] = ( 1 - ccov1 - ccovmu ) * t->C[ i ][ j ]
 						+ ccov1
 						* ( t->rgpc[ i ] * t->rgpc[ j ]
-							+ ( 1 - hsig )*t->sp.ccumcov*( 2. - t->sp.ccumcov ) * t->C[ i ][ j ] );
+							+ ( 1 - hsig ) * t->sp.ccumcov * ( 2. - t->sp.ccumcov ) * t->C[ i ][ j ] );
 					for ( k = 0; k < t->sp.mu; ++k ) { /* additional rank mu update */
 						t->C[ i ][ j ] += ccovmu * t->sp.weights[ k ]
 							* ( t->current_pop[ t->index[ k ] ][ i ] - t->rgxold[ i ] )
@@ -938,7 +936,7 @@ namespace spot
 		} /* if ccov... */
 	}
 
-	dbl_vec& cmaes_UpdateDistribution( cmaes_t *t, const dbl_vec& rgFunVal )
+	dbl_vec& cmaes_UpdateDistribution( cmaes_t* t, const dbl_vec& rgFunVal )
 	{
 		int i, j, iNk, hsig, N = t->sp.N;
 		int flgdiag = ( ( t->sp.diagonalCov == 1 ) || ( t->sp.diagonalCov >= t->gen ) );
@@ -988,7 +986,7 @@ namespace spot
 			t->current_mean[ i ] = 0.;
 			for ( iNk = 0; iNk < t->sp.mu; ++iNk )
 				t->current_mean[ i ] += t->sp.weights[ iNk ] * t->current_pop[ t->index[ iNk ] ][ i ];
-			t->rgBDz[ i ] = sqrt( t->sp.mueff )*( t->current_mean[ i ] - t->rgxold[ i ] ) / t->sigma;
+			t->rgBDz[ i ] = sqrt( t->sp.mueff ) * ( t->current_mean[ i ] - t->rgxold[ i ] ) / t->sigma;
 		}
 
 		/* calculate z := D^(-1) * B^(-1) * rgBDz into rgdTmp */
@@ -1037,7 +1035,7 @@ namespace spot
 		Adapt_C2( t, hsig );
 
 		/* update of sigma */
-		t->sigma *= exp( ( ( sqrt( psxps ) / t->chiN ) - 1. )*t->sp.cs / t->sp.damps );
+		t->sigma *= exp( ( ( sqrt( psxps ) / t->chiN ) - 1. ) * t->sp.cs / t->sp.damps );
 
 		t->state = 3;
 
@@ -1056,7 +1054,7 @@ namespace spot
 		dbl_vec au; /* add-on to upper boundary preimage, same length as bounds */
 	} cmaes_boundary_trans_t;
 
-	void cmaes_boundary_trans_init( cmaes_boundary_trans_t *t, const dbl_vec& lower, const dbl_vec& upper )
+	void cmaes_boundary_trans_init( cmaes_boundary_trans_t* t, const dbl_vec& lower, const dbl_vec& upper )
 	{
 		xo_assert( upper.size() == lower.size() );
 		auto l = lower.size();
@@ -1080,7 +1078,7 @@ namespace spot
 		}
 	}
 
-	void cmaes_boundary_trans_shift_into_feasible_preimage( cmaes_boundary_trans_t *t, const dbl_vec& x, dbl_vec& y )
+	void cmaes_boundary_trans_shift_into_feasible_preimage( cmaes_boundary_trans_t* t, const dbl_vec& x, dbl_vec& y )
 	{
 		auto len = t->lower_bounds.size();
 		for ( size_t i = 0; i < len; ++i ) {
@@ -1113,7 +1111,7 @@ namespace spot
 		}
 	}
 
-	void cmaes_boundary_trans( cmaes_boundary_trans_t *t, const dbl_vec& x, dbl_vec& y )
+	void cmaes_boundary_trans( cmaes_boundary_trans_t* t, const dbl_vec& x, dbl_vec& y )
 	{
 		auto len = t->lower_bounds.size();
 		cmaes_boundary_trans_shift_into_feasible_preimage( t, x, y );
@@ -1130,7 +1128,7 @@ namespace spot
 		}
 	}
 
-	void cmaes_boundary_trans_inverse( cmaes_boundary_trans_t *t, const dbl_vec& x, dbl_vec& y )
+	void cmaes_boundary_trans_inverse( cmaes_boundary_trans_t* t, const dbl_vec& x, dbl_vec& y )
 	{
 		auto len = t->lower_bounds.size();
 		unsigned long i;
@@ -1156,13 +1154,13 @@ namespace spot
 		search_point_vec bounded_pop;
 	};
 
-	cma_optimizer::cma_optimizer( const objective& o, int l, int seed, cma_weights w ) :
-	optimizer( o ),
-	best_fitness_( o.info().worst_fitness() ),
-	best_point_( o.info() ),
-	current_step_best_fitness_( o.info().worst_fitness() ),
-	current_step_best_point_( o.info() ),
-	max_resample_count( 100 )
+	cma_optimizer::cma_optimizer( const objective& o, const cma_options& options, evaluator& e ) :
+		optimizer( o, e ),
+		best_fitness_( o.info().worst_fitness() ),
+		best_point_( o.info() ),
+		current_step_best_fitness_( o.info().worst_fitness() ),
+		current_step_best_point_( o.info() ),
+		max_resample_count( 100 )
 	{
 		pimpl = new pimpl_t;
 		auto n = objective_.info().dim();
@@ -1178,10 +1176,11 @@ namespace spot
 		}
 
 		// create random seed when zero
+		auto seed = options.random_seed;
 		if ( seed == 0 )
 			seed = std::random_device()();
 
-		cmaes_init( &pimpl->cmaes, (int)n, mean, std, seed, l );
+		cmaes_init( &pimpl->cmaes, (int)n, mean, std, seed, options.lambda );
 		cmaes_readpara_SupplementDefaults( &pimpl->cmaes );
 		cmaes_init_final( &pimpl->cmaes );
 

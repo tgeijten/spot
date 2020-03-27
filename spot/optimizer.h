@@ -28,7 +28,7 @@ namespace spot
 	class SPOT_API optimizer : public xo::interruptible
 	{
 	public:
-		optimizer( const objective& o, const evaluator& e = global_evaluator() );
+		optimizer( const objective& o, evaluator& e = global_evaluator() );
 		optimizer( const optimizer& ) = delete;
 		optimizer& operator=( const optimizer& ) = delete;
 		virtual ~optimizer();
@@ -77,10 +77,10 @@ namespace spot
 	protected:
 		virtual stop_condition* internal_step() = 0;
 		par_vec& boundary_transform( par_vec& v ) const;
-		vector< result<fitness_t> > evaluate( const search_point_vec& point_vec, priority_t prio = 0.0 ) const;
+		vector< result<fitness_t> > evaluate( const search_point_vec& point_vec, priority_t prio = 0.0 );
 
 		const objective& objective_;
-		const evaluator& evaluator_;
+		evaluator& evaluator_;
 
 		index_t step_count_;
 
