@@ -74,7 +74,7 @@ namespace spot
 		return priorities;
 	}
 
-	xo::error_message optimizer_pool::internal_step()
+	stop_condition* optimizer_pool::internal_step()
 	{
 		xo_assert( optimizers_.size() > 0 );
 
@@ -132,6 +132,6 @@ namespace spot
 		}
 
 		// #todo: propagate errors
-		return xo::error_message();
+		return nullptr;
 	}
 }

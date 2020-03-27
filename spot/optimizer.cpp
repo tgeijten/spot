@@ -10,6 +10,8 @@
 #include "xo/system/log.h"
 #include "xo/system/system_tools.h"
 #include "xo/utility/irange.h"
+#include "xo/container/flat_set.h"
+#include "xo/container/view_if.h"
 
 namespace spot
 {
@@ -47,22 +49,22 @@ namespace spot
 		signal_reporters( &reporter::on_pre_step, *this );
 
 		// perform actual step
-		if ( auto result = internal_step(); result.good() )
-		{
-			// update fitness history
-			if ( fitness_tracking_window_size() > 0 )
-			{
-				if ( fitness_history_.full() ) fitness_history_.pop_front();
-				fitness_history_.push_back( static_cast<float>( current_step_best_fitness() ) );
-				++fitness_history_samples_;
-			}
+		if ( auto* sc = internal_step() )
+			return sc;
 
-			// signal reporters
-			signal_reporters( &reporter::on_post_step, *this );
-			++step_count_;
-			return nullptr;
+		// update fitness history
+		if ( fitness_tracking_window_size() > 0 )
+		{
+			if ( fitness_history_.full() ) fitness_history_.pop_front();
+			fitness_history_.push_back( static_cast<float>( current_step_best_fitness() ) );
+			++fitness_history_samples_;
 		}
-		else return error_stop_condition_.set( result.message() );
+
+		// signal reporters
+		signal_reporters( &reporter::on_post_step, *this );
+		++step_count_;
+
+		return nullptr;
 	}
 
 	const stop_condition* optimizer::run( size_t number_of_steps )
@@ -149,12 +151,33 @@ namespace spot
 		return v;
 	}
 
-	xo::result<fitness_vec> optimizer::evaluate( const search_point_vec& point_vec, priority_t prio ) const
+	vector< result<fitness_t> > optimizer::evaluate( const search_point_vec& point_vec, priority_t prio ) const
 	{
 #if SPOT_EVALUATOR_ENABLED
 		return evaluator_.evaluate( objective_, point_vec, prio );
 #else
 		return objective_.evaluate_async( point_vec, max_threads_, thread_priority_ );
 #endif // SPOT_EVALUATOR_ENABLED
+	}
+
+	stop_condition* optimizer::check_errors( const vector<result<fitness_t>>& results, int max_errors )
+	{
+		int errors = 0;
+		xo::flat_set<string> messages;
+		for ( const auto& r : results )
+		{
+			if ( !r )
+			{
+				++errors;
+				messages.insert( r.error().message() );
+			}
+		}
+
+		if ( errors > max_errors )
+		{
+			error_stop_condition_.set( xo::to_str( messages ) );
+			return &error_stop_condition_;
+		}
+		else return nullptr;
 	}
 }

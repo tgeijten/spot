@@ -26,23 +26,22 @@ namespace spot
 		else *error = result.error();
 	}
 
-	xo::result<fitness_vec> async_evaluator::evaluate( const objective& o, const search_point_vec& point_vec, priority_t prio ) const
+	vector< result<fitness_t> > async_evaluator::evaluate( const objective& o, const search_point_vec& point_vec, priority_t prio )
 	{
-		fitness_vec results( point_vec.size(), o.info().worst_fitness() );
-		xo::error_message error;
+		vector< result<fitness_t> > results( point_vec.size() );
 		vector< pair< std::future< xo::result< fitness_t > >, index_t > > threads;
 
-		for ( index_t eval_idx = 0; eval_idx < point_vec.size() && error.good(); ++eval_idx )
+		for ( index_t eval_idx = 0; eval_idx < point_vec.size(); ++eval_idx )
 		{
 			// wait for threads to finish
-			while ( threads.size() >= max_threads_ && error.good() )
+			while ( threads.size() >= max_threads_ )
 			{
-				for ( auto it = threads.begin(); it != threads.end() && error.good(); )
+				for ( auto it = threads.begin(); it != threads.end(); )
 				{
 					if ( it->first.wait_for( std::chrono::milliseconds( 1 ) ) == std::future_status::ready )
 					{
-						// a thread is finished, add it to the results or process error
-						set_result( it->first.get(), &results[ it->second ], &error );
+						// a thread is finished, set the result
+						results[ it->second ] = it->first.get();
 
 						// remove the thread to make room for a new one
 						it = threads.erase( it );
@@ -52,16 +51,13 @@ namespace spot
 			}
 
 			// add new thread
-			if ( error.good() )
-				threads.push_back( std::make_pair( evaluate_async( o, point_vec[ eval_idx ] ), eval_idx ) );
+			threads.push_back( std::make_pair( evaluate_async( o, point_vec[ eval_idx ] ), eval_idx ) );
 		}
 
 		// wait for remaining threads
-		for ( auto it = threads.begin(); it != threads.end() && error.good(); ++it )
-			set_result( it->first.get(), &results[ it->second ], &error );
+		for ( auto it = threads.begin(); it != threads.end() ; ++it )
+			results[ it->second ] = it->first.get();
 
-		if ( error.good() )
-			return std::move( results );
-		else return std::move( error );
+		return results;
 	}
 }

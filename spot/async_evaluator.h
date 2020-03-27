@@ -12,7 +12,7 @@ namespace spot
 	public:
 		async_evaluator( size_t max_threads, xo::thread_priority thread_prio );
 
-		virtual xo::result<fitness_vec> evaluate( const objective& o, const search_point_vec& point_vec, priority_t prio = 0 ) const override;
+		virtual vector<result<fitness_t>> evaluate( const objective& o, const search_point_vec& point_vec, priority_t prio = 0 ) override;
 
 	protected:
 		std::future< xo::result< fitness_t > > evaluate_async( const objective& o, const search_point& point ) const;

@@ -11,10 +11,10 @@ namespace spot
 	public:
 		evaluator() = default;
 		virtual ~evaluator() = default;
-		virtual xo::result<fitness_vec> evaluate( const objective& o, const search_point_vec& point_vec, priority_t prio = 0 ) const;
+		virtual vector< result<fitness_t> > evaluate( const objective& o, const search_point_vec& point_vec, priority_t prio = 0 );
 
 	protected:
-		xo::result<fitness_t> evaluate_noexcept( const objective& o, const search_point& point ) const noexcept;
+		static result<fitness_t> evaluate_noexcept( const objective& o, const search_point& point ) noexcept;
 	};
 
 	SPOT_API evaluator& global_evaluator();

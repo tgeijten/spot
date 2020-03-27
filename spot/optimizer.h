@@ -75,9 +75,9 @@ namespace spot
 		mutable string name; // #todo: not this, name should be const
 
 	protected:
-		virtual xo::error_message internal_step() = 0;
+		virtual stop_condition* internal_step() = 0;
 		par_vec& boundary_transform( par_vec& v ) const;
-		xo::result<fitness_vec> evaluate( const search_point_vec& point_vec, priority_t prio = 0.0 ) const;
+		vector< result<fitness_t> > evaluate( const search_point_vec& point_vec, priority_t prio = 0.0 ) const;
 
 		const objective& objective_;
 		const evaluator& evaluator_;
@@ -97,6 +97,9 @@ namespace spot
 		xo::thread_priority thread_priority_;
 
 		stop_condition* stop_condition_;
+
+		// check if the results have errors and return &error_stop_condition if there are too many errors
+		stop_condition* check_errors( const vector< result<fitness_t> >& results, int max_errors );
 		error_condition error_stop_condition_;
 
 		template< typename T, typename... Args > void signal_reporters( T fn, Args&&... args );

@@ -7,7 +7,7 @@
 
 namespace spot
 {
-	xo::result<fitness_t> evaluator::evaluate_noexcept( const objective& o, const search_point& point ) const noexcept
+	result<fitness_t> evaluator::evaluate_noexcept( const objective& o, const search_point& point ) noexcept
 	{
 		try
 		{
@@ -23,19 +23,15 @@ namespace spot
 		}
 	}
 
-	xo::result<fitness_vec> evaluator::evaluate( const objective& o, const search_point_vec& point_vec, priority_t prio ) const
+	vector< result<fitness_t> > evaluator::evaluate( const objective& o, const search_point_vec& point_vec, priority_t prio )
 	{
 		// single threaded evaluation
-		fitness_vec results;
+		vector< result<fitness_t> > results;
 		results.reserve( point_vec.size() );
 		for ( const auto& sp : point_vec )
-		{
-			if ( auto r = evaluate_noexcept( o, sp ) )
-				results.push_back( r.value() );
-			else return r.error();
-		}
-
-		return std::move( results );
+			results.push_back( evaluate_noexcept( o, sp ) );
+	
+		return results;
 	}
 
 	evaluator& global_evaluator()

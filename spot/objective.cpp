@@ -37,9 +37,9 @@ namespace spot
 		return std::async( std::launch::async, &objective::evaluate_in_thread_noexcept, this, point, prio );
 	}
 
-	fitness_vec objective::evaluate_async( const search_point_vec& pop, size_t max_threads, xo::thread_priority prio ) const
+	vector< result<fitness_t> > objective::evaluate_async( const search_point_vec& pop, size_t max_threads, xo::thread_priority prio ) const
 	{
-		fitness_vec results( pop.size(), info().worst_fitness() );
+		vector< result<fitness_t> > results( pop.size(), info().worst_fitness() );
 		vector< pair< std::future< fitness_t >, index_t > > threads;
 
 		for ( index_t eval_idx = 0; eval_idx < pop.size(); ++eval_idx )

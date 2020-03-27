@@ -41,7 +41,6 @@ namespace spot
 		double sigma() const;
 
 	protected:
-
 		fitness_t best_fitness_;
 		search_point best_point_;
 
@@ -51,7 +50,7 @@ namespace spot
 
 		size_t max_resample_count;
 
-		virtual xo::error_message internal_step() override;
+		virtual stop_condition* internal_step() override;
 		struct pimpl_t* pimpl;
 	};
 }

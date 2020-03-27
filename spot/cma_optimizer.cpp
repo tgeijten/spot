@@ -9,8 +9,6 @@
 #include "xo/system/assert.h"
 #include "xo/container/container_tools.h"
 #include "xo/system/log.h"
-#include "boundary_transformer.h"
-#include "xo/system/version.h"
 
 namespace spot
 {
@@ -1303,37 +1301,43 @@ namespace spot
 		return pimpl->cmaes.sigma;
 	}
 
-	xo::error_message cma_optimizer::internal_step()
+	stop_condition* cma_optimizer::internal_step()
 	{
 		// sample population and run callbacks
 		auto& pop = sample_population();
 		signal_reporters( &reporter::on_pre_evaluate_population, *this, pop );
 
 		// compute fitnesses
-		if ( auto result = evaluate( pop ) )
+		auto results = evaluate( pop );
+
+		// stop if there where too many errors
+		if ( auto* sc = check_errors( results, int( pop.size() ) / 2 - 1 ) )
+			return sc;
+
+		// apply results
+		for ( index_t i = 0; i < results.size(); ++i )
+			current_step_fitnesses_[ i ] = results[ i ] ? results[ i ].value() : info().worst_fitness();
+
+		// update current step best
+		auto best_idx = objective_.info().find_best_fitness( current_step_fitnesses_ );
+		current_step_best_fitness_ = current_step_fitnesses_[ best_idx ];
+		current_step_best_point_ = pop[ best_idx ];
+
+		// update all-time best
+		bool has_new_best = objective_.info().is_better( current_step_fitnesses_[ best_idx ], best_fitness_ );
+		if ( has_new_best )
 		{
-			current_step_fitnesses_ = result.value();
-
-			// update current step best
-			auto best_idx = objective_.info().find_best_fitness( current_step_fitnesses_ );
-			current_step_best_fitness_ = current_step_fitnesses_[ best_idx ];
-			current_step_best_point_ = pop[ best_idx ];
-
-			// update all-time best
-			bool has_new_best = objective_.info().is_better( current_step_fitnesses_[ best_idx ], best_fitness_ );
-			if ( has_new_best )
-			{
-				best_fitness_ = current_step_fitnesses_[ best_idx ];
-				best_point_.set_values( pop[ best_idx ].values() );
-				signal_reporters( &reporter::on_new_best, *this, best_point_, best_fitness_ );
-			}
-
-			// run post-evaluate callbacks (AFTER current_best is updated!)
-			signal_reporters( &reporter::on_post_evaluate_population, *this, pop, current_step_fitnesses_, has_new_best );
-
-			update_distribution( current_step_fitnesses_ );
-			return {};
+			best_fitness_ = current_step_fitnesses_[ best_idx ];
+			best_point_.set_values( pop[ best_idx ].values() );
+			signal_reporters( &reporter::on_new_best, *this, best_point_, best_fitness_ );
 		}
-		else return result.error();
+
+		// run post-evaluate callbacks (AFTER current_best is updated!)
+		signal_reporters( &reporter::on_post_evaluate_population, *this, pop, current_step_fitnesses_, has_new_best );
+
+		// update CMA-ES parameters
+		update_distribution( current_step_fitnesses_ );
+
+		return nullptr;
 	}
 }

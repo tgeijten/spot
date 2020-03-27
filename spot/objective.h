@@ -29,7 +29,7 @@ namespace spot
 #if !SPOT_EVALUATOR_ENABLED
 		fitness_t evaluate_noexcept( const search_point& point ) const noexcept;
 		std::future< fitness_t > evaluate_async( const search_point& point, xo::thread_priority prio ) const;
-		fitness_vec evaluate_async( const search_point_vec& pop, size_t max_threads, xo::thread_priority prio ) const;
+		vector< result<fitness_t> > evaluate_async( const search_point_vec& pop, size_t max_threads, xo::thread_priority prio ) const;
 #endif
 
 	protected:

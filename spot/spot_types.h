@@ -6,6 +6,7 @@
 #include "xo/container/vector_type.h"
 #include "xo/container/pair_type.h"
 #include "xo/utility/pointer_types.h"
+#include "xo/utility/result.h"
 
 namespace spot
 {
@@ -27,6 +28,8 @@ namespace spot
 
 	using xo::u_ptr;
 	using xo::s_ptr;
+
+	using xo::result;
 
 	using fitness_t = double;
 	using fitness_vec = vector<fitness_t>;
