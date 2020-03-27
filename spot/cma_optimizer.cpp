@@ -1311,7 +1311,7 @@ namespace spot
 		auto results = evaluate( pop );
 
 		// stop if there where too many errors
-		if ( auto* sc = check_errors( results, int( pop.size() ) / 2 - 1 ) )
+		if ( auto* sc = check_results( results, int( pop.size() ) / 2 - 1 ) )
 			return sc;
 
 		// apply results

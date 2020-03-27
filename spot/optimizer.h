@@ -99,7 +99,7 @@ namespace spot
 		stop_condition* stop_condition_;
 
 		// check if the results have errors and return &error_stop_condition if there are too many errors
-		stop_condition* check_errors( const vector< result<fitness_t> >& results, int max_errors );
+		stop_condition* check_results( const vector< result<fitness_t> >& results, int max_errors );
 		error_condition error_stop_condition_;
 
 		template< typename T, typename... Args > void signal_reporters( T fn, Args&&... args );

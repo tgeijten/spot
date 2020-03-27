@@ -160,7 +160,7 @@ namespace spot
 #endif // SPOT_EVALUATOR_ENABLED
 	}
 
-	stop_condition* optimizer::check_errors( const vector<result<fitness_t>>& results, int max_errors )
+	stop_condition* optimizer::check_results( const vector<result<fitness_t>>& results, int max_errors )
 	{
 		int errors = 0;
 		xo::flat_set<string> messages;
