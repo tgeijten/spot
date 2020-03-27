@@ -1314,7 +1314,8 @@ namespace spot
 		if ( auto* sc = check_results( results, int( pop.size() ) / 2 - 1 ) )
 			return sc;
 
-		// apply results
+		// copy results
+		current_step_fitnesses_.resize( pop.size() );
 		for ( index_t i = 0; i < results.size(); ++i )
 			current_step_fitnesses_[ i ] = results[ i ] ? results[ i ].value() : info().worst_fitness();
 
