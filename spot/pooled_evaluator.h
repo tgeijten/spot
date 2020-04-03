@@ -11,10 +11,21 @@ namespace spot
 	{
 	public:
 		pooled_evaluator( size_t max_threads, xo::thread_priority thread_prio );
+		virtual ~pooled_evaluator();
 
 		virtual vector< result<fitness_t> > evaluate( const objective& o, const search_point_vec& point_vec, priority_t prio = 0 ) override;
 
+		void set_max_threads( size_t thread_count, xo::thread_priority prio );
+
 	protected:
+		void start_threads();
+		void stop_threads();
+
+		void thread_func();
+
+		vector< std::thread > threads_;
+		std::atomic_bool stop_signal_;
+
 		size_t max_threads_;
 		xo::thread_priority thread_prio_;
 
