@@ -24,7 +24,7 @@ namespace spot
 
 		// init cma_optimizer
 		function_objective obj( dim, cigtab, init_mean, init_std, lower, upper );
-		async_evaluator eval;
+		async_evaluator eval( 32 );
 		cma_optimizer cma( obj, eval, cma_options{ lambda, seed } );
 #if !SPOT_EVALUATOR_ENABLED
 		cma.set_max_threads( 10 );
@@ -75,7 +75,7 @@ namespace spot
 
 		// init cma_optimizer
 		function_objective obj( dim, cigtab, 0.0, 0.3, -1e12, 1e12 );
-		async_evaluator eval;
+		async_evaluator eval( 32 );
 		cma_optimizer cma( obj, eval, cma_options{ lambda, seed } );
 #if !SPOT_EVALUATOR_ENABLED
 		cma.set_max_threads( 3 );
