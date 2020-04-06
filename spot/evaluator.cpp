@@ -23,7 +23,7 @@ namespace spot
 		}
 	}
 
-	vector< result<fitness_t> > evaluator::evaluate( const objective& o, const search_point_vec& point_vec, priority_t prio )
+	vector< result<fitness_t> > sequential_evaluator::evaluate( const objective& o, const search_point_vec& point_vec, priority_t prio )
 	{
 		// single threaded evaluation
 		vector< result<fitness_t> > results;
@@ -32,12 +32,5 @@ namespace spot
 			results.push_back( evaluate_noexcept( o, sp ) );
 	
 		return results;
-	}
-
-	evaluator& global_evaluator()
-	{
-		static async_evaluator g_async_eval( std::thread::hardware_concurrency(), xo::thread_priority::low );
-
-		return g_async_eval;
 	}
 }

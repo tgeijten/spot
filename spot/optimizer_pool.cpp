@@ -19,8 +19,8 @@ namespace spot
 		}
 	};
 
-	optimizer_pool::optimizer_pool( const objective& o, const prop_node& pn ) :
-		optimizer( o ),
+	optimizer_pool::optimizer_pool( const objective& o, evaluator& e, const prop_node& pn ) :
+		optimizer( o, e ),
 		INIT_MEMBER( pn, prediction_window_, 100 ),
 		INIT_MEMBER( pn, prediction_start_, prediction_window_ ),
 		INIT_MEMBER( pn, prediction_look_ahead_, prediction_window_ ),

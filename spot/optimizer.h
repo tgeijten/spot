@@ -28,7 +28,7 @@ namespace spot
 	class SPOT_API optimizer : public xo::interruptible
 	{
 	public:
-		optimizer( const objective& o, evaluator& e = global_evaluator() );
+		optimizer( const objective& o, evaluator& e );
 		optimizer( const optimizer& ) = delete;
 		optimizer& operator=( const optimizer& ) = delete;
 		virtual ~optimizer();

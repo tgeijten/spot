@@ -16,7 +16,7 @@ namespace spot
 	class SPOT_API cma_optimizer : public optimizer
 	{
 	public:
-		cma_optimizer( const objective& o, const cma_options& options = cma_options(), evaluator& e = global_evaluator() );
+		cma_optimizer( const objective& o, evaluator& e, const cma_options& options = cma_options() );
 		virtual ~cma_optimizer();
 
 		// optimization

@@ -10,7 +10,7 @@ namespace spot
 	class SPOT_API optimizer_pool : public optimizer
 	{
 	public:
-		optimizer_pool( const objective& o, const prop_node& pn );
+		optimizer_pool( const objective& o, evaluator& e, const prop_node& pn );
 		optimizer_pool( const optimizer_pool& ) = delete;
 		optimizer_pool& operator=( const optimizer_pool& ) = delete;
 		virtual ~optimizer_pool() {}

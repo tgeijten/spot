@@ -10,12 +10,12 @@ namespace spot
 	class SPOT_API pooled_evaluator : public evaluator
 	{
 	public:
-		pooled_evaluator( size_t max_threads, xo::thread_priority thread_prio );
+		pooled_evaluator( size_t max_threads = 0, xo::thread_priority thread_prio = xo::thread_priority::low );
 		virtual ~pooled_evaluator();
 
 		virtual vector< result<fitness_t> > evaluate( const objective& o, const search_point_vec& point_vec, priority_t prio = 0 ) override;
 
-		void set_max_threads( size_t thread_count, xo::thread_priority prio );
+		void set_max_threads( size_t max_threads, xo::thread_priority prio );
 
 	protected:
 		void start_threads();

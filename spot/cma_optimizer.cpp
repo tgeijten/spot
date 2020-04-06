@@ -1154,7 +1154,7 @@ namespace spot
 		search_point_vec bounded_pop;
 	};
 
-	cma_optimizer::cma_optimizer( const objective& o, const cma_options& options, evaluator& e ) :
+	cma_optimizer::cma_optimizer( const objective& o, evaluator& e, const cma_options& options ) :
 		optimizer( o, e ),
 		best_fitness_( o.info().worst_fitness() ),
 		best_point_( o.info() ),

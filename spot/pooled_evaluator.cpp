@@ -33,7 +33,7 @@ namespace spot
 			// add tasks to end of queue
 			std::scoped_lock lock( queue_mutex_ );
 			std::move( tasks.begin(), tasks.end(), std::back_inserter( queue_ ) );
-			std::cout << queue_.size() << std::endl;
+			//std::cout << queue_.size() << std::endl;
 		}
 
 		// worker threads are notified after the lock is released
@@ -52,6 +52,7 @@ namespace spot
 		if ( max_threads_ != thread_count || thread_prio_ != prio )
 		{
 			max_threads_ = thread_count;
+			thread_prio_ = prio;
 			stop_threads();
 			start_threads();
 		}
@@ -62,8 +63,10 @@ namespace spot
 		if ( !threads_.empty() )
 			stop_threads();
 		stop_signal_ = false;
-		for ( index_t i = 0; i < max_threads_; ++i )
+		auto thread_count = max_threads_ > 0 ? max_threads_ : std::thread::hardware_concurrency();
+		for ( index_t i = 0; i < thread_count; ++i )
 			threads_.emplace_back( &pooled_evaluator::thread_func, this );
+		xo::log::debug( "pooled_evaluator started threads: ", thread_count );
 	}
 
 	void pooled_evaluator::stop_threads()
@@ -79,7 +82,7 @@ namespace spot
 
 	void pooled_evaluator::thread_func()
 	{
-		std::cout << "starting thread " << std::this_thread::get_id() << "\n";
+		//std::cout << "starting thread " << std::this_thread::get_id() << "\n";
 		while ( !stop_signal_ )
 		{
 			eval_task task;
@@ -93,10 +96,10 @@ namespace spot
 				}
 				task = std::move( queue_.back() );
 				queue_.pop_back();
-				std::cout << queue_.size() << " by " << std::this_thread::get_id() << std::endl;
+				//std::cout << queue_.size() << " by " << std::this_thread::get_id() << std::endl;
 			}
 			task();
 		}
-		std::cout << "stopping thread " << std::this_thread::get_id() << "\n";
+		//std::cout << "stopping thread " << std::this_thread::get_id() << "\n";
 	}
 }

@@ -10,7 +10,7 @@ namespace spot
 	class SPOT_API async_evaluator : public evaluator
 	{
 	public:
-		async_evaluator( size_t max_threads, xo::thread_priority thread_prio );
+		async_evaluator( size_t max_threads, xo::thread_priority thread_prio = xo::thread_priority::low );
 
 		virtual vector<result<fitness_t>> evaluate( const objective& o, const search_point_vec& point_vec, priority_t prio = 0 ) override;
 
