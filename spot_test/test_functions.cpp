@@ -68,4 +68,26 @@ namespace spot
 	{
 		return function_objective( d, rastrigin, 0, 2.56, -5.12, 5.12 );
 	}
+
+	double slow_schwefel( const par_vec& v )
+	{
+		double result = 0;
+		auto dim = v.size();
+		size_t evals = 1ULL << dim;
+		for ( size_t i = 0; i < evals; ++i )
+		{
+			par_vec v2 = v;
+			for ( size_t d = 0; d < dim; ++d )
+				if ( ( 1ULL << d ) & i )
+					v2[ d ] *= 1.0001;
+			auto f = schwefel( v2 );
+			result += f / evals;
+		}
+		return result;
+	}
+
+	function_objective make_slow_schwefel_objective( size_t d )
+	{
+		return function_objective( d, slow_schwefel, 0, 250, -500, 500 );
+	}
 }

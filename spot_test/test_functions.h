@@ -23,6 +23,7 @@ namespace spot
 	// range: [-500, 500], optimum: (420.9678, ..., 420.9678)
 	double schwefel( const par_vec& v );
 	function_objective make_schwefel_objective( size_t d );
+	function_objective make_slow_schwefel_objective( size_t d );
 
 	// https://en.wikipedia.org/wiki/Rastrigin_function
 	// range: [-5.12, 5.12], optimum: 0
