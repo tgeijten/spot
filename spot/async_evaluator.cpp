@@ -32,7 +32,6 @@ namespace spot
 		vector< pair< std::future< xo::result< fitness_t > >, index_t > > threads;
 
 		auto thread_count = max_threads_ > 0 ? max_threads_ : std::thread::hardware_concurrency() + max_threads_;
-		printf( "evaluating %d points, max=%d\n", (int)point_vec.size(), thread_count );
 		for ( index_t eval_idx = 0; eval_idx < point_vec.size(); ++eval_idx )
 		{
 			// wait for threads to finish
