@@ -15,9 +15,9 @@ using std::cout;
 
 namespace spot
 {
-	inline constexpr int g_dim = 14;
+	inline constexpr int g_dim = 16;
 	inline constexpr cma_options g_cma{ 0 };
-	inline constexpr int g_iterations = 100;
+	inline constexpr int g_iterations = 10;
 	inline constexpr int g_optimizers = 10;
 
 	fitness_t evaluator_test( evaluator& e, size_t num_opt = g_optimizers )
