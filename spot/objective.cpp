@@ -69,5 +69,21 @@ namespace spot
 
 		return results;
 	}
+#else
+	result<fitness_t> objective::evaluate_noexcept( const search_point& point ) const noexcept
+	{
+		try
+		{
+			return evaluate( point );
+		}
+		catch ( std::exception& e )
+		{
+			return xo::error_message( e.what() );
+		}
+		catch ( ... )
+		{
+			return xo::error_message( "Unknown exception while evaluating objective" );
+		}
+	}
 #endif
 }
