@@ -4,7 +4,7 @@
 
 namespace spot
 {
-	pooled_evaluator::pooled_evaluator( size_t max_threads, xo::thread_priority thread_prio ) :
+	pooled_evaluator::pooled_evaluator( int max_threads, xo::thread_priority thread_prio ) :
 		max_threads_( max_threads ),
 		thread_prio_( thread_prio )
 	{
@@ -47,7 +47,7 @@ namespace spot
 		return results;
 	}
 
-	void pooled_evaluator::set_max_threads( size_t thread_count, xo::thread_priority prio )
+	void pooled_evaluator::set_max_threads( int thread_count, xo::thread_priority prio )
 	{
 		if ( max_threads_ != thread_count || thread_prio_ != prio )
 		{
@@ -56,14 +56,14 @@ namespace spot
 			stop_threads();
 			start_threads();
 		}
-;	}
+	}
 
 	void pooled_evaluator::start_threads()
 	{
 		if ( !threads_.empty() )
 			stop_threads();
 		stop_signal_ = false;
-		auto thread_count = max_threads_ > 0 ? max_threads_ : std::thread::hardware_concurrency();
+		auto thread_count = max_threads_ > 0 ? max_threads_ : std::thread::hardware_concurrency() + max_threads_;
 		for ( index_t i = 0; i < thread_count; ++i )
 			threads_.emplace_back( &pooled_evaluator::thread_func, this );
 		xo::log::debug( "pooled_evaluator started threads: ", thread_count );
@@ -94,8 +94,8 @@ namespace spot
 					if ( stop_signal_ )
 						return;
 				}
-				task = std::move( queue_.back() );
-				queue_.pop_back();
+				task = std::move( queue_.front() );
+				queue_.pop_front();
 				//std::cout << queue_.size() << " by " << std::this_thread::get_id() << std::endl;
 			}
 			task();

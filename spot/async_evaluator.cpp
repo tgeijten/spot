@@ -4,7 +4,7 @@
 
 namespace spot
 {
-	async_evaluator::async_evaluator( size_t max_threads, xo::thread_priority thread_prio ) :
+	async_evaluator::async_evaluator( int max_threads, xo::thread_priority thread_prio ) :
 		evaluator(),
 		max_threads_( max_threads ),
 		thread_prio_( thread_prio )
@@ -31,10 +31,12 @@ namespace spot
 		vector< result<fitness_t> > results( point_vec.size() );
 		vector< pair< std::future< xo::result< fitness_t > >, index_t > > threads;
 
+		auto thread_count = max_threads_ > 0 ? max_threads_ : std::thread::hardware_concurrency() + max_threads_;
+		printf( "evaluating %d points, max=%d\n", (int)point_vec.size(), thread_count );
 		for ( index_t eval_idx = 0; eval_idx < point_vec.size(); ++eval_idx )
 		{
 			// wait for threads to finish
-			while ( threads.size() >= max_threads_ )
+			while ( threads.size() >= thread_count )
 			{
 				for ( auto it = threads.begin(); it != threads.end(); )
 				{
@@ -59,5 +61,11 @@ namespace spot
 			results[ it->second ] = it->first.get();
 
 		return results;
+	}
+
+	void async_evaluator::set_max_threads( int max_threads, xo::thread_priority prio )
+	{
+		max_threads_ = max_threads;
+		thread_prio_ = prio;
 	}
 }
