@@ -9,7 +9,7 @@ namespace spot
 
 	struct cma_options {
 		int lambda = 0;
-		int random_seed = 123;
+		long random_seed = 123;
 		cma_weights weights = cma_weights::log; // #todo: this setting is currently ignored :S
 	};
 
