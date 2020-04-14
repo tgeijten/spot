@@ -14,7 +14,7 @@ namespace spot
 		pooled_evaluator( int max_threads = 0, xo::thread_priority thread_prio = xo::thread_priority::low );
 		virtual ~pooled_evaluator();
 
-		virtual vector< result<fitness_t> > evaluate( const objective& o, const search_point_vec& point_vec, priority_t prio = 0 ) override;
+		virtual vector< result<fitness_t> > evaluate( const objective& o, const search_point_vec& point_vec, const xo::stop_token& st, priority_t prio = 0 ) override;
 
 		void set_max_threads( int max_threads, xo::thread_priority prio );
 

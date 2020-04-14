@@ -1,5 +1,6 @@
 #include "pooled_evaluator.h"
 #include "xo/system/log.h"
+#include "objective.h"
 #include <iostream>
 
 namespace spot
@@ -13,10 +14,13 @@ namespace spot
 
 	pooled_evaluator::~pooled_evaluator()
 	{
+		std::scoped_lock lock( queue_mutex_ );
+		if ( !queue_.empty() )
+			xo::log::error( "destroying pooled_evaluator with non-empty queue" );
 		stop_threads();
 	}
 
-	vector< result<fitness_t> > pooled_evaluator::evaluate( const objective& o, const search_point_vec& point_vec, priority_t prio )
+	vector< result<fitness_t> > pooled_evaluator::evaluate( const objective& o, const search_point_vec& point_vec, const xo::stop_token& st, priority_t prio )
 	{
 		// prepare vector of tasks and futures
 		vector< std::future< result<fitness_t> > > futures;
@@ -25,7 +29,7 @@ namespace spot
 		tasks.reserve( point_vec.size() );
 		for ( const auto& point : point_vec )
 		{
-			tasks.emplace_back( [&]() { return evaluate_noexcept( o, point ); } );
+			tasks.emplace_back( [&]() { return o.evaluate_noexcept( point, st ); } );
 			futures.emplace_back( tasks.back().get_future() );
 		}
 
@@ -33,7 +37,6 @@ namespace spot
 			// add tasks to end of queue
 			std::scoped_lock lock( queue_mutex_ );
 			std::move( tasks.begin(), tasks.end(), std::back_inserter( queue_ ) );
-			//std::cout << queue_.size() << std::endl;
 		}
 
 		// worker threads are notified after the lock is released
@@ -82,7 +85,7 @@ namespace spot
 
 	void pooled_evaluator::thread_func()
 	{
-		//std::cout << "starting thread " << std::this_thread::get_id() << "\n";
+		xo::set_thread_priority( thread_prio_ );
 		while ( !stop_signal_ )
 		{
 			eval_task task;
@@ -96,10 +99,8 @@ namespace spot
 				}
 				task = std::move( queue_.front() );
 				queue_.pop_front();
-				//std::cout << queue_.size() << " by " << std::this_thread::get_id() << std::endl;
 			}
 			task();
 		}
-		//std::cout << "stopping thread " << std::this_thread::get_id() << "\n";
 	}
 }

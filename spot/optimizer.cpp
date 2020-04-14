@@ -21,8 +21,10 @@ namespace spot
 		step_count_( 0 ),
 		fitness_history_samples_( 0 ),
 		fitness_trend_step_( no_index ),
+#if !SPOT_EVALUATOR_ENABLED
 		max_threads_( xo::max<int>( 4, std::thread::hardware_concurrency() ) ),
 		thread_priority_( xo::thread_priority::lowest ),
+#endif
 		stop_condition_( nullptr )
 	{
 		xo_error_if( o.dim() <= 0, "Objective has no free parameters" );
@@ -32,8 +34,7 @@ namespace spot
 	}
 
 	optimizer::~optimizer()
-	{
-	}
+	{}
 
 	const stop_condition* optimizer::step()
 	{
@@ -72,10 +73,11 @@ namespace spot
 		if ( number_of_steps == 0 )
 			number_of_steps = xo::constants<size_t>::max();
 
-		const stop_condition* sc = nullptr;
-		for ( size_t n = 0; n < number_of_steps && !sc; ++n )
-			sc = step();
-		return sc;
+		for ( size_t n = 0; n < number_of_steps; ++n )
+			if ( const stop_condition* sc = step() )
+				return sc;
+
+		return nullptr;
 	}
 
 	spot::stop_condition* optimizer::test_stop_conditions()
@@ -154,7 +156,7 @@ namespace spot
 	vector< result<fitness_t> > optimizer::evaluate( const search_point_vec& point_vec, priority_t prio )
 	{
 #if SPOT_EVALUATOR_ENABLED
-		return evaluator_.evaluate( objective_, point_vec, prio );
+		return evaluator_.evaluate( objective_, point_vec, stop_source_.get_token(), prio );
 #else
 		return objective_.evaluate_async( point_vec, max_threads_, thread_priority_ );
 #endif // SPOT_EVALUATOR_ENABLED

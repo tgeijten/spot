@@ -9,7 +9,7 @@ namespace spot
 		thread_prio_( thread_prio )
 	{}
 
-	vector< result<fitness_t> > batch_evaluator::evaluate( const objective& o, const search_point_vec& point_vec, priority_t prio )
+	vector< result<fitness_t> > batch_evaluator::evaluate( const objective& o, const search_point_vec& point_vec, const xo::stop_token& st, priority_t prio )
 	{
 		// create threads
 		vector< std::future< xo::result< fitness_t > > > futures;
@@ -18,7 +18,7 @@ namespace spot
 			futures.emplace_back(
 				std::async( std::launch::async,	[&]() {
 					xo::set_thread_priority( thread_prio_ );
-					return o.evaluate_noexcept( point );
+					return o.evaluate_noexcept( point, st );
 				} )
 			);
 		}

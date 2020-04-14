@@ -25,7 +25,7 @@ namespace spot
 		const vector< u_ptr< optimizer > >& optimizers() const { return optimizers_; }
 		size_t size() const { return optimizers_.size(); }
 
-		virtual void interrupt() const override;
+		virtual bool interrupt() override;
 		virtual objective_info make_updated_objective_info() const override;
 
 		/// Number of generations on which to base the prediction.

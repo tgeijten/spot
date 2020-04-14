@@ -10,12 +10,12 @@ namespace spot
 		thread_prio_( thread_prio )
 	{}
 
-	std::future< xo::result< fitness_t > > async_evaluator::evaluate_async( const objective& o, const search_point& point ) const
+	std::future< xo::result< fitness_t > > async_evaluator::evaluate_async( const objective& o, const search_point& point, const xo::stop_token& st ) const
 	{
 		return std::async( std::launch::async,
 			[&]() {
 				xo::set_thread_priority( thread_prio_ );
-				return evaluate_noexcept( o, point );
+				return o.evaluate_noexcept( point, st );
 			} );
 	}
 
@@ -26,7 +26,7 @@ namespace spot
 		else *error = result.error();
 	}
 
-	vector< result<fitness_t> > async_evaluator::evaluate( const objective& o, const search_point_vec& point_vec, priority_t prio )
+	vector< result<fitness_t> > async_evaluator::evaluate( const objective& o, const search_point_vec& point_vec, const xo::stop_token& st, priority_t prio )
 	{
 		vector< result<fitness_t> > results( point_vec.size() );
 		vector< pair< std::future< xo::result< fitness_t > >, index_t > > threads;
@@ -52,7 +52,7 @@ namespace spot
 			}
 
 			// add new thread
-			threads.push_back( std::make_pair( evaluate_async( o, point_vec[ eval_idx ] ), eval_idx ) );
+			threads.push_back( std::make_pair( evaluate_async( o, point_vec[ eval_idx ], st ), eval_idx ) );
 		}
 
 		// wait for remaining threads

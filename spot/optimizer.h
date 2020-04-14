@@ -20,12 +20,13 @@
 
 #include <thread>
 #include <functional>
+#include "xo/utility/stop_token.h"
 
 namespace spot
 {
 	// #todo: this class is a bit of mess and should be cleaned up
 	// Perhaps take step / threading out of this class?
-	class SPOT_API optimizer : public xo::interruptible
+	class SPOT_API optimizer
 	{
 	public:
 		optimizer( const objective& o, evaluator& e );
@@ -74,6 +75,9 @@ namespace spot
 		// properties
 		mutable string name; // #todo: not this, name should be const
 
+		virtual bool interrupt() { return stop_source_.request_stop(); }
+		bool stop_requested() const { return stop_source_.stop_requested(); }
+
 	protected:
 		virtual stop_condition* internal_step() = 0;
 		par_vec& boundary_transform( par_vec& v ) const;
@@ -93,10 +97,13 @@ namespace spot
 		vector< u_ptr<stop_condition> > stop_conditions_;
 		u_ptr< boundary_transformer > boundary_transformer_;
 
+#if !SPOT_EVALUATOR_ENABLED
 		int max_threads_;
 		xo::thread_priority thread_priority_;
+#endif
 
 		stop_condition* stop_condition_;
+		xo::stop_source stop_source_;
 
 		// check if the results have errors and return &error_stop_condition if there are too many errors
 		stop_condition* check_results( const vector< result<fitness_t> >& results, int max_errors );

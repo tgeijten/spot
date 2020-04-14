@@ -7,29 +7,13 @@
 
 namespace spot
 {
-	result<fitness_t> evaluator::evaluate_noexcept( const objective& o, const search_point& point ) noexcept
-	{
-		try
-		{
-			return o.evaluate( point );
-		}
-		catch ( std::exception& e )
-		{
-			return xo::error_message( e.what() );
-		}
-		catch ( ... )
-		{
-			return xo::error_message( "Error evaluating objective" );
-		}
-	}
-
-	vector< result<fitness_t> > sequential_evaluator::evaluate( const objective& o, const search_point_vec& point_vec, priority_t prio )
+	vector< result<fitness_t> > sequential_evaluator::evaluate( const objective& o, const search_point_vec& point_vec, const xo::stop_token& st, priority_t prio )
 	{
 		// single threaded evaluation
 		vector< result<fitness_t> > results;
 		results.reserve( point_vec.size() );
 		for ( const auto& sp : point_vec )
-			results.push_back( evaluate_noexcept( o, sp ) );
+			results.push_back( o.evaluate_noexcept( sp, st ) );
 	
 		return results;
 	}

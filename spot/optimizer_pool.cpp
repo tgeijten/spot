@@ -41,11 +41,11 @@ namespace spot
 		optimizers_.push_back( std::move( opt ) );
 	}
 
-	void optimizer_pool::interrupt() const
+	bool optimizer_pool::interrupt()
 	{
 		for ( auto& o : optimizers_ )
 			o->interrupt();
-		interruptible::interrupt();
+		return interrupt();
 	}
 
 	objective_info optimizer_pool::make_updated_objective_info() const

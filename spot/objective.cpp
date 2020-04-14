@@ -70,11 +70,11 @@ namespace spot
 		return results;
 	}
 #else
-	result<fitness_t> objective::evaluate_noexcept( const search_point& point ) const noexcept
+	result<fitness_t> objective::evaluate_noexcept( const search_point& point, const xo::stop_token& st ) const noexcept
 	{
 		try
 		{
-			return evaluate( point );
+			return evaluate( point, st );
 		}
 		catch ( std::exception& e )
 		{
