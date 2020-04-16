@@ -22,7 +22,7 @@ namespace spot
 
 	struct SPOT_API abort_condition : public stop_condition
 	{
-		virtual string what() const override { return "Aborted by user"; }
+		virtual string what() const override { return "Optimization canceled"; }
 		virtual bool test( const optimizer& opt ) override;
 	};
 
@@ -30,7 +30,7 @@ namespace spot
 	{
 		virtual string what() const override { return error_.message(); }
 		virtual bool test( const optimizer& opt ) override { return !error_.good(); }
-		stop_condition* set( const xo::error_message& e ) { error_ = e; return this; }
+		stop_condition* set( const string& e ) { error_ = e; return this; }
 		xo::error_message error_;
 	};
 

@@ -47,7 +47,7 @@ namespace spot
 		fitness_t best_fitness_;
 
 		virtual vector< double > compute_predicted_fitnesses();
-		virtual stop_condition* internal_step() override;
+		virtual void internal_step() override;
 
 		vector< u_ptr< optimizer > > optimizers_;
 		std::deque< index_t > step_queue_;

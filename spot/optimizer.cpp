@@ -30,6 +30,7 @@ namespace spot
 		xo_error_if( o.dim() <= 0, "Objective has no free parameters" );
 
 		add_stop_condition( std::make_unique< abort_condition >() );
+		add_stop_condition( std::make_unique< error_condition >() );
 		//boundary_transformer_ = std::make_unique< cmaes_boundary_transformer >( o.info() );
 	}
 
@@ -38,10 +39,6 @@ namespace spot
 
 	const stop_condition* optimizer::step()
 	{
-		// test stop conditions and report finish
-		if ( auto* sc = test_stop_conditions() )
-			return sc;
-
 		// send out start callback if this is the first step
 		if ( step_count_ == 0 )
 			signal_reporters( &reporter::on_start, *this );
@@ -50,7 +47,10 @@ namespace spot
 		signal_reporters( &reporter::on_pre_step, *this );
 
 		// perform actual step
-		if ( auto* sc = internal_step() )
+		internal_step();
+
+		// test stop conditions (e.g. error, abort)
+		if ( auto* sc = test_stop_conditions() )
 			return sc;
 
 		// update fitness history
@@ -65,7 +65,8 @@ namespace spot
 		signal_reporters( &reporter::on_post_step, *this );
 		++step_count_;
 
-		return nullptr;
+		// test stop conditions (e.g. min_progress, flat_fitness)
+		return test_stop_conditions();
 	}
 
 	const stop_condition* optimizer::run( size_t number_of_steps )
@@ -80,7 +81,7 @@ namespace spot
 		return nullptr;
 	}
 
-	spot::stop_condition* optimizer::test_stop_conditions()
+	stop_condition* optimizer::test_stop_conditions()
 	{
 		if ( stop_condition_ )
 			return stop_condition_; // already stopped and signaled
@@ -162,24 +163,21 @@ namespace spot
 #endif // SPOT_EVALUATOR_ENABLED
 	}
 
-	stop_condition* optimizer::check_results( const vector<result<fitness_t>>& results, int max_errors )
+	bool optimizer::verify_results( const vector< result<fitness_t> >& results, int max_errors )
 	{
-		int errors = 0;
-		xo::flat_set<string> messages;
-		for ( const auto& r : results )
-		{
-			if ( !r )
-			{
-				++errors;
-				messages.insert( r.error().message() );
-			}
-		}
+		const auto errors = xo::count_if( results, []( const auto& r ) { return !r; } );
 
 		if ( errors > max_errors )
 		{
-			error_stop_condition_.set( xo::to_str( messages ) );
-			return &error_stop_condition_;
+			// collect error messages
+			xo::flat_set<string> messages;
+			for ( const auto& r : results )
+				if ( !r ) messages.insert( r.error().message() );
+			if ( messages.empty() )
+				messages.insert( "Unknown error" );
+			find_stop_condition<error_condition>().set( xo::to_str( messages ) );
+			return false;
 		}
-		else return nullptr;
+		else return true;
 	}
 }

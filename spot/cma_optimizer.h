@@ -56,7 +56,7 @@ namespace spot
 
 		size_t max_resample_count;
 
-		virtual stop_condition* internal_step() override;
+		virtual void internal_step() override;
 		struct pimpl_t* pimpl;
 	};
 }

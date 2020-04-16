@@ -79,7 +79,7 @@ namespace spot
 		bool stop_requested() const { return stop_source_.stop_requested(); }
 
 	protected:
-		virtual stop_condition* internal_step() = 0;
+		virtual void internal_step() = 0;
 		par_vec& boundary_transform( par_vec& v ) const;
 		vector< result<fitness_t> > evaluate( const search_point_vec& point_vec, priority_t prio = 0.0 );
 
@@ -101,13 +101,11 @@ namespace spot
 		int max_threads_;
 		xo::thread_priority thread_priority_;
 #endif
-
 		stop_condition* stop_condition_;
 		xo::stop_source stop_source_;
 
-		// check if the results have errors and return &error_stop_condition if there are too many errors
-		stop_condition* check_results( const vector< result<fitness_t> >& results, int max_errors );
-		error_condition error_stop_condition_;
+		// check if the results have errors and set error_stop_condition if there are too many errors
+		bool verify_results( const vector< result<fitness_t> >& results, int min_good_results );
 
 		template< typename T, typename... Args > void signal_reporters( T fn, Args&&... args );
 	};
