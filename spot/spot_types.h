@@ -13,6 +13,7 @@ namespace spot
 	class par_io;
 	class search_point;
 	class objective;
+	class objective_info;
 	class optimizer;
 	struct stop_condition;
 

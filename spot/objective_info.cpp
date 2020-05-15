@@ -75,8 +75,8 @@ namespace spot
 					p->mean = mean;
 					if ( import_std )
 						p->std = std_offset + std_factor * std;
-					else if ( std_factor != 1.0 ) // set std to factor of mean
-						p->std = std_offset + std_factor * p->mean;
+					else if ( std_factor != 1.0 ) // set std to factor of abs(mean)
+						p->std = std_offset + std_factor * std::abs( p->mean );
 					++params_set;
 				}
 				else
