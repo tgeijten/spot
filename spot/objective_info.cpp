@@ -95,7 +95,7 @@ namespace spot
 		size_t params_locked = 0;
 		size_t params_not_found = 0;
 
-		xo::char_stream str( filename );
+		xo::char_stream str( load_string( filename ) );
 		while ( str.good() )
 		{
 			string name;

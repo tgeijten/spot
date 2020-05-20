@@ -1,13 +1,14 @@
 #include "static_par_set.h"
 
-#include "xo/serialization/char_stream.h"
 #include "xo/xo_types.h"
+#include "xo/serialization/char_stream.h"
+#include "xo/filesystem/filesystem.h"
 
 namespace spot
 {
 	size_t static_par_set::load( const path& filename )
 	{
-		xo::char_stream str( filename );
+		xo::char_stream str( xo::load_string( filename ) );
 		while ( str.good() )
 		{
 			string name;
@@ -23,7 +24,7 @@ namespace spot
 	size_t static_par_set::merge( const path& filename, bool overwrite )
 	{
 		size_t read = 0;
-		xo::char_stream str( filename );
+		xo::char_stream str( xo::load_string( filename ) );
 		while ( str.good() )
 		{
 			string name;

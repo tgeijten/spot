@@ -4,6 +4,7 @@
 #include "xo/serialization/char_stream.h"
 #include "xo/string/string_tools.h"
 #include "xo/numerical/math.h"
+#include "xo/filesystem/filesystem.h"
 
 #include <fstream>
 #include <sstream>
@@ -55,7 +56,7 @@ namespace spot
 	{
 		size_t params_set = 0;
 		size_t params_skipped = 0;
-		xo::char_stream str( filename );
+		xo::char_stream str( xo::load_string( filename ) );
 
 		xo_error_if( !str.good(), "Could not open " + filename.str() );
 		while ( str.good() )
