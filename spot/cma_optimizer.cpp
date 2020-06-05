@@ -5,7 +5,6 @@
 #include <cstring>
 #include <numeric>
 #include <random>
-#include <stdio.h>
 
 #include "xo/system/assert.h"
 #include "xo/container/container_tools.h"
@@ -739,7 +738,6 @@ namespace spot
 		/* compute Q diag Q^T and Q Q^T to check */
 		int i, j, k, res = 0;
 		double cc, dd;
-		static char s[ 324 ];
 
 		for ( i = 0; i < N; ++i )
 			for ( j = 0; j < N; ++j ) {
@@ -750,13 +748,13 @@ namespace spot
 				/* check here, is the normalization the right one? */
 				if ( fabs( cc - C[ i > j ? i : j ][ i > j ? j : i ] ) / sqrt( C[ i ][ i ] * C[ j ][ j ] ) > 1e-10
 					&& fabs( cc - C[ i > j ? i : j ][ i > j ? j : i ] ) > 3e-14 ) {
-					sprintf_s( s, sizeof( s ), "%d %d: %.17e %.17e, %e",
+					auto s = xo::stringf( "%d %d: %.17e %.17e, %e",
 						i, j, cc, C[ i > j ? i : j ][ i > j ? j : i ], cc - C[ i > j ? i : j ][ i > j ? j : i ] );
 					xo::log::error( "pimpl_t:Eigen(): imprecise result detected ", s );
 					++res;
 				}
 				if ( fabs( dd - ( i == j ) ) > 1e-10 ) {
-					sprintf_s( s, sizeof( s ), "%d %d %.17e ", i, j, dd );
+					auto s = xo::stringf( "%d %d %.17e ", i, j, dd );
 					xo::log::error( "pimpl_t:Eigen(): imprecise result detected (Q not orthog.) ", s );
 					++res;
 				}
