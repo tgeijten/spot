@@ -5,6 +5,7 @@
 #include <cstring>
 #include <numeric>
 #include <random>
+#include <stdio.h>
 
 #include "xo/system/assert.h"
 #include "xo/container/container_tools.h"
