@@ -749,13 +749,13 @@ namespace spot
 				/* check here, is the normalization the right one? */
 				if ( fabs( cc - C[ i > j ? i : j ][ i > j ? j : i ] ) / sqrt( C[ i ][ i ] * C[ j ][ j ] ) > 1e-10
 					&& fabs( cc - C[ i > j ? i : j ][ i > j ? j : i ] ) > 3e-14 ) {
-					sprintf( s, "%d %d: %.17e %.17e, %e",
+					sprintf_s( s, sizeof( s ), "%d %d: %.17e %.17e, %e",
 						i, j, cc, C[ i > j ? i : j ][ i > j ? j : i ], cc - C[ i > j ? i : j ][ i > j ? j : i ] );
 					xo::log::error( "pimpl_t:Eigen(): imprecise result detected ", s );
 					++res;
 				}
 				if ( fabs( dd - ( i == j ) ) > 1e-10 ) {
-					sprintf( s, "%d %d %.17e ", i, j, dd );
+					sprintf_s( s, sizeof( s ), "%d %d %.17e ", i, j, dd );
 					xo::log::error( "pimpl_t:Eigen(): imprecise result detected (Q not orthog.) ", s );
 					++res;
 				}
