@@ -1,8 +1,4 @@
-# Gather spot sources.
 file (GLOB SPOT_SOURCES "*.h" "*.cpp")
-
-include( PrecompiledHeaders )
-use_precompiled_headers( SPOT_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/stdafx.h" "${CMAKE_CURRENT_SOURCE_DIR}/stdafx.cpp" 256 )
 
 add_library(spot SHARED ${SPOT_SOURCES})
 
@@ -13,7 +9,9 @@ target_include_directories( spot PUBLIC ${SPOT_INCLUDE_DIR})
 target_link_libraries( spot xo )
 
 if (MSVC)
-	source_group("" FILES ${PRECOMPILED_HEADER_FILES})
+	target_precompile_headers(spot PRIVATE <string> <vector> <memory> <fstream>)
+	file ( GLOB_RECURSE PRECOMPILED_HEADER_FILES ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/cmake_pch.*)
+	source_group("CMakePCH" FILES ${PRECOMPILED_HEADER_FILES})
 	source_group("spot" FILES ${SPOT_SOURCES})
 	target_compile_definitions( spot PRIVATE SPOT_EXPORTS )
 	target_compile_options( spot PRIVATE "/MP" ) # multithreaded compilation on MSVC
