@@ -11,9 +11,3 @@ set_target_properties(spot_test PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED
 target_include_directories(spot_test PRIVATE ${XO_INCLUDE_DIR} ${SPOT_INCLUDE_DIR})
 
 target_link_libraries(spot_test spot)
-
-set_target_properties(spot_test	PROPERTIES
-	PROJECT_LABEL "spot_test"
-	OUTPUT_NAME spot_test
-    FOLDER "spot" # Place target inside a spot folder in MSVC
-	)

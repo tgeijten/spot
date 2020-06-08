@@ -16,9 +16,3 @@ if (MSVC)
 	target_compile_definitions( spot PRIVATE SPOT_EXPORTS )
 	target_compile_options( spot PRIVATE "/MP" ) # multithreaded compilation on MSVC
 endif()
-
-set_target_properties(spot PROPERTIES 
-	PROJECT_LABEL "spot"
-	OUTPUT_NAME spot
-    FOLDER "spot" # Place target inside a spot folder in MSVC
-	)
