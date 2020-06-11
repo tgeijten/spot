@@ -7,7 +7,9 @@ source_group("c-cmaes" FILES ${CCMA_FILES})
 add_executable(spot_test ${TEST_FILES} ${CCMA_FILES})
 
 set_target_properties(spot_test PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
+#set_target_properties(spot_test PROPERTIES FOLDER "test")
 
 target_include_directories(spot_test PRIVATE ${XO_INCLUDE_DIR} ${SPOT_INCLUDE_DIR})
 
 target_link_libraries(spot_test spot)
+
