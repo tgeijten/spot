@@ -2,6 +2,7 @@
 
 #include "spot_types.h"
 #include "evaluator.h"
+#include "xo/thread/thread_priority.h"
 #include <future>
 #include <mutex>
 #include <deque>

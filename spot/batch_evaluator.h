@@ -2,6 +2,7 @@
 
 #include "spot/spot_types.h"
 #include "spot/search_point.h"
+#include "xo/thread/thread_priority.h"
 #include "evaluator.h"
 #include <future>
 

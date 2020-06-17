@@ -2,7 +2,7 @@
 
 #include "spot_types.h"
 #include "search_point.h"
-#include "xo/utility/stop_token.h"
+#include "xo/thread/stop_token.h"
 #include <functional>
 
 #if !SPOT_EVALUATOR_ENABLED

@@ -12,15 +12,14 @@
 #include "xo/numerical/polynomial.h"
 #include "xo/system/log.h"
 #include "xo/system/system_tools.h"
-#include "xo/utility/interruptible.h"
 #include "xo/utility/memory_tools.h"
 #include "xo/utility/optional.h"
 #include "xo/utility/pointer_types.h"
 #include "xo/utility/result.h"
+#include "xo/thread/stop_token.h"
 
 #include <thread>
 #include <functional>
-#include "xo/utility/stop_token.h"
 
 namespace spot
 {

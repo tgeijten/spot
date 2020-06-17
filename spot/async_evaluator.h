@@ -3,6 +3,7 @@
 #include "spot/spot_types.h"
 #include "spot/search_point.h"
 #include "evaluator.h"
+#include "xo/thread/thread_priority.h"
 #include <future>
 
 namespace spot

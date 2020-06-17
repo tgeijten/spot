@@ -2,7 +2,7 @@
 
 #include "spot/spot_types.h"
 #include "xo/utility/result.h"
-#include "xo/utility/stop_token.h"
+#include "xo/thread/stop_token.h"
 #include "search_point.h"
 
 namespace spot
