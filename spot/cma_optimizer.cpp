@@ -1180,6 +1180,7 @@ namespace spot
 			seed = std::random_device()();
 
 		cmaes_init( &pimpl->cmaes, (int)n, mean, std, seed, options.lambda );
+		pimpl->cmaes.sp.updateCmode.modulo = options.update_eigen_modulo;
 		cmaes_readpara_SupplementDefaults( &pimpl->cmaes );
 		cmaes_init_final( &pimpl->cmaes );
 

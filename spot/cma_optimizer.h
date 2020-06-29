@@ -11,6 +11,7 @@ namespace spot
 		int lambda = 0;
 		long random_seed = 123;
 		cma_weights weights = cma_weights::log; // #todo: this setting is currently ignored :S
+		double update_eigen_modulo = -1;
 	};
 
 	class SPOT_API cma_optimizer : public optimizer
