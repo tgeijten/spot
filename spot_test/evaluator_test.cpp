@@ -62,13 +62,13 @@ namespace spot
 
 		xo::stopwatch sw;
 		auto fs = evaluator_test( seq_eval );
-		sw.add_measure( "seq" );
+		sw.split( "seq" );
 		auto fa = evaluator_test( async_eval );
-		sw.add_measure( "async" );
+		sw.split( "async" );
 		auto fb = evaluator_test( batch_eval );
-		sw.add_measure( "batch" );
+		sw.split( "batch" );
 		auto fp = evaluator_test( pooled_eval );
-		sw.add_measure( "pool" );
+		sw.split( "pool" );
 
 		XO_CHECK( fa == fp );
 
