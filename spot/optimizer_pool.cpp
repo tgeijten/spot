@@ -45,7 +45,7 @@ namespace spot
 	{
 		for ( auto& o : optimizers_ )
 			o->interrupt();
-		return interrupt();
+		return optimizer::interrupt();
 	}
 
 	objective_info optimizer_pool::make_updated_objective_info() const
