@@ -37,6 +37,9 @@ namespace spot
 		/// Prediction look-ahead.
 		size_t prediction_look_ahead_;
 
+		/// Stop when predicted fitness is worse than current best.
+		bool use_predicted_fitness_stop_condition_;
+
 		/// Maximum number of active optimizations.
 		size_t active_optimizations_;
 

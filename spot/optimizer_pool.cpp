@@ -24,6 +24,7 @@ namespace spot
 		INIT_MEMBER( pn, prediction_window_, 100 ),
 		INIT_MEMBER( pn, prediction_start_, prediction_window_ ),
 		INIT_MEMBER( pn, prediction_look_ahead_, prediction_window_ ),
+		INIT_MEMBER( pn, use_predicted_fitness_stop_condition_, true ),
 		INIT_MEMBER( pn, active_optimizations_, 6 ),
 		INIT_MEMBER( pn, concurrent_optimizations_, 3 ),
 		best_fitness_( o.info().worst_fitness() ),
@@ -35,8 +36,9 @@ namespace spot
 	void optimizer_pool::push_back( u_ptr< optimizer > opt )
 	{
 		opt->enable_fitness_tracking( prediction_window_ );
-		opt->add_stop_condition(
-			std::make_unique< predicted_fitness_condition >(
+		if ( use_predicted_fitness_stop_condition_ )
+			opt->add_stop_condition(
+				std::make_unique< predicted_fitness_condition >(
 				info().worst_fitness(), prediction_look_ahead_, prediction_start_ ) );
 		optimizers_.push_back( std::move( opt ) );
 	}
@@ -121,8 +123,9 @@ namespace spot
 				best_fitness_ = best_optimizer().best_fitness();
 
 				// update prediction targets for all optimizers
-				for ( auto& o : optimizers() )
-					o->find_stop_condition< predicted_fitness_condition >().fitness_ = best_fitness();
+				if ( use_predicted_fitness_stop_condition_ )
+					for ( auto& o : optimizers() )
+						o->find_stop_condition<predicted_fitness_condition>().fitness_ = best_fitness();
 
 				signal_reporters( &reporter::on_new_best, *this, best_point(), best_fitness() );
 			}
