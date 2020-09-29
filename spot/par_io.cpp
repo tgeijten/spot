@@ -29,7 +29,7 @@ namespace spot
 		{
 			auto par_ref = pn.get<string>();
 			auto val = try_get( par_ref );
-			xo_error_if( !val, "Could not find " + par_ref );
+			xo_error_if( !val, "Could not find parameter " + par_ref );
 			return *val;
 		}
 
