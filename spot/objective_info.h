@@ -9,6 +9,7 @@
 #include "xo/filesystem/path.h"
 #include "xo/numerical/constants.h"
 #include <utility>
+#include "xo/string/pattern_matcher.h"
 
 namespace spot
 {
@@ -52,7 +53,8 @@ namespace spot
 		bool empty() const { return par_infos_.empty(); }
 
 		/// import / export
-		pair< size_t, size_t > import_mean_std( const path& filename, bool import_std, double std_factor = 1.0, double std_offset = 0.0 );
+		pair< size_t, size_t > import_mean_std( const path& filename, bool import_std, double std_factor = 1.0, double std_offset = 0.0,
+			const xo::pattern_matcher& include = {}, const xo::pattern_matcher& exclude = {} );
 		pair< size_t, size_t > import_locked( const path& filename );
 		void set_std_minimum( double value, double factor );
 		void set_mean_std( const par_vec& mean, const par_vec& std );

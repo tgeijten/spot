@@ -48,7 +48,8 @@ namespace spot
 		return it != par_infos_.end() ? it - par_infos_.begin() : no_index;
 	}
 
-	pair< size_t, size_t > objective_info::import_mean_std( const path& filename, bool import_std, double std_factor, double std_offset )
+	pair< size_t, size_t > objective_info::import_mean_std( const path& filename, bool import_std, double std_factor, double std_offset,
+		const xo::pattern_matcher& include, const xo::pattern_matcher& exclude )
 	{
 		size_t params_set = 0;
 		size_t params_not_found = 0;
@@ -61,29 +62,35 @@ namespace spot
 			double value, mean, std;
 			str >> name >> value >> mean >> std;
 
-			if ( !str.fail() )
+			if ( str.fail() )
 			{
-				if ( std == 0 )
-				{
-					if ( lock_parameter( name, value ) )
-						++params_set;
-					else ++params_not_found;
-				}
-				else if ( auto p = try_find( name ) )
-				{
-					// read existing parameter, updating mean / std
-					p->mean = mean;
-					if ( import_std )
-						p->std = std_offset + std_factor * std;
-					else if ( std_factor != 1.0 ) // set std to factor of abs(mean)
-						p->std = std_offset + std_factor * std::abs( p->mean );
+				xo_error_if( !name.empty(), "Error reading parameter " + name );
+				continue;
+			}
+
+			if ( ( !include.empty() && !include( name ) ) || ( !exclude.empty() && exclude( name ) ) )
+				continue;
+
+			if ( std == 0 )
+			{
+				if ( lock_parameter( name, value ) )
 					++params_set;
-				}
-				else
-				{
-					xo::log::trace( "Ignored parameter ", name );
-					++params_not_found;
-				}
+				else ++params_not_found;
+			}
+			else if ( auto p = try_find( name ) )
+			{
+				// read existing parameter, updating mean / std
+				p->mean = mean;
+				if ( import_std )
+					p->std = std_offset + std_factor * std;
+				else if ( std_factor != 1.0 ) // set std to factor of abs(mean)
+					p->std = std_offset + std_factor * std::abs( p->mean );
+				++params_set;
+			}
+			else
+			{
+				xo::log::trace( "Ignored parameter ", name );
+				++params_not_found;
 			}
 		}
 
