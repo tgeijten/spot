@@ -1310,7 +1310,7 @@ namespace spot
 		auto results = evaluate( pop );
 
 		// stop if there where too many errors
-		if ( verify_results( results, 0 ) )
+		if ( verify_results( results ) )
 		{
 			// copy results
 			current_step_fitnesses_.resize( pop.size() );

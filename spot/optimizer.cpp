@@ -25,7 +25,8 @@ namespace spot
 		max_threads_( xo::max<int>( 4, std::thread::hardware_concurrency() ) ),
 		thread_priority_( xo::thread_priority::lowest ),
 #endif
-		stop_condition_( nullptr )
+		stop_condition_( nullptr ),
+		max_errors_( 0 )
 	{
 		xo_error_if( o.dim() <= 0, "Objective has no free parameters" );
 
@@ -163,10 +164,10 @@ namespace spot
 #endif // SPOT_EVALUATOR_ENABLED
 	}
 
-	bool optimizer::verify_results( const vector< result<fitness_t> >& results, int max_errors )
+	bool optimizer::verify_results( const vector< result<fitness_t> >& results )
 	{
 		const auto errors = xo::count_if( results, []( const auto& r ) { return !r; } );
-
+		const auto max_errors = max_errors_ >= 0 ? max_errors_ : int( results.size() ) + max_errors_;
 		if ( errors > max_errors )
 		{
 			// collect error messages
@@ -175,7 +176,9 @@ namespace spot
 				if ( !r ) messages.insert( r.error().message() );
 			if ( messages.empty() )
 				messages.insert( "Unknown error" );
-			find_stop_condition<error_condition>().set( xo::to_str( messages ) );
+
+			auto err_message = xo::stringf( "Errors found in %zu of %zu evaluations (%d allowed):\n", errors, results.size(), max_errors );
+			find_stop_condition<error_condition>().set( err_message + xo::to_str( messages ) );
 			return false;
 		}
 		else return true;

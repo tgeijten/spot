@@ -104,7 +104,8 @@ namespace spot
 		xo::stop_source stop_source_;
 
 		// check if the results have errors and set error_stop_condition if there are too many errors
-		bool verify_results( const vector< result<fitness_t> >& results, int min_good_results );
+		bool verify_results( const vector< result<fitness_t> >& results );
+		int max_errors_;
 
 		template< typename T, typename... Args > void signal_reporters( T fn, Args&&... args );
 	};
