@@ -10,7 +10,7 @@ find_path(SPOT_INCLUDE_DIR
     PATHS ${CMAKE_CURRENT_SOURCE_DIR}
     )
 
-option(SPOT_TEST_ENABLED "Build and add spot_test" ON)
+option(SPOT_TEST_ENABLED "Build and add spot_test" OFF)
 
 # Process source code.
 add_subdirectory(spot)
