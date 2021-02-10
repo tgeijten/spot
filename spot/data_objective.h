@@ -12,7 +12,6 @@ namespace spot
 	{
 	public:
 		using function_t = typename std::function< OutputT( const par_vec&, InputT ) >;
-
 		using pair_t = typename std::pair<InputT, OutputT>;
 		using container_t = typename std::vector<pair_t>;
 
