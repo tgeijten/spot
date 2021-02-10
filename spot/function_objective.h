@@ -2,6 +2,7 @@
 
 #include "objective.h"
 #include <functional>
+#include "xo/container/storage.h"
 
 namespace spot
 {
@@ -10,12 +11,12 @@ namespace spot
 	class SPOT_API function_objective : public objective
 	{
 	public:
-		function_objective( size_t d, objective_function_t func, const par_vec& start, const par_vec& start_std, const par_vec& lower, const par_vec& upper );
-		function_objective( size_t d, objective_function_t func, par_t start, par_t std, par_t lower, par_t upper );
+		function_objective( size_t d, objective_function_t func, const par_vec& mean, const par_vec& stdev, const par_vec& lower, const par_vec& upper );
+		function_objective( size_t d, objective_function_t func, par_t mean, par_t stdev, par_t lower, par_t upper );
 
 		virtual fitness_t evaluate( const search_point& point ) const override { return func_( point.values() ); }
 
-	private:
+	protected:
 		objective_function_t func_;
 	};
 }
