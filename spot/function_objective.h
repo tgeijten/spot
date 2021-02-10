@@ -8,7 +8,7 @@ namespace spot
 {
 	using objective_function_t = std::function< fitness_t( const par_vec& ) >;
 
-	class SPOT_API function_objective : public objective
+	class function_objective : public objective
 	{
 	public:
 		function_objective( objective_function_t func, const par_vec& mean, const par_vec& stdev, const par_vec& lower, const par_vec& upper ) :

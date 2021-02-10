@@ -26,7 +26,7 @@ namespace spot
 
 	void console_reporter::on_stop( const optimizer& opt, const stop_condition& s )
 	{
-		printf( "\nOptimization finished: %s", s.what().c_str() );
+		printf( "\nOptimization finished: %s\n", s.what().c_str() );
 	}
 
 	void console_reporter::on_pre_step( const optimizer& opt )
@@ -38,5 +38,4 @@ namespace spot
 	{
 		printf( "Starting optimization, dim=%d\n", ( int )opt.info().dim() );
 	}
-
 }
