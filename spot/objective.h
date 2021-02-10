@@ -16,6 +16,8 @@ namespace spot
 	{
 	public:
 		objective() = default;
+		objective( objective_info info ) : info_( std::move( info ) ) {}
+
 		virtual ~objective() = default;
 
 		const objective_info& info() const { return info_; }

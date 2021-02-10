@@ -23,7 +23,7 @@ namespace spot
 		double *arFunvals = cmaes_init( &evo, dim, &init_mean[ 0 ], &init_std[ 0 ], seed, lambda, "no" );
 
 		// init cma_optimizer
-		function_objective obj( dim, cigtab, init_mean, init_std, lower, upper );
+		function_objective obj( cigtab, init_mean, init_std, lower, upper );
 		async_evaluator eval( 32 );
 		cma_optimizer cma( obj, eval, cma_options{ lambda, seed } );
 #if !SPOT_EVALUATOR_ENABLED
@@ -74,7 +74,7 @@ namespace spot
 		int lambda = 0;
 
 		// init cma_optimizer
-		function_objective obj( dim, cigtab, 0.0, 0.3, -1e12, 1e12 );
+		function_objective obj( cigtab, dim, 0.0, 0.3, -1e12, 1e12 );
 		async_evaluator eval( 32 );
 		cma_optimizer cma( obj, eval, cma_options{ lambda, seed } );
 #if !SPOT_EVALUATOR_ENABLED

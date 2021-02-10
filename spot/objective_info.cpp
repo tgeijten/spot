@@ -199,4 +199,24 @@ namespace spot
 		}
 		return false;
  	}
+
+	objective_info make_objective_info( size_t d, par_t mean, par_t stdev, par_t lower, par_t upper )
+	{
+		vector<par_info> pi;
+		pi.reserve( d );
+		for ( size_t i = 0; i < d; ++i )
+			pi.emplace_back( xo::stringf( "%d", i ), mean, stdev, lower, upper );
+		return pi;
+	}
+
+	objective_info make_objective_info( const par_vec& mean, const par_vec& stdev, const par_vec& lower, const par_vec& upper )
+	{
+		auto d = mean.size();
+		xo_assert( stdev.size() == d && lower.size() == d && upper.size() == d );
+		vector<par_info> pi;
+		pi.reserve( d );
+		for ( size_t i = 0; i < d; ++i )
+			pi.emplace_back( xo::stringf( "%d", i ), mean[ i ], stdev[ i ], lower[ i ], upper[ i ] );
+		return pi;
+	}
 }

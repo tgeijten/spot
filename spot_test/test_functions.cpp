@@ -27,7 +27,7 @@ namespace spot
 
 	function_objective make_himmelblau_objective()
 	{
-		return function_objective( 2, himmelblau, 0, 2.5, -5, 5 );
+		return function_objective( himmelblau, 2, 0, 2.5, -5, 5 );
 	}
 
 	double rosenbrock( const par_vec& v )
@@ -40,7 +40,7 @@ namespace spot
 
 	function_objective make_rosenbrock_objective( size_t d )
 	{
-		return function_objective( d, rosenbrock, 2.5, 3.75, -5, 10 );
+		return function_objective( rosenbrock, d, 2.5, 3.75, -5, 10 );
 	}
 
 	double schwefel( const par_vec& v )
@@ -53,7 +53,7 @@ namespace spot
 
 	function_objective make_schwefel_objective( size_t d )
 	{
-		return function_objective( d, schwefel, 0, 250, -500, 500 );
+		return function_objective( schwefel, d, 0, 250, -500, 500 );
 	}
 
 	double rastrigin( const par_vec& v )
@@ -66,7 +66,7 @@ namespace spot
 
 	function_objective make_rastrigin_objective( size_t d )
 	{
-		return function_objective( d, rastrigin, 0, 2.56, -5.12, 5.12 );
+		return function_objective( rastrigin, d, 0, 2.56, -5.12, 5.12 );
 	}
 
 	double slow_schwefel( const par_vec& v )
@@ -88,6 +88,6 @@ namespace spot
 
 	function_objective make_slow_schwefel_objective( size_t d )
 	{
-		return function_objective( d, slow_schwefel, 0, 250, -500, 500 );
+		return function_objective( slow_schwefel, d, 0, 250, -500, 500 );
 	}
 }

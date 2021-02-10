@@ -17,6 +17,7 @@ namespace spot
 	{
 	public:
 		objective_info( bool min = true ) : minimize_( min ), target_fitness_( 0 ) {}
+		objective_info( vector<par_info> par_infos, bool min = true ) : par_infos_( std::move( par_infos ) ), minimize_( min ), target_fitness_( 0 ) {}
 
 		virtual size_t dim() const override { return par_infos_.size(); }
 		virtual par_t add( const par_info& pi ) override;
@@ -77,4 +78,7 @@ namespace spot
 		par_info* try_find( const string& name );
 		bool lock_parameter( const string& name, par_t value );
 	};
+
+	SPOT_API objective_info make_objective_info( size_t d, par_t mean, par_t stdev, par_t lower, par_t upper );
+	SPOT_API objective_info make_objective_info( const par_vec& mean, const par_vec& stdev, const par_vec& lower, const par_vec& upper );
 }
