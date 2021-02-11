@@ -18,6 +18,7 @@ namespace spot
 		virtual ~stop_condition() = default;
 		virtual string what() const { return ""; }
 		virtual bool test( const optimizer& opt ) = 0;
+		virtual bool error() const { return false; }
 	};
 
 	struct SPOT_API abort_condition : public stop_condition
@@ -30,6 +31,7 @@ namespace spot
 	{
 		virtual string what() const override { return error_.message(); }
 		virtual bool test( const optimizer& opt ) override { return !error_.good(); }
+		virtual bool error() const { return true; }
 		stop_condition* set( const string& e ) { error_ = e; return this; }
 		xo::error_message error_;
 	};
