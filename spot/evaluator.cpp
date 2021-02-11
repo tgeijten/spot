@@ -4,9 +4,16 @@
 #include "xo/system/system_tools.h"
 #include "spot/search_point.h"
 #include "async_evaluator.h"
+#include "pooled_evaluator.h"
 
 namespace spot
 {
+	evaluator& default_evaluator()
+	{
+		static auto s_default_evaluator = pooled_evaluator();
+		return s_default_evaluator;
+	}
+
 	vector< result<fitness_t> > sequential_evaluator::evaluate( const objective& o, const search_point_vec& point_vec, const xo::stop_token& st, priority_t prio )
 	{
 		// single threaded evaluation

@@ -20,4 +20,6 @@ namespace spot
 	public:
 		virtual vector< result<fitness_t> > evaluate( const objective& o, const search_point_vec& point_vec, const xo::stop_token& st, priority_t prio = 0 ) override;
 	};
+
+	SPOT_API evaluator& default_evaluator();
 }
