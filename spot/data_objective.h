@@ -7,35 +7,44 @@
 
 namespace spot
 {
-	template< typename InputT = double, typename OutputT = double>
+	template< int Dim, typename InputT = double, typename OutputT = double >
+	struct data_model {
+		static constexpr size_t size() { return Dim; }
+		static par_vec mean() { return par_vec( size(), 0.0 ); }
+		static par_vec stdev() { return par_vec( size(), 0.1 ); }
+		static par_vec lower() { return par_vec( size(), default_lower_boundaray ); }
+		static par_vec upper() { return par_vec( size(), default_upper_boundaray ); }
+		using input_t = InputT;
+		using output_t = OutputT;
+		data_model( const spot::search_point& sp ) : p( sp ) {
+			xo_error_if( size() != sp.size(), xo::stringf( "Model dimension mismatch: %d != %d", size(), sp.dim() ) );
+		}
+		const spot::search_point& p;
+	};
+
+	template< typename ModelT >
 	class data_objective : public objective
 	{
 	public:
-		using function_t = typename std::function< OutputT( const par_vec&, InputT ) >;
-		using pair_t = typename std::pair<InputT, OutputT>;
+		using input_t = typename ModelT::input_t;
+		using output_t = typename ModelT::output_t;
+		using pair_t = typename std::pair<input_t, output_t>;
 		using container_t = typename std::vector<pair_t>;
 
-		data_objective( const container_t& data, function_t func, const par_vec& mean, const par_vec& stdev, const par_vec& lower, const par_vec& upper ) :
-			objective( make_objective_info( mean, stdev, lower, upper ) ),
-			data_( data ),
-			func_( func )
-		{}
-
-		data_objective( const container_t& data, function_t func, size_t d, par_t mean, par_t stdev, par_t lower = default_lower_boundaray, par_t upper = default_upper_boundaray ) :
-			objective( make_objective_info( d, mean, stdev, lower, upper ) ),
-			data_( data ),
-			func_( func )
+		data_objective( const container_t& data ) :
+			objective( make_objective_info( ModelT::mean(), ModelT::stdev(), ModelT::lower(), ModelT::upper() ) ),
+			data_( data )
 		{}
 
 		virtual fitness_t evaluate( const search_point& point ) const override {
+			ModelT model( point );
 			fitness_t result = 0;
 			for ( const auto& [x, y] : data_ )
-				result += xo::squared( func_( point.values(), x ) - y );
-			return result;
+				result += xo::squared( model( x ) - y );
+			return result / data_.size();
 		}
 
 	private:
 		const container_t& data_;
-		function_t func_;
 	};
 }
