@@ -31,7 +31,7 @@ namespace spot
 	{
 		virtual string what() const override { return error_.message(); }
 		virtual bool test( const optimizer& opt ) override { return !error_.good(); }
-		virtual bool error() const { return true; }
+		virtual bool error() const override { return true; }
 		stop_condition* set( const string& e ) { error_ = e; return this; }
 		xo::error_message error_;
 	};
