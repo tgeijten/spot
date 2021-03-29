@@ -17,7 +17,4 @@ add_subdirectory(spot)
 
 if (SPOT_TEST_ENABLED)
     add_subdirectory(spot_test)
-    enable_testing()
-    add_test(spot_test "${CMAKE_SOURCE_DIR}/bin/${CONFIG_NAME}/spot_test")
 endif()
-
