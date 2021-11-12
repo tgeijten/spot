@@ -34,7 +34,7 @@ namespace spot
 		}
 
 		// parameter not found, try adding a new one
-		par_info pi = par_info( full_name, pn );
+		par_info pi = par_info( full_name, pn, par_options_ );
 		if ( pi.is_constant() )
 			return pi.mean;
 		else return add( pi );

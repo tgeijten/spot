@@ -11,20 +11,20 @@ namespace spot
 		name( pname ), mean( pmean ), std( pstd ), min( pmin ), max( pmax )
 	{}
 
-	par_info::par_info( string full_name, const prop_node& pn ) :
-	name( full_name ),
-	mean( xo::constants<par_t>::NaN() ),
-	std( 0 ),
-	min( -1e12 ),
-	max( 1e12 )
+	par_info::par_info( string full_name, const prop_node& pn, const par_options& opt ) :
+		name( full_name ),
+		mean( xo::constants<par_t>::NaN() ),
+		std( 0 ),
+		min( opt.lower_boundaray ),
+		max( opt.upper_boundaray )
 	{
 		// check if the prop_node has children
 		if ( pn.size() > 0 )
 		{
 			mean = pn.get_any< par_t >( { "mean", "init_mean" } );
 			std = pn.get_any< par_t >( { "std", "init_std" } );
-			min = pn.get< par_t >( "min", -1e12 );
-			max = pn.get< par_t >( "max", 1e12 );
+			min = pn.get< par_t >( "min", opt.lower_boundaray );
+			max = pn.get< par_t >( "max", opt.upper_boundaray );
 		}
 		else
 		{
@@ -68,14 +68,14 @@ namespace spot
 
 		// do some sanity checking and fixing
 		xo_error_if( min >= max, "Error parsing parameter '" + full_name + "': min >= max" );
-		xo_error_if( std::isnan( mean ) && std == 0 && min == default_lower_boundaray && max == default_upper_boundaray, "Error parsing parameter '" + full_name + "': no parameter defined" );
+		xo_error_if( std::isnan( mean ) && std == 0 && min == opt.lower_boundaray && max == opt.upper_boundaray, "Error parsing parameter '" + full_name + "': no parameter defined" );
 
-		if ( std != 0 && std::isnan( mean ) ) { 
+		if ( std != 0 && std::isnan( mean ) ) {
 			// using ~value notation, derive mean and std
 			mean = std;
-			std = xo::max( default_std_factor * abs( mean ), default_std_minimum );
+			std = xo::max( opt.auto_std_factor * abs( mean ), opt.auto_std_minimum );
 		}
-		if ( min != default_lower_boundaray && max != default_upper_boundaray ) {
+		if ( min != opt.lower_boundaray && max != opt.upper_boundaray ) {
 			// min and max are set, derive mean and / or std
 			if ( std::isnan( mean ) ) mean = min + ( max - min ) / 2;
 			if ( std == 0 ) std = ( max - min ) / 4;

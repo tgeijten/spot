@@ -5,6 +5,7 @@
 #include "xo/string/stack_string.h"
 #include "spot_types.h"
 #include "par_info.h"
+#include "par_options.h"
 
 namespace spot
 {
@@ -27,9 +28,12 @@ namespace spot
 		void push_prefix( const string& s ) { prefix_.push_back( s ); }
 		void pop_prefix() { prefix_.pop_back(); }
 		const string& prefix() const { return prefix_.str(); }
+		const par_options& options() const { return par_options_; }
+		par_options& options() { return par_options_; }
 
 	private:
 		xo::stack_string prefix_;
+		par_options par_options_;
 	};
 
 	struct scoped_prefix
