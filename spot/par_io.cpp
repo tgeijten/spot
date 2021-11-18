@@ -25,7 +25,7 @@ namespace spot
 			return *val;
 
 		// if value starts with a letter: must be a reference to another parameter
-		if ( !pn.raw_value().empty() && std::isalpha( pn.raw_value().front() ) )
+		if ( !pn.get_str().empty() && std::isalpha( pn.get_str().front() ) )
 		{
 			auto par_ref = pn.get<string>();
 			auto val = try_get( par_ref );
