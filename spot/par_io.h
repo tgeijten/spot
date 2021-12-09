@@ -68,9 +68,9 @@ namespace spot
 	{
 		scoped_par_options( const prop_node& pn, par_io& par ) : ps_( par ) {
 			ps_.push_options();
-			pn.try_get( par.options().auto_std_factor, "auto_std_factor" );
-			pn.try_get( par.options().auto_std_offset, "auto_std_offset" );
-			pn.try_get( par.options().auto_std_minimum, "auto_std_minimum" );
+			pn.try_get( ps_.options().auto_std_factor, "auto_std_factor" );
+			pn.try_get( ps_.options().auto_std_offset, "auto_std_offset" );
+			pn.try_get( ps_.options().auto_std_minimum, "auto_std_minimum" );
 		}
 		~scoped_par_options() {
 			ps_.pop_options();
