@@ -1168,6 +1168,8 @@ namespace spot
 		for ( index_t i = 0; i < n; ++i )
 		{
 			auto& p = objective_.info()[ i ];
+			if ( !xo::is_between( p.mean, p.min, p.max ) )
+				xo::log::error( "Initial mean of parameter ", p.name, " is outside range [", p.min, ", ", p.max, "]" );
 			mean[ i ] = p.mean;
 			std[ i ] = p.std;
 			lb[ i ] = p.min;

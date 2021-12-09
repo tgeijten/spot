@@ -9,7 +9,9 @@ namespace spot
 {
 	par_info::par_info( string pname, par_t pmean, par_t pstd, par_t pmin, par_t pmax ) :
 		name( pname ), mean( pmean ), std( pstd ), min( pmin ), max( pmax )
-	{}
+	{
+		xo_error_if( !is_valid(), "Invalid parameter: " + to_str() );
+	}
 
 	par_info::par_info( string full_name, const prop_node& pn, const par_options& opt ) :
 		name( full_name ),
@@ -70,6 +72,7 @@ namespace spot
 		}
 
 		// do some sanity checking and fixing
+		xo_error_if( mean < min || mean > max, "Error parsing parameter '" + full_name + "': mean is outside range" );
 		xo_error_if( min >= max, "Error parsing parameter '" + full_name + "': min >= max" );
 		xo_error_if( std::isnan( mean ) && std == 0 && min == opt.lower_boundaray && max == opt.upper_boundaray, "Error parsing parameter '" + full_name + "': no parameter defined" );
 
@@ -85,5 +88,13 @@ namespace spot
 			if ( std == 0 )
 				std = ( max - min ) / 4;
 		}
+
+		xo_error_if( !is_valid(), "Invalid parameter: " + to_str() );
+	}
+
+	string par_info::to_str() const
+	{
+		return string( "name=" ) + name + " mean=" + xo::to_str( mean ) + " std=" + xo::to_str( std ) +
+			" min=" + xo::to_str( min ) + " max=" + xo::to_str( max );
 	}
 }

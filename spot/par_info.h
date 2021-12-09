@@ -12,7 +12,8 @@ namespace spot
 		par_info( string name, const prop_node& pn, const par_options& opt );
 
 		bool is_constant() const { return std == 0; }
-		bool is_valid() const { return mean == mean && std >= 0 && min <= max; }
+		bool is_valid() const { return mean == mean && std >= 0 && min <= max && mean >= min && mean <= max; }
+		string to_str() const;
 
 		string name;
 		par_t mean;
