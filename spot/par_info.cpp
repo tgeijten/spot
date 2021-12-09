@@ -18,6 +18,8 @@ namespace spot
 		min( opt.lower_boundaray ),
 		max( opt.upper_boundaray )
 	{
+		bool std_is_set = false;
+
 		// check if the prop_node has children
 		if ( pn.size() > 0 )
 		{
@@ -41,6 +43,7 @@ namespace spot
 						xo_error_if( std != 0, "Error parsing parameter '" + full_name + "': Standard deviation already set" );
 						str.getc();
 						str >> std;
+						std_is_set = true;
 					}
 					else if ( c == '[' || c == '<' || c == '(' )
 					{
@@ -70,15 +73,17 @@ namespace spot
 		xo_error_if( min >= max, "Error parsing parameter '" + full_name + "': min >= max" );
 		xo_error_if( std::isnan( mean ) && std == 0 && min == opt.lower_boundaray && max == opt.upper_boundaray, "Error parsing parameter '" + full_name + "': no parameter defined" );
 
-		if ( std != 0 && std::isnan( mean ) ) {
+		if ( std_is_set && std::isnan( mean ) ) {
 			// using ~value notation, derive mean and std
 			mean = std;
-			std = xo::max( opt.auto_std_factor * abs( mean ), opt.auto_std_minimum );
+			std = xo::max( opt.auto_std_factor * abs( mean ) + opt.auto_std_offset, opt.auto_std_minimum );
 		}
 		if ( min != opt.lower_boundaray && max != opt.upper_boundaray ) {
 			// min and max are set, derive mean and / or std
-			if ( std::isnan( mean ) ) mean = min + ( max - min ) / 2;
-			if ( std == 0 ) std = ( max - min ) / 4;
+			if ( std::isnan( mean ) )
+				mean = min + ( max - min ) / 2;
+			if ( std == 0 )
+				std = ( max - min ) / 4;
 		}
 	}
 }

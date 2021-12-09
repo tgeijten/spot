@@ -6,13 +6,15 @@
 #include "spot_types.h"
 #include "par_info.h"
 #include "par_options.h"
+#include <stack>
+#include <vector>
 
 namespace spot
 {
 	class SPOT_API par_io
 	{
 	public:
-		par_io() {}
+		par_io() : prefix_(), par_options_( { par_options{} } ) {}
 		virtual ~par_io() {}
 
 		virtual size_t dim() const = 0;
@@ -24,16 +26,19 @@ namespace spot
 		par_t get( const string& name, const prop_node& pn );
 		par_t try_get( const string& name, const prop_node& parent_pn, const string& key, const par_t& default_value );
 
+		const string& prefix() const { return prefix_.str(); }
 		void set_prefix( const string& s ) { prefix_.set( s ); }
 		void push_prefix( const string& s ) { prefix_.push_back( s ); }
 		void pop_prefix() { prefix_.pop_back(); }
-		const string& prefix() const { return prefix_.str(); }
-		const par_options& options() const { return par_options_; }
-		par_options& options() { return par_options_; }
+
+		const par_options& options() const { xo_assert( !par_options_.empty() );  return par_options_.top(); }
+		par_options& options() { xo_assert( !par_options_.empty() ); return par_options_.top(); }
+		void push_options() { par_options_.emplace( options() ); }
+		void pop_options() { par_options_.pop(); }
 
 	private:
 		xo::stack_string prefix_;
-		par_options par_options_;
+		std::stack<par_options, std::vector<par_options>> par_options_;
 	};
 
 	struct scoped_prefix
@@ -57,5 +62,20 @@ namespace spot
 	private:
 		par_io& ps_;
 		string previous_;
+	};
+
+	struct scoped_par_options
+	{
+		scoped_par_options( const prop_node& pn, par_io& par ) : ps_( par ) {
+			ps_.push_options();
+			pn.try_get( par.options().auto_std_factor, "auto_std_factor" );
+			pn.try_get( par.options().auto_std_offset, "auto_std_offset" );
+			pn.try_get( par.options().auto_std_minimum, "auto_std_minimum" );
+		}
+		~scoped_par_options() {
+			ps_.pop_options();
+		}
+	private:
+		par_io& ps_;
 	};
 }

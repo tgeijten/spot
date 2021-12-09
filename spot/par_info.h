@@ -8,7 +8,6 @@ namespace spot
 {
 	struct SPOT_API par_info
 	{
-		//par_info() : name(), mean(), std(), min( default_lower_boundaray ), max( default_upper_boundaray ) {}
 		par_info( string name, par_t mean, par_t std, par_t min = default_lower_boundaray, par_t max = default_upper_boundaray );
 		par_info( string name, const prop_node& pn, const par_options& opt );
 
