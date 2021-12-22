@@ -61,10 +61,10 @@ namespace spot
 		bool is_better( fitness_t a, fitness_t b ) const { return objective_.info().is_better( a, b ); }
 
 		// more statistics
-		void enable_fitness_tracking( size_t window_size ) { fitness_history_.reserve( window_size ); }
+		void set_fitness_tracking_window_size( size_t window_size ) { fitness_history_.reserve( window_size ); }
+		size_t fitness_tracking_window_size() const { return fitness_history_.capacity(); }
 		xo::linear_function< float > fitness_trend() const;
 		float progress() const;
-		size_t fitness_tracking_window_size() const { return fitness_history_.capacity(); }
 		float predicted_fitness( size_t steps_ahead ) const;
 
 		// state

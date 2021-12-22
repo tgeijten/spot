@@ -101,6 +101,8 @@ namespace spot
 
 	stop_condition& optimizer::add_stop_condition( u_ptr<stop_condition> new_sc )
 	{
+		if ( new_sc->minimum_fitness_tracking_window_size() > fitness_tracking_window_size() )
+			set_fitness_tracking_window_size( new_sc->minimum_fitness_tracking_window_size() );
 		return *stop_conditions_.emplace_back( std::move( new_sc ) );
 	}
 

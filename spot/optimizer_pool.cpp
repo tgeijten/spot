@@ -35,7 +35,7 @@ namespace spot
 
 	void optimizer_pool::push_back( u_ptr< optimizer > opt )
 	{
-		opt->enable_fitness_tracking( prediction_window_ );
+		opt->set_fitness_tracking_window_size( prediction_window_ );
 		if ( use_predicted_fitness_stop_condition_ )
 			opt->add_stop_condition(
 				std::make_unique< predicted_fitness_condition >(

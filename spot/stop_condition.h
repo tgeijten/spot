@@ -19,6 +19,7 @@ namespace spot
 		virtual string what() const { return ""; }
 		virtual bool test( const optimizer& opt ) = 0;
 		virtual bool error() const { return false; }
+		virtual size_t minimum_fitness_tracking_window_size() const { return 0; }
 	};
 
 	struct SPOT_API abort_condition : public stop_condition
@@ -58,6 +59,7 @@ namespace spot
 		min_progress_condition( fitness_t progress, size_t min_samples = 200 ) : min_progress_( progress ), min_samples_( min_samples ) {}
 		virtual string what() const override { return "Minimum progress reached"; }
 		virtual bool test( const optimizer& opt ) override;
+		virtual size_t minimum_fitness_tracking_window_size() const override { return min_samples_; }
 
 		fitness_t min_progress_;
 		size_t min_samples_;
@@ -68,6 +70,7 @@ namespace spot
 		predicted_fitness_condition( fitness_t fitness, size_t look_ahead, size_t min_samples = 100 ) : prediction_(), fitness_( fitness ), look_ahead_( look_ahead ), min_samples_( min_samples ) {}
 		virtual string what() const override;
 		virtual bool test( const optimizer& opt ) override;
+		virtual size_t minimum_fitness_tracking_window_size() const override { return min_samples_; }
 
 		fitness_t prediction_;
 		fitness_t fitness_;
