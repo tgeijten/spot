@@ -49,7 +49,7 @@ namespace spot
 	protected:
 		fitness_t best_fitness_;
 
-		virtual vector< double > compute_predicted_fitnesses();
+		virtual fitness_vec compute_predicted_fitnesses();
 		virtual void internal_step() override;
 
 		vector< u_ptr< optimizer > > optimizers_;

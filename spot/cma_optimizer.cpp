@@ -12,7 +12,8 @@
 
 namespace spot
 {
-	typedef vector< double > dbl_vec;
+	using dbl_vec = par_vec;
+	//typedef vector< double > dbl_vec;
 
 	struct cmaes_random_t
 	{
@@ -873,7 +874,7 @@ namespace spot
 		return  t->current_pop;
 	}
 
-	const vector< dbl_vec >& cmaes_OverwriteSingle( cmaes_t* t, index_t iindex, dbl_vec params )
+	const vector< dbl_vec >& cmaes_OverwriteSingle( cmaes_t* t, index_t iindex, const par_vec& params )
 	{
 		// TG: overwrite parameters of a single individual
 		// This is required in case of clamping when no individual can be found
@@ -1164,7 +1165,7 @@ namespace spot
 		pimpl = new pimpl_t;
 		auto n = objective_.info().dim();
 
-		vector< double > mean( n ), std( n ), lb( n ), ub( n );
+		par_vec mean( n ), std( n ), lb( n ), ub( n );
 		for ( index_t i = 0; i < n; ++i )
 		{
 			auto& p = objective_.info()[ i ];
@@ -1244,26 +1245,26 @@ namespace spot
 		else cmaes_UpdateDistribution( &pimpl->cmaes, results );
 	}
 
-	vector< double > cma_optimizer::current_mean() const
+	par_vec cma_optimizer::current_mean() const
 	{
 		par_vec individual( pimpl->cmaes.current_mean.begin(), pimpl->cmaes.current_mean.begin() + info().dim() );
 		return boundary_transform( individual );
 	}
 
-	vector< double > cma_optimizer::current_std() const
+	par_vec cma_optimizer::current_std() const
 	{
 		// get from covariance matrix
-		vector< double > stds( dim() );
+		par_vec stds( dim() );
 		for ( index_t i = 0; i < dim(); ++i )
-			stds[ i ] = pimpl->cmaes.sigma * sqrt( pimpl->cmaes.C[ i ][ i ] );
+			stds[ i ] = par_t( pimpl->cmaes.sigma * sqrt( pimpl->cmaes.C[ i ][ i ] ) );
 
 		return stds;
 	}
 
-	vector< par_vec > cma_optimizer::current_covariance() const
-	{
-		return pimpl->cmaes.C;
-	}
+	//vector< par_vec > cma_optimizer::current_covariance() const
+	//{
+	//	return pimpl->cmaes.C;
+	//}
 
 	void cma_optimizer::save_state( const path& filename ) const
 	{

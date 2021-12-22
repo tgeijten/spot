@@ -56,9 +56,9 @@ namespace spot
 		return optimizers_[ best_optimizer_idx_ ]->make_updated_objective_info();
 	}
 
-	vector< double > optimizer_pool::compute_predicted_fitnesses()
+	fitness_vec optimizer_pool::compute_predicted_fitnesses()
 	{
-		vector< double > priorities;
+		fitness_vec priorities;
 
 		size_t active_count = 0;
 		for ( auto& o : optimizers_ )
@@ -99,8 +99,8 @@ namespace spot
 			for ( int i = 0; i < optimizers_.size(); ++i )
 			{
 				auto& opt = *optimizers_[ i ];
-				auto bf = xo::clamped( opt.best_fitness(), -9999.0, 9999.0 );
-				auto pf = xo::clamped( predictions[ i ], -9999.0, 9999.0 );
+				auto bf = xo::clamped( opt.best_fitness(), fitness_t( -9999 ), fitness_t( 9999 ) );
+				auto pf = xo::clamped( predictions[ i ], fitness_t( -9999 ), fitness_t( 9999 ) );
 				str += xo::stringf( "\t%d/%.0f/%.0f", opt.current_step(), bf, pf );
 			}
 		}

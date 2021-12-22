@@ -54,10 +54,10 @@ namespace spot
 		bool empty() const { return par_infos_.empty(); }
 
 		/// import / export
-		pair< size_t, size_t > import_mean_std( const path& filename, bool import_std, double std_factor = 1.0, double std_offset = 0.0,
+		pair< size_t, size_t > import_mean_std( const path& filename, bool import_std, par_t std_factor = 1.0, par_t std_offset = 0.0,
 			const xo::pattern_matcher& include = {}, const xo::pattern_matcher& exclude = {} );
 		pair< size_t, size_t > import_locked( const path& filename );
-		void set_std_minimum( double value, double factor );
+		void set_std_minimum( par_t value, par_t factor );
 		void set_mean_std( const par_vec& mean, const par_vec& std );
 		void set_name( const string& name ) { name_ = name; }
 

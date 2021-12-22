@@ -69,7 +69,7 @@ namespace spot
 	protected:
 		virtual void internal_step() = 0;
 		par_vec& boundary_transform( par_vec& v ) const;
-		vector< result<fitness_t> > evaluate( const search_point_vec& point_vec, priority_t prio = 0.0 );
+		vector< result<fitness_t> > evaluate( const search_point_vec& point_vec, priority_t prio = 0 );
 
 		const objective& objective_;
 		evaluator& evaluator_;
@@ -100,7 +100,7 @@ namespace spot
 	//
 
 	template< typename T, typename... Args >
-	void spot::optimizer::signal_reporters( T fn, Args&&... args ) {
+	void optimizer::signal_reporters( T fn, Args&&... args ) {
 		try {
 			for ( auto& r : reporters_ )
 				std::mem_fn( fn )( *r, std::forward< Args >( args )... );

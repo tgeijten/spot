@@ -55,7 +55,7 @@ namespace spot
 			auto& cma = dynamic_cast< const cma_optimizer& >( opt );
 			for ( index_t i = 0; i < similarity_points.size(); ++i )
 			{
-				vector< double > std;
+				par_vec std;
 				std.reserve( opt.info().dim() );
 				for ( auto& p : cma.info() ) std.push_back( p.std );
 				//auto std = cma.info().begin();

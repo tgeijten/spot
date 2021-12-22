@@ -34,7 +34,7 @@ namespace spot
 		// analysis
 		par_vec current_mean() const;
 		par_vec current_std() const;
-		vector< par_vec > current_covariance() const;
+		//vector< par_vec > current_covariance() const;
 
 		// state
 		virtual void save_state( const path& filename ) const override;
@@ -50,7 +50,6 @@ namespace spot
 	protected:
 		fitness_t best_fitness_;
 		search_point best_point_;
-
 		fitness_t current_step_best_fitness_;
 		fitness_vec current_step_fitnesses_;
 		search_point current_step_best_point_;

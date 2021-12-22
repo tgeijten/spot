@@ -48,7 +48,7 @@ namespace spot
 		return it != par_infos_.end() ? it - par_infos_.begin() : no_index;
 	}
 
-	pair< size_t, size_t > objective_info::import_mean_std( const path& filename, bool import_std, double std_factor, double std_offset,
+	pair< size_t, size_t > objective_info::import_mean_std( const path& filename, bool import_std, par_t std_factor, par_t std_offset,
 		const xo::pattern_matcher& include, const xo::pattern_matcher& exclude )
 	{
 		size_t params_set = 0;
@@ -59,7 +59,7 @@ namespace spot
 		while ( str.good() )
 		{
 			std::string name;
-			double value, mean, std;
+			par_t value, mean, std;
 			str >> name >> value >> mean >> std;
 
 			if ( str.fail() )
@@ -106,7 +106,7 @@ namespace spot
 		while ( str.good() )
 		{
 			string name;
-			double value, mean, std;
+			par_t value, mean, std;
 			str >> name >> value >> mean >> std;
 			if ( !str.fail() )
 			{
@@ -118,7 +118,7 @@ namespace spot
 		return { params_locked, params_not_found };
 	}
 
-	void objective_info::set_std_minimum( double value, double factor )
+	void objective_info::set_std_minimum( par_t value, par_t factor )
 	{
 		for ( auto& p : par_infos_ )
 			p.std = xo::max( p.std, factor * fabs( p.mean ) + value );

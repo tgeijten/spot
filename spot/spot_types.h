@@ -32,11 +32,11 @@ namespace spot
 
 	using xo::result;
 
-	using fitness_t = double;
+	using fitness_t = SPOT_DEFAULT_PRECISION_TYPE;
 	using fitness_vec = vector<fitness_t>;
 
-	using par_t = double;
+	using par_t = SPOT_DEFAULT_PRECISION_TYPE;
 	using par_vec = vector<par_t>;
 
-	using priority_t = double;
+	using priority_t = SPOT_DEFAULT_PRECISION_TYPE;
 }
