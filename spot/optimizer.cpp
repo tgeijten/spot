@@ -21,10 +21,6 @@ namespace spot
 		step_count_( 0 ),
 		fitness_history_samples_( 0 ),
 		fitness_trend_step_( no_index ),
-#if !SPOT_EVALUATOR_ENABLED
-		max_threads_( xo::max<int>( 4, std::thread::hardware_concurrency() ) ),
-		thread_priority_( xo::thread_priority::lowest ),
-#endif
 		stop_condition_( nullptr ),
 		max_errors_( 0 )
 	{
@@ -159,11 +155,7 @@ namespace spot
 
 	vector< result<fitness_t> > optimizer::evaluate( const search_point_vec& point_vec, priority_t prio )
 	{
-#if SPOT_EVALUATOR_ENABLED
 		return evaluator_.evaluate( objective_, point_vec, stop_source_.get_token(), prio );
-#else
-		return objective_.evaluate_async( point_vec, max_threads_, thread_priority_ );
-#endif // SPOT_EVALUATOR_ENABLED
 	}
 
 	bool optimizer::verify_results( const vector< result<fitness_t> >& results )

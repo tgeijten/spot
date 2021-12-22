@@ -18,13 +18,8 @@
 #include "xo/utility/result.h"
 #include "xo/thread/stop_token.h"
 
-#include <thread>
-#include <functional>
-
 namespace spot
 {
-	// #todo: this class is a bit of mess and should be cleaned up
-	// Perhaps take step / threading out of this class?
 	class SPOT_API optimizer
 	{
 	public:
@@ -42,12 +37,6 @@ namespace spot
 		template< typename T > T& find_stop_condition();
 
 		reporter& add_reporter( u_ptr<reporter> new_rep );
-
-#if !SPOT_EVALUATOR_ENABLED
-		void set_max_threads( int val ) { max_threads_ = val; }
-		void set_thread_priority( xo::thread_priority tp ) { thread_priority_ = tp; }
-#endif
-
 		index_t current_step() const { return step_count_; }
 
 		virtual const fitness_vec& current_step_fitnesses() const = 0;
@@ -72,7 +61,7 @@ namespace spot
 		virtual objective_info make_updated_objective_info() const { XO_NOT_IMPLEMENTED; }
 
 		// properties
-		mutable string name; // #todo: not this, name should be const
+		string name;
 
 		virtual bool interrupt() { return stop_source_.request_stop(); }
 		bool stop_requested() const { return stop_source_.stop_requested(); }
@@ -96,10 +85,6 @@ namespace spot
 		vector< u_ptr<stop_condition> > stop_conditions_;
 		u_ptr< boundary_transformer > boundary_transformer_;
 
-#if !SPOT_EVALUATOR_ENABLED
-		int max_threads_;
-		xo::thread_priority thread_priority_;
-#endif
 		stop_condition* stop_condition_;
 		xo::stop_source stop_source_;
 
