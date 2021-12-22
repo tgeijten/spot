@@ -1156,10 +1156,6 @@ namespace spot
 
 	cma_optimizer::cma_optimizer( const objective& o, evaluator& e, const cma_options& options ) :
 		optimizer( o, e ),
-		best_fitness_( o.info().worst_fitness() ),
-		best_point_( o.info() ),
-		current_step_best_fitness_( o.info().worst_fitness() ),
-		current_step_best_point_( o.info() ),
 		max_resample_count( 100 )
 	{
 		pimpl = new pimpl_t;
@@ -1307,44 +1303,16 @@ namespace spot
 		return pimpl->cmaes.sigma;
 	}
 
-	void cma_optimizer::internal_step()
+	bool cma_optimizer::internal_step()
 	{
 		XO_PROFILE_FUNCTION( profiler_ );
 
-		// sample population and run callbacks
 		auto& pop = sample_population();
-		signal_reporters( &reporter::on_pre_evaluate_population, *this, pop );
-
-		// compute fitnesses
-		auto results = evaluate( pop );
-
-		// stop if there where too many errors
-		if ( verify_results( results ) )
+		if ( evaluate_step( pop ) )
 		{
-			// copy results
-			current_step_fitnesses_.resize( pop.size() );
-			for ( index_t i = 0; i < results.size(); ++i )
-				current_step_fitnesses_[ i ] = results[ i ] ? results[ i ].value() : info().worst_fitness();
-
-			// update current step best
-			auto best_idx = objective_.info().find_best_fitness( current_step_fitnesses_ );
-			current_step_best_fitness_ = current_step_fitnesses_[ best_idx ];
-			current_step_best_point_ = pop[ best_idx ];
-
-			// update all-time best
-			bool has_new_best = objective_.info().is_better( current_step_fitnesses_[ best_idx ], best_fitness_ );
-			if ( has_new_best )
-			{
-				best_fitness_ = current_step_fitnesses_[ best_idx ];
-				best_point_.set_values( pop[ best_idx ].values() );
-				signal_reporters( &reporter::on_new_best, *this, best_point_, best_fitness_ );
-			}
-
-			// run post-evaluate callbacks (AFTER current_best is updated!)
-			signal_reporters( &reporter::on_post_evaluate_population, *this, pop, current_step_fitnesses_, has_new_best );
-
-			// update CMA-ES parameters
 			update_distribution( current_step_fitnesses_ );
+			return true;
 		}
+		else return false;
 	}
 }

@@ -39,19 +39,21 @@ namespace spot
 		template< typename T > T& find_stop_condition();
 
 		reporter& add_reporter( u_ptr<reporter> new_rep );
+
+		// optimization info
 		index_t current_step() const { return step_count_; }
+		virtual const fitness_vec& current_step_fitnesses() const { return current_step_fitnesses_; }
+		virtual fitness_t current_step_best_fitness() const { return current_step_best_fitness_; }
+		virtual const search_point& current_step_best_point() const { return current_step_best_point_; }
+		virtual fitness_t best_fitness() const { return best_fitness_; }
+		virtual const search_point& best_point() const { return best_point_; }
 
-		virtual const fitness_vec& current_step_fitnesses() const = 0;
-		virtual fitness_t current_step_best_fitness() const = 0;
-		virtual const search_point& current_step_best_point() const = 0;
-		virtual fitness_t best_fitness() const = 0;
-		virtual const search_point& best_point() const = 0;
-
+		// objective info
 		const objective_info& info() const { return objective_.info(); }
 		const objective& obj() const { return objective_; }
 		bool is_better( fitness_t a, fitness_t b ) const { return objective_.info().is_better( a, b ); }
 
-		// more statistics
+		// fitness tracking and prediction
 		void set_fitness_tracking_window_size( size_t window_size ) { fitness_history_.reserve( window_size ); }
 		size_t fitness_tracking_window_size() const { return fitness_history_.capacity(); }
 		xo::linear_function< float > fitness_trend() const;
@@ -71,15 +73,25 @@ namespace spot
 		xo::profiler& profiler() { return profiler_; }
 
 	protected:
-		virtual void internal_step() = 0;
+		virtual bool internal_step() = 0;
 		par_vec& boundary_transform( par_vec& v ) const;
 		vector< result<fitness_t> > evaluate( const search_point_vec& point_vec, priority_t prio = 0 );
+		bool evaluate_step( const search_point_vec& point_vec, priority_t prio = 0 );
+		bool verify_results( const vector< result<fitness_t> >& results );
+		void update_fitness_tracking();
 
 		const objective& objective_;
 		evaluator& evaluator_;
 
+		// optimization info
 		index_t step_count_;
+		fitness_t best_fitness_;
+		search_point best_point_;
+		fitness_t current_step_best_fitness_;
+		fitness_vec current_step_fitnesses_;
+		search_point current_step_best_point_;
 
+		// fitness tracking
 		size_t fitness_history_samples_;
 		xo::circular_deque< float > fitness_history_;
 		mutable xo::linear_function< float > fitness_trend_;
@@ -92,8 +104,6 @@ namespace spot
 		stop_condition* stop_condition_;
 		xo::stop_source stop_source_;
 
-		// check if the results have errors and set error_stop_condition if there are too many errors
-		bool verify_results( const vector< result<fitness_t> >& results );
 		int max_errors_;
 
 		xo::profiler profiler_;

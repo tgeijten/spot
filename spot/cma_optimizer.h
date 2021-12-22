@@ -24,13 +24,6 @@ namespace spot
 		const search_point_vec& sample_population();
 		void update_distribution( const fitness_vec& results );
 
-		// fitness info
-		virtual const fitness_vec& current_step_fitnesses() const override { return current_step_fitnesses_; }
-		virtual fitness_t current_step_best_fitness() const override { return current_step_best_fitness_; }
-		virtual const search_point& current_step_best_point() const override { return current_step_best_point_; }
-		virtual fitness_t best_fitness() const override { return best_fitness_; }
-		virtual const search_point& best_point() const override { return best_point_; }
-
 		// analysis
 		par_vec current_mean() const;
 		par_vec current_std() const;
@@ -48,15 +41,9 @@ namespace spot
 		double sigma() const;
 
 	protected:
-		fitness_t best_fitness_;
-		search_point best_point_;
-		fitness_t current_step_best_fitness_;
-		fitness_vec current_step_fitnesses_;
-		search_point current_step_best_point_;
-
 		size_t max_resample_count;
 
-		virtual void internal_step() override;
+		virtual bool internal_step() override;
 		struct pimpl_t* pimpl;
 	};
 }

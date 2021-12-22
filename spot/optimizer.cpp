@@ -20,6 +20,10 @@ namespace spot
 		objective_( o ),
 		evaluator_( e ),
 		step_count_( 0 ),
+		best_fitness_( o.info().worst_fitness() ),
+		best_point_( o.info() ),
+		current_step_best_fitness_( o.info().worst_fitness() ),
+		current_step_best_point_( o.info() ),
 		fitness_history_samples_( 0 ),
 		fitness_trend_step_( no_index ),
 		stop_condition_( nullptr ),
@@ -47,25 +51,13 @@ namespace spot
 		signal_reporters( &reporter::on_pre_step, *this );
 
 		// perform actual step
-		internal_step();
-
-		// test stop conditions (e.g. error, abort)
-		if ( auto* sc = test_stop_conditions() )
-			return sc;
-
-		// update fitness history
-		if ( fitness_tracking_window_size() > 0 )
+		if ( internal_step() )
 		{
-			if ( fitness_history_.full() ) fitness_history_.pop_front();
-			fitness_history_.push_back( static_cast<float>( current_step_best_fitness() ) );
-			++fitness_history_samples_;
+			signal_reporters( &reporter::on_post_step, *this );
+			++step_count_;
 		}
 
-		// signal reporters
-		signal_reporters( &reporter::on_post_step, *this );
-		++step_count_;
-
-		// test stop conditions (e.g. min_progress, flat_fitness)
+		// test stop conditions (e.g. error, abort, min_progress, flat_fitness)
 		return test_stop_conditions();
 	}
 
@@ -164,6 +156,47 @@ namespace spot
 		return evaluator_.evaluate( objective_, point_vec, stop_source_.get_token(), prio );
 	}
 
+	bool optimizer::evaluate_step( const search_point_vec& point_vec, priority_t prio )
+	{
+		// run callbacks
+		signal_reporters( &reporter::on_pre_evaluate_population, *this, point_vec );
+
+		// compute fitnesses
+		auto results = evaluate( point_vec );
+
+		// stop if there were too many errors
+		if ( verify_results( results ) )
+		{
+			// copy results
+			current_step_fitnesses_.resize( results.size() );
+			for ( index_t i = 0; i < results.size(); ++i )
+				current_step_fitnesses_[ i ] = results[ i ] ? results[ i ].value() : info().worst_fitness();
+
+			// update current step best
+			auto best_idx = objective_.info().find_best_fitness( current_step_fitnesses_ );
+			current_step_best_fitness_ = current_step_fitnesses_[ best_idx ];
+			current_step_best_point_ = point_vec[ best_idx ];
+
+			// update all-time best
+			bool has_new_best = objective_.info().is_better( current_step_fitnesses_[ best_idx ], best_fitness_ );
+			if ( has_new_best )
+			{
+				best_fitness_ = current_step_fitnesses_[ best_idx ];
+				best_point_.set_values( point_vec[ best_idx ].values() );
+				signal_reporters( &reporter::on_new_best, *this, best_point_, best_fitness_ );
+			}
+
+			// update fitness tracking
+			update_fitness_tracking();
+
+			// run post-evaluate callbacks (AFTER current_best is updated!)
+			signal_reporters( &reporter::on_post_evaluate_population, *this, point_vec, current_step_fitnesses_, has_new_best );
+
+			return true;
+		}
+		else return false;
+	}
+
 	bool optimizer::verify_results( const vector< result<fitness_t> >& results )
 	{
 		const auto errors = xo::count_if( results, []( const auto& r ) { return !r; } );
@@ -182,5 +215,16 @@ namespace spot
 			return false;
 		}
 		else return true;
+	}
+
+	void optimizer::update_fitness_tracking()
+	{
+		// update fitness history
+		if ( fitness_tracking_window_size() > 0 )
+		{
+			if ( fitness_history_.full() ) fitness_history_.pop_front();
+			fitness_history_.push_back( static_cast<float>( current_step_best_fitness() ) );
+			++fitness_history_samples_;
+		}
 	}
 }

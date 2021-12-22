@@ -76,7 +76,7 @@ namespace spot
 		return priorities;
 	}
 
-	void optimizer_pool::internal_step()
+	bool optimizer_pool::internal_step()
 	{
 		xo_assert( optimizers_.size() > 0 );
 
@@ -133,5 +133,7 @@ namespace spot
 			// run post-evaluate callbacks (AFTER current_best is updated!)
 			signal_reporters( &reporter::on_post_evaluate_population, *this, search_point_vec(), current_step_fitnesses(), new_best );
 		}
+
+		return true;
 	}
 }
