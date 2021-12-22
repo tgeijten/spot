@@ -17,6 +17,8 @@
 #include "xo/utility/pointer_types.h"
 #include "xo/utility/result.h"
 #include "xo/thread/stop_token.h"
+#include "xo/system/profiler.h"
+#include "xo/system/profiler_config.h"
 
 namespace spot
 {
@@ -66,6 +68,8 @@ namespace spot
 		virtual bool interrupt() { return stop_source_.request_stop(); }
 		bool stop_requested() const { return stop_source_.stop_requested(); }
 
+		xo::profiler& profiler() { return profiler_; }
+
 	protected:
 		virtual void internal_step() = 0;
 		par_vec& boundary_transform( par_vec& v ) const;
@@ -92,6 +96,8 @@ namespace spot
 		bool verify_results( const vector< result<fitness_t> >& results );
 		int max_errors_;
 
+		xo::profiler profiler_;
+
 		template< typename T, typename... Args > void signal_reporters( T fn, Args&&... args );
 	};
 
@@ -101,6 +107,7 @@ namespace spot
 
 	template< typename T, typename... Args >
 	void optimizer::signal_reporters( T fn, Args&&... args ) {
+		XO_PROFILE_FUNCTION( profiler_ );
 		try {
 			for ( auto& r : reporters_ )
 				std::mem_fn( fn )( *r, std::forward< Args >( args )... );

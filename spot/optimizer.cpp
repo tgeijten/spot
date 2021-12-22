@@ -12,6 +12,7 @@
 #include "xo/utility/irange.h"
 #include "xo/container/flat_set.h"
 #include "xo/container/view_if.h"
+#include "xo/system/profiler_config.h"
 
 namespace spot
 {
@@ -36,6 +37,8 @@ namespace spot
 
 	const stop_condition* optimizer::step()
 	{
+		XO_PROFILE_FUNCTION( profiler_ );
+
 		// send out start callback if this is the first step
 		if ( step_count_ == 0 )
 			signal_reporters( &reporter::on_start, *this );
@@ -68,6 +71,8 @@ namespace spot
 
 	const stop_condition* optimizer::run( size_t number_of_steps )
 	{
+		profiler_.start();
+
 		if ( number_of_steps == 0 )
 			number_of_steps = xo::constants<size_t>::max();
 
@@ -155,6 +160,7 @@ namespace spot
 
 	vector< result<fitness_t> > optimizer::evaluate( const search_point_vec& point_vec, priority_t prio )
 	{
+		XO_PROFILE_FUNCTION( profiler_ );
 		return evaluator_.evaluate( objective_, point_vec, stop_source_.get_token(), prio );
 	}
 

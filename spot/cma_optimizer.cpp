@@ -1202,6 +1202,8 @@ namespace spot
 
 	const search_point_vec& cma_optimizer::sample_population()
 	{
+		XO_PROFILE_FUNCTION( profiler_ );
+
 		auto& pop = cmaes_SamplePopulation( &pimpl->cmaes );
 		for ( index_t ind_idx = 0; ind_idx < pop.size(); ++ind_idx )
 		{
@@ -1235,6 +1237,8 @@ namespace spot
 
 	void cma_optimizer::update_distribution( const fitness_vec& results )
 	{
+		XO_PROFILE_FUNCTION( profiler_ );
+
 		if ( objective_.info().maximize() )
 		{
 			// negate first, since c-cmaes always minimizes
@@ -1305,6 +1309,8 @@ namespace spot
 
 	void cma_optimizer::internal_step()
 	{
+		XO_PROFILE_FUNCTION( profiler_ );
+
 		// sample population and run callbacks
 		auto& pop = sample_population();
 		signal_reporters( &reporter::on_pre_evaluate_population, *this, pop );
