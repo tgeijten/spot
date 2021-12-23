@@ -19,11 +19,11 @@ namespace spot
 	class SPOT_API mes_optimizer : public optimizer
 	{
 	public:
-		mes_optimizer() = delete;
 		mes_optimizer( const objective& o, evaluator& e, const mes_options& options = mes_options() );
-		mes_optimizer( const mes_optimizer& ) = delete;
-		mes_optimizer& operator=( const mes_optimizer& ) = delete;
 		virtual ~mes_optimizer() = default;
+
+		int lambda() const { return lambda_; }
+		int mu() const { return mu_; }
 
 	protected:
 		par_t sample_parameter( par_t mean, par_t stdev, const par_info& pi );
