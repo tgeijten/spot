@@ -1,4 +1,4 @@
-#include "optimizer_test.h"
+#include "cma_optimizer_test.h"
 
 #include <thread>
 #include <chrono>
@@ -7,7 +7,7 @@
 
 namespace spot
 {
-	void optimizer_test()
+	void cma_optimizer_test()
 	{
 		// setup mean / std / N
 		int dim = 10;
@@ -26,9 +26,6 @@ namespace spot
 		function_objective obj( cigtab, init_mean, init_std, lower, upper );
 		async_evaluator eval( 32 );
 		cma_optimizer cma( obj, eval, cma_options{ lambda, seed } );
-#if !SPOT_EVALUATOR_ENABLED
-		cma.set_max_threads( 10 );
-#endif // !SPOT_EVALUATOR_ENABLED
 
 		/* Iterate until stop criterion holds */
 		for ( int gen = 0; gen < 100; ++gen )
@@ -66,7 +63,7 @@ namespace spot
 		free( xfinal );
 	}
 
-	void optimizer_thread_test()
+	void cma_optimizer_thread_test()
 	{
 		// setup mean / std / N
 		size_t dim = 10;
@@ -77,9 +74,6 @@ namespace spot
 		function_objective obj( cigtab, dim, 0.0, 0.3, -1e12, 1e12 );
 		async_evaluator eval( 32 );
 		cma_optimizer cma( obj, eval, cma_options{ lambda, seed } );
-#if !SPOT_EVALUATOR_ENABLED
-		cma.set_max_threads( 3 );
-#endif // !SPOT_EVALUATOR_ENABLED
 
 		for ( int gen = 0; gen < 10; ++gen )
 		{

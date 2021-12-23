@@ -34,6 +34,7 @@ namespace spot
 
 		void set_values( const par_vec& values );
 		const par_vec& values() const { return values_; }
+		par_vec& values() { return values_; }
 
 	private:
 		void round_values();

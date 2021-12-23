@@ -1,12 +1,13 @@
 #include "test_functions.h"
+#include "xo/string/string_tools.h"
 
 namespace spot
 {
 	using xo::squared;
 
-	double cigtab_c( double const *x, int N )
+	double cigtab_c( double const* x, int N )
 	{
-		double sum = 1e4*x[ 0 ] * x[ 0 ] + 1e-4*x[ 1 ] * x[ 1 ];
+		double sum = 1e4 * x[ 0 ] * x[ 0 ] + 1e-4 * x[ 1 ] * x[ 1 ];
 		for ( int i = 2; i < N; ++i )
 			sum += x[ i ] * x[ i ];
 		return sum;
@@ -14,10 +15,23 @@ namespace spot
 
 	double cigtab( const par_vec& x )
 	{
-		double sum = 1e4*x[ 0 ] * x[ 0 ] + 1e-4*x[ 1 ] * x[ 1 ];
+		double sum = 1e4 * x[ 0 ] * x[ 0 ] + 1e-4 * x[ 1 ] * x[ 1 ];
 		for ( int i = 2; i < x.size(); ++i )
 			sum += x[ i ] * x[ i ];
 		return sum;
+	}
+
+	double sphere( const par_vec& v )
+	{
+		double sum = 0.0;
+		for ( unsigned int i = 0; i < v.size(); ++i )
+			sum += squared( v[ i ] );
+		return sum;
+	}
+
+	function_objective make_sphere_objective( size_t d )
+	{
+		return function_objective( sphere, d, 0.0, 1.0, -1e9, 1e9, xo::stringf( "sphere-%d", d ) );
 	}
 
 	double himmelblau( const par_vec& v )
@@ -27,7 +41,7 @@ namespace spot
 
 	function_objective make_himmelblau_objective()
 	{
-		return function_objective( himmelblau, 2, 0, 2.5, -5, 5 );
+		return function_objective( himmelblau, 2, 0, 2.5, -5, 5, "himmelblau" );
 	}
 
 	double rosenbrock( const par_vec& v )
@@ -40,7 +54,7 @@ namespace spot
 
 	function_objective make_rosenbrock_objective( size_t d )
 	{
-		return function_objective( rosenbrock, d, 2.5, 3.75, -5, 10 );
+		return function_objective( rosenbrock, d, 2.5, 1.0, -5, 10, xo::stringf( "rosenbrock-%d", d ) );
 	}
 
 	double schwefel( const par_vec& v )
@@ -53,20 +67,7 @@ namespace spot
 
 	function_objective make_schwefel_objective( size_t d )
 	{
-		return function_objective( schwefel, d, 0, 250, -500, 500 );
-	}
-
-	double rastrigin( const par_vec& v )
-	{
-		double sum = 10.0 * v.size();
-		for ( index_t i = 0; i < v.size(); ++i )
-			sum += xo::squared( v[ i ] ) - 10.0 * cos( 2 * xo::constantsd::pi() * v[ i ] );
-		return sum;
-	}
-
-	function_objective make_rastrigin_objective( size_t d )
-	{
-		return function_objective( rastrigin, d, 0, 2.56, -5.12, 5.12 );
+		return function_objective( schwefel, d, 0, 100, -500, 500, xo::stringf( "schwefel-%d", d ) );
 	}
 
 	double slow_schwefel( const par_vec& v )
@@ -88,6 +89,32 @@ namespace spot
 
 	function_objective make_slow_schwefel_objective( size_t d )
 	{
-		return function_objective( slow_schwefel, d, 0, 250, -500, 500 );
+		return function_objective( slow_schwefel, d, 0, 100, -500, 500 );
+	}
+
+	double rastrigin( const par_vec& v )
+	{
+		double sum = 10.0 * v.size();
+		for ( index_t i = 0; i < v.size(); ++i )
+			sum += xo::squared( v[ i ] ) - 10.0 * cos( 2 * xo::constantsd::pi() * v[ i ] );
+		return sum;
+	}
+
+	function_objective make_rastrigin_objective( size_t d )
+	{
+		return function_objective( rastrigin, d, 0, 1.0, -5.12, 5.12, xo::stringf( "rastrigin-%d", d ) );
+	}
+
+	std::vector<function_objective> make_objectives( std::initializer_list<size_t> dims )
+	{
+		std::vector<function_objective> objs;
+		for ( auto& d : dims )
+		{
+			objs.emplace_back( make_sphere_objective( d ) );
+			objs.emplace_back( make_rosenbrock_objective( d ) );
+			objs.emplace_back( make_rastrigin_objective( d ) );
+			objs.emplace_back( make_schwefel_objective( d ) );
+		}
+		return objs;
 	}
 }

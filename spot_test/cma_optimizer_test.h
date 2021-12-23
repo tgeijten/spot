@@ -6,6 +6,6 @@
 
 namespace spot
 {
-	void optimizer_test();
-	void optimizer_thread_test();
+	void cma_optimizer_test();
+	void cma_optimizer_thread_test();
 }

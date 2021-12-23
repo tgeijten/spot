@@ -19,7 +19,7 @@ namespace spot
 		objective_info& info() { return info_; }
 		size_t dim() const { return info_.dim(); }
 
-		virtual string name() const { return string( "" ); }
+		virtual string name() const { return info_.name(); }
 		virtual prop_node to_prop_node() const { return prop_node(); }
 
 		virtual result<fitness_t> evaluate( const search_point& point, const xo::stop_token& ) const { return evaluate( point ); }

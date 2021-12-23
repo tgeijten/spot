@@ -13,6 +13,7 @@ namespace spot
 
 		bool is_constant() const { return std == 0; }
 		bool is_valid() const { return mean == mean && std >= 0 && min <= max && mean >= min && mean <= max; }
+		bool is_within_range( par_t v ) const { return v >= min && v <= max; }
 		string to_str() const;
 
 		string name;
