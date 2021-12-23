@@ -84,7 +84,7 @@ namespace spot
 		{
 			// choose best active optimizer
 			auto predictions = compute_predicted_fitnesses();
-			auto best_indices = xo::sort_indices( predictions, [&]( fitness_t a, fitness_t b ) { return info().is_better( a, b ); } );
+			auto best_indices = xo::sorted_indices( predictions, [&]( fitness_t a, fitness_t b ) { return info().is_better( a, b ); } );
 
 			for ( auto it = best_indices.begin(); it != best_indices.end() && !optimizers_[ *it ]->test_stop_conditions(); ++it )
 			{
