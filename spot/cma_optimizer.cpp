@@ -1261,10 +1261,10 @@ namespace spot
 		return stds;
 	}
 
-	//vector< par_vec > cma_optimizer::current_covariance() const
-	//{
-	//	return pimpl->cmaes.C;
-	//}
+	vector< par_vec > cma_optimizer::current_covariance() const
+	{
+		return pimpl->cmaes.C;
+	}
 
 	void cma_optimizer::save_state( const path& filename ) const
 	{
