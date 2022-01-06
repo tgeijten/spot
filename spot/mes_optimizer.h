@@ -14,6 +14,8 @@ namespace spot
 		par_t mean_sigma = 0.2;
 		par_t var_sigma = 0.2;
 		par_t mom_sigma = 0.2;
+		par_t mom_offset = 1.0;
+		par_t mom_offset_stdev = 1.0;
 	};
 
 	class SPOT_API mes_optimizer : public optimizer
@@ -35,7 +37,7 @@ namespace spot
 		void sample_population();
 		void update_distribution();
 		virtual bool internal_step() override;
-		search_point_vec& population() { return *population_; }
+		search_point_vec& population() { return population_; }
 
 		int lambda_;
 		int mu_;
@@ -43,10 +45,8 @@ namespace spot
 		par_vec mean_;
 		par_vec var_;
 		par_vec mom_;
-		par_t mean_sigma;
-		par_t var_sigma;
-		par_t mom_sigma;
+		mes_options options_;
 		std::minstd_rand random_engine_;
-		std::unique_ptr<search_point_vec> population_;
+		search_point_vec population_;
 	};
 }

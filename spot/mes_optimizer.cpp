@@ -7,11 +7,9 @@ namespace spot
 		lambda_( options.lambda > 1 ? options.lambda : 4 + int( 3 * std::log( double( o.dim() ) ) ) ),
 		mu_( options.mu ? options.mu : lambda_ / 2 ),
 		max_resample_count( 100 ),
-		mean_sigma( options.mean_sigma ),
-		var_sigma( options.var_sigma ),
-		mom_sigma( options.mom_sigma ),
+		options_( options ),
 		random_engine_( options.random_seed ),
-		population_( std::make_unique<search_point_vec>( lambda_, search_point( o.info() ) ) )
+		population_( lambda_, search_point( o.info() ) )
 	{
 		mean_.reserve( o.dim() );
 		var_.reserve( o.dim() );
@@ -78,20 +76,24 @@ namespace spot
 	{
 		XO_PROFILE_FUNCTION( profiler_ );
 
+		auto mom_dist = std::normal_distribution( options_.mom_offset, options_.mom_offset_stdev );
 		const auto n = info().dim();
 		for ( int ind_idx = 0; ind_idx < lambda_; ++ind_idx )
 		{
-			auto& ind = population()[ ind_idx ].values();
+			auto mom_ofs = mom_dist( random_engine_ );
+			auto& ind = population_[ ind_idx ].values();
 			ind.resize( n );
 			for ( index_t i = 0; i < n; ++i )
 			{
 				auto var = var_[ i ] + xo::squared( mom_[ i ] );
-				ind[ i ] = sample_parameter( mean_[ i ], std::sqrt( var ), info()[ i ] );
+				ind[ i ] = sample_parameter( mean_[ i ] + mom_ofs * mom_[ i ], std::sqrt( var ), info()[ i ] );
 			}
 		}
 	}
 
-	inline void update( par_t& v, const par_t& nv, const par_t& rate ) { v = ( 1 - rate ) * v + rate * nv; }
+	inline void update( par_t& v, const par_t& nv, const par_t& rate ) {
+		v = ( 1 - rate ) * v + rate * nv;
+	}
 
 	void mes_optimizer::update_distribution()
 	{
@@ -104,25 +106,26 @@ namespace spot
 			par_t mean = 0, var = 0;
 			for ( index_t ui = 0; ui < mu_; ++ui ) {
 				auto oi = order[ ui ];
-				mean += population()[ oi ][ pi ];
-				var += xo::squared( population()[ oi ][ pi ] - mean_[ pi ] );
+				mean += population_[ oi ][ pi ];
+				// #todo: find closest point on momentum line
+				var += xo::squared( population_[ oi ][ pi ] - ( mean_[ pi ] + options_.mom_offset * mom_[ pi ] ) );
 			}
 			mean /= mu_;
 			var /= mu_;
 
-			if ( mom_sigma > 0 )
+			if ( options_.mom_sigma > 0 )
 			{
 				// update momentum, then mean
 				auto delta_mean = mean - mean_[ pi ];
-				update( mom_[ pi ], delta_mean, mom_sigma );
-				mean_[ pi ] += mean_sigma * mom_[ pi ];
-				update( var_[ pi ], var, var_sigma );
+				update( mom_[ pi ], delta_mean, options_.mom_sigma );
+				mean_[ pi ] += options_.mean_sigma * mom_[ pi ];
+				update( var_[ pi ], var, options_.var_sigma );
 			}
 			else
 			{
 				// update mean directly
-				update( mean_[ pi ], mean, mean_sigma );
-				update( var_[ pi ], var, var_sigma );
+				update( mean_[ pi ], mean, options_.mean_sigma );
+				update( var_[ pi ], var, options_.var_sigma );
 			}
 		}
 	}
