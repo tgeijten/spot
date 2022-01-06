@@ -79,16 +79,16 @@ namespace spot
 
 		auto mom_dist = std::normal_distribution( options_.mom_offset, options_.mom_offset_stdev );
 		const auto n = info().dim();
+		par_vec vec( n );
 		for ( int ind_idx = 0; ind_idx < lambda_; ++ind_idx )
 		{
 			auto mom_ofs = mom_dist( random_engine_ );
-			auto& ind = population_[ ind_idx ].values();
-			ind.resize( n );
 			for ( index_t i = 0; i < n; ++i )
 			{
 				auto var = var_[ i ] + xo::squared( mom_[ i ] );
-				ind[ i ] = sample_parameter( mean_[ i ] + mom_ofs * mom_[ i ], std::sqrt( var ), info()[ i ] );
+				vec[ i ] = sample_parameter( mean_[ i ] + mom_ofs * mom_[ i ], std::sqrt( var ), info()[ i ] );
 			}
+			population_[ ind_idx ].set_values( vec );
 		}
 	}
 
