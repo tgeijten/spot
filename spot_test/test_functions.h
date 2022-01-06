@@ -11,7 +11,7 @@ namespace spot
 
 	// optimum: (0, ..., 0) 
 	double sphere( const par_vec& v );
-	function_objective make_sphere_objective( size_t d );
+	function_objective make_sphere_objective( size_t d, double mean = 0.0, double stdev = 1.0 );
 
 	// https://en.wikipedia.org/wiki/Himmelblau%27s_function
 	// range: [-5, 5], optima: (3.0,2.0) (-2.805118, 3.131312) (-3.779310,-3.283186) (3.584428,-1.848126)

@@ -29,9 +29,9 @@ namespace spot
 		return sum;
 	}
 
-	function_objective make_sphere_objective( size_t d )
+	function_objective make_sphere_objective( size_t d, double mean, double stdev )
 	{
-		return function_objective( sphere, d, 0.0, 1.0, -1e9, 1e9, xo::stringf( "sphere-%d", d ) );
+		return function_objective( sphere, d, mean, stdev, -1e9, 1e9, xo::stringf( "sphere-%d", d ) );
 	}
 
 	double himmelblau( const par_vec& v )
