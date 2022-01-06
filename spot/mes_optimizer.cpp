@@ -21,6 +21,45 @@ namespace spot
 			mean_.emplace_back( pi.mean );
 			var_.emplace_back( xo::squared( pi.std ) );
 		}
+
+		// add flat fitness condition
+		add_stop_condition( std::make_unique< flat_fitness_condition >( 1e-9 ) );
+	}
+
+	par_vec mes_optimizer::current_std() const
+	{
+		par_vec std_vec;
+		std_vec.reserve( var_.size() );
+		for ( auto& v : var_ )
+			std_vec.emplace_back( std::sqrt( v ) );
+		return std_vec;
+	}
+
+	objective_info mes_optimizer::make_updated_objective_info() const
+	{
+		objective_info inf( info() );
+		inf.set_mean_std( current_mean(), current_std() );
+		return inf;
+	}
+
+	vector< string > mes_optimizer::optimizer_state_labels() const
+	{
+		vector<string> labels;
+		for ( auto& pi : info() ) {
+			labels.emplace_back( pi.name + ".mean" );
+			labels.emplace_back( pi.name + ".std" );
+			labels.emplace_back( pi.name + ".mom" );
+		}
+		return labels;
+	}
+
+	vector< par_t > mes_optimizer::optimizer_state_values() const
+	{
+		vector<par_t> result;
+		result.reserve( 3 * info().dim() );
+		for ( index_t i = 0; i < info().dim(); ++i )
+			result.insert( result.end(), { mean_[ i ], std::sqrt( var_[ i ] ), mom_[ i ] } );
+		return result;
 	}
 
 	par_t mes_optimizer::sample_parameter( par_t mean, par_t stdev, const par_info& pi )

@@ -36,6 +36,10 @@ namespace spot
 			par_history_ << "Step";
 			for ( auto& pi : opt.obj().info() )
 				par_history_ << '\t' << pi.name;
+
+			for ( auto& l : opt.optimizer_state_labels() )
+				par_history_ << '\t' << l;
+
 			par_history_ << std::endl;
 		}
 	}
@@ -103,6 +107,8 @@ namespace spot
 		{
 			par_history_ << opt.current_step();
 			for ( auto&& v : opt.current_step_best_point().values() )
+				par_history_ << '\t' << v;
+			for ( auto&& v : opt.optimizer_state_values() )
 				par_history_ << '\t' << v;
 			par_history_ << '\n';
 		}

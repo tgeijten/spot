@@ -24,6 +24,11 @@ namespace spot
 
 		int lambda() const { return lambda_; }
 		int mu() const { return mu_; }
+		const par_vec& current_mean() const { return mean_; }
+		par_vec current_std() const;
+		virtual objective_info make_updated_objective_info() const override;
+		virtual vector< string > optimizer_state_labels() const override;
+		virtual vector< par_t > optimizer_state_values() const override;
 
 	protected:
 		par_t sample_parameter( par_t mean, par_t stdev, const par_info& pi );

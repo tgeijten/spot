@@ -63,6 +63,8 @@ namespace spot
 		// state
 		virtual void save_state( const path& filename ) const { XO_NOT_IMPLEMENTED; }
 		virtual objective_info make_updated_objective_info() const { XO_NOT_IMPLEMENTED; }
+		virtual vector< string > optimizer_state_labels() const { return {}; }
+		virtual vector< par_t > optimizer_state_values() const { return {}; }
 
 		// properties
 		string name;
