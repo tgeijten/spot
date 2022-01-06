@@ -20,6 +20,11 @@ namespace spot
 		else return false;
 	}
 
+	bool target_fitness_condition::test( const optimizer& opt )
+	{
+		return opt.is_better( opt.best_fitness(), target_ );
+	}
+
 	bool max_steps_condition::test( const optimizer& opt )
 	{
 		return opt.current_step() >= max_steps_;

@@ -45,6 +45,13 @@ namespace spot
 		fitness_t epsilon_;
 	};
 
+	struct SPOT_API target_fitness_condition : public stop_condition
+	{
+		target_fitness_condition( fitness_t target ) : target_( target ) {}
+		virtual string what() const override { return "Target fitness reached"; }
+		virtual bool test( const optimizer& opt ) override;
+		fitness_t target_;
+	};
 
 	struct SPOT_API max_steps_condition : public stop_condition
 	{
