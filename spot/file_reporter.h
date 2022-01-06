@@ -17,16 +17,19 @@ namespace spot
 		virtual void on_new_best( const optimizer& opt, const search_point& point, fitness_t fitness_t ) override;
 		virtual void on_post_step( const optimizer& opt ) override;
 
-		path root_;
-		double min_improvement_for_file_output_;
-		size_t max_steps_without_file_output_;
+		double min_improvement_for_file_output_ = 0.05;
+		size_t max_steps_without_file_output_ = 1000;
 		bool output_temp_files = false;
+		bool output_fitness_history_ = true;
+		bool output_par_history_ = false;
 
 	private:
 		void write_par_file( const optimizer& opt, bool try_cleanup );
 
+		path root_;
 		index_t last_output_step;
 		xo::circular_deque< pair< path, fitness_t > > recent_files;
-		std::ofstream history_;
+		std::ofstream fitness_history_;
+		std::ofstream par_history_;
 	};
 }
