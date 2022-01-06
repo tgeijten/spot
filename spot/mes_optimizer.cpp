@@ -1,4 +1,5 @@
 #include "mes_optimizer.h"
+#include "xo/utility/irange.h"
 
 namespace spot
 {
@@ -91,8 +92,53 @@ namespace spot
 		}
 	}
 
+	inline par_t length( const par_vec& vec ) {
+		par_t sum = 0;
+		for ( const auto& v : vec )
+			sum += v * v;
+		return std::sqrt( sum );
+	}
+
+	inline par_t dot_product( const par_vec& v1, const par_vec& v2 ) {
+		xo_assert( v1.size() == v2.size() );
+		par_t sum = 0;
+		for ( auto i : xo::size_range( v1 ) )
+			sum += v1[ i ] * v2[ i ];
+		return sum;
+	}
+
+	inline par_vec vec_sub( par_vec a, const par_vec& b ) {
+		xo_assert( a.size() == b.size() );
+		for ( index_t i = 0; i < a.size(); ++i )
+			a[ i ] -= b[ i ];
+		return a;
+	}
+
+	inline par_vec vec_add( par_vec a, const par_vec& b ) {
+		xo_assert( a.size() == b.size() );
+		for ( index_t i = 0; i < a.size(); ++i )
+			a[ i ] += b[ i ];
+		return a;
+	}
+
+	inline par_vec vec_mul( par_t s, par_vec a ) {
+		for ( index_t i = 0; i < a.size(); ++i )
+			a[ i ] *= s;
+		return a;
+	}
+
 	inline void update( par_t& v, const par_t& nv, const par_t& rate ) {
 		v = ( 1 - rate ) * v + rate * nv;
+	}
+
+	inline par_vec projected( const par_vec& a, const par_vec& ab, const par_vec& p ) {
+		auto ap = vec_sub( p, a );
+		auto dot_ab = dot_product( ab, ab );
+		if ( dot_ab > xo::num<par_t>::ample_epsilon ) {
+			auto t = dot_product( ap, ab ) / dot_ab;
+			return vec_add( a, vec_mul( t, ab ) );
+		}
+		else return p;
 	}
 
 	void mes_optimizer::update_distribution()
@@ -101,14 +147,21 @@ namespace spot
 
 		const auto n = info().dim();
 		auto order = xo::sorted_indices( current_step_fitnesses_, [&]( auto a, auto b ) { return info().is_better( a, b ); } );
+
+		std::vector<par_vec> projected_pop;
+		for ( auto& sp : population_ ) {
+			projected_pop.push_back( projected( mean_, mom_, sp.values() ) );
+		}
+
 		par_vec new_mean( n ), new_var( n );
 		for ( index_t pi = 0; pi < n; ++pi ) {
 			par_t mean = 0, var = 0;
 			for ( index_t ui = 0; ui < mu_; ++ui ) {
-				auto oi = order[ ui ];
-				mean += population_[ oi ][ pi ];
-				// #todo: find closest point on momentum line
-				var += xo::squared( population_[ oi ][ pi ] - ( mean_[ pi ] + options_.mom_offset * mom_[ pi ] ) );
+				auto& individual = population_[ order[ ui ] ];
+				auto& proj_ind = projected_pop[ order[ ui ] ];
+				mean += individual[ pi ];
+				//var += xo::squared( individual[ pi ] - ( mean_[ pi ] + options_.mom_offset * mom_[ pi ] ) );
+				var += xo::squared( individual[ pi ] - proj_ind[ pi ] ); // distance to projected point
 			}
 			mean /= mu_;
 			var /= mu_;
