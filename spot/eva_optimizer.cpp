@@ -1,9 +1,9 @@
-#include "mes_optimizer.h"
+#include "eva_optimizer.h"
 #include "xo/utility/irange.h"
 
 namespace spot
 {
-	mes_optimizer::mes_optimizer( const objective& o, evaluator& e, const mes_options& options ) :
+	eva_optimizer::eva_optimizer( const objective& o, evaluator& e, const eva_options& options ) :
 		optimizer( o, e ),
 		lambda_( options.lambda > 1 ? options.lambda : 4 + int( 3 * std::log( double( o.dim() ) ) ) ),
 		mu_( options.mu ? options.mu : lambda_ / 2 ),
@@ -14,7 +14,7 @@ namespace spot
 	{
 		mean_.reserve( o.dim() );
 		var_.reserve( o.dim() );
-		mom_.resize( o.dim(), 0 );
+		ev_.resize( o.dim(), 0 );
 		for ( auto& pi : o.info() )
 		{
 			mean_.emplace_back( pi.mean );
@@ -25,7 +25,7 @@ namespace spot
 		add_stop_condition( std::make_unique< flat_fitness_condition >( 1e-9 ) );
 	}
 
-	par_vec mes_optimizer::current_std() const
+	par_vec eva_optimizer::current_std() const
 	{
 		par_vec std_vec;
 		std_vec.reserve( var_.size() );
@@ -34,34 +34,34 @@ namespace spot
 		return std_vec;
 	}
 
-	objective_info mes_optimizer::make_updated_objective_info() const
+	objective_info eva_optimizer::make_updated_objective_info() const
 	{
 		objective_info inf( info() );
 		inf.set_mean_std( current_mean(), current_std() );
 		return inf;
 	}
 
-	vector< string > mes_optimizer::optimizer_state_labels() const
+	vector< string > eva_optimizer::optimizer_state_labels() const
 	{
 		vector<string> labels;
 		for ( auto& pi : info() ) {
 			labels.emplace_back( pi.name + ".mean" );
 			labels.emplace_back( pi.name + ".std" );
-			labels.emplace_back( pi.name + ".mom" );
+			labels.emplace_back( pi.name + ".ev" );
 		}
 		return labels;
 	}
 
-	vector< par_t > mes_optimizer::optimizer_state_values() const
+	vector< par_t > eva_optimizer::optimizer_state_values() const
 	{
 		vector<par_t> result;
 		result.reserve( 3 * info().dim() );
 		for ( index_t i = 0; i < info().dim(); ++i )
-			result.insert( result.end(), { mean_[ i ], std::sqrt( var_[ i ] ), mom_[ i ] } );
+			result.insert( result.end(), { mean_[ i ], std::sqrt( var_[ i ] ), ev_[ i ] } );
 		return result;
 	}
 
-	par_t mes_optimizer::sample_parameter( par_t mean, par_t stdev, const par_info& pi )
+	par_t eva_optimizer::sample_parameter( par_t mean, par_t stdev, const par_info& pi )
 	{
 		auto dist = std::normal_distribution( mean, stdev );
 		for ( int i = 0; i < max_resample_count; ++i ) {
@@ -122,11 +122,11 @@ namespace spot
 		else return a;
 	}
 
-	void mes_optimizer::sample_population()
+	void eva_optimizer::sample_population()
 	{
 		XO_PROFILE_FUNCTION( profiler_ );
 
-		auto mom_dist = std::normal_distribution( options_.mom_offset, options_.mom_offset_stdev );
+		auto mom_dist = std::normal_distribution( options_.ev_offset, options_.ev_stdev );
 		const auto n = info().dim();
 		par_vec vec( n );
 		for ( int ind_idx = 0; ind_idx < lambda_; ++ind_idx )
@@ -134,14 +134,14 @@ namespace spot
 			auto mom_ofs = mom_dist( random_engine_ );
 			for ( index_t i = 0; i < n; ++i )
 			{
-				auto var = var_[ i ] + xo::squared( mom_[ i ] );
-				vec[ i ] = sample_parameter( mean_[ i ] + mom_ofs * mom_[ i ], std::sqrt( var ), info()[ i ] );
+				auto var = var_[ i ] + xo::squared( ev_[ i ] );
+				vec[ i ] = sample_parameter( mean_[ i ] + mom_ofs * ev_[ i ], std::sqrt( var ), info()[ i ] );
 			}
 			population_[ ind_idx ].set_values( vec );
 		}
 	}
 
-	void mes_optimizer::update_distribution()
+	void eva_optimizer::update_distribution()
 	{
 		XO_PROFILE_FUNCTION( profiler_ );
 
@@ -150,7 +150,7 @@ namespace spot
 
 		std::vector<par_vec> projected_pop;
 		for ( auto& sp : population_ ) {
-			projected_pop.push_back( projected( mean_, mom_, sp.values() ) );
+			projected_pop.push_back( projected( mean_, ev_, sp.values() ) );
 		}
 
 		par_vec new_mean( n ), new_var( n );
@@ -160,30 +160,20 @@ namespace spot
 				auto& individual = population_[ order[ ui ] ];
 				auto& proj_ind = projected_pop[ order[ ui ] ];
 				mean += individual[ pi ];
-				//var += xo::squared( individual[ pi ] - ( mean_[ pi ] + options_.mom_offset * mom_[ pi ] ) );
 				var += xo::squared( individual[ pi ] - proj_ind[ pi ] ); // distance to projected point
 			}
 			mean /= mu_;
 			var /= mu_;
 
-			if ( options_.mom_sigma > 0 )
-			{
-				// update momentum, then mean
-				auto delta_mean = mean - mean_[ pi ];
-				update( mom_[ pi ], delta_mean, options_.mom_sigma );
-				mean_[ pi ] += options_.mean_sigma * mom_[ pi ];
-				update( var_[ pi ], var, options_.var_sigma );
-			}
-			else
-			{
-				// update mean directly
-				update( mean_[ pi ], mean, options_.mean_sigma );
-				update( var_[ pi ], var, options_.var_sigma );
-			}
+			// update ev, mean and var
+			auto delta_mean = mean - mean_[ pi ];
+			update( ev_[ pi ], delta_mean, options_.ev_update );
+			mean_[ pi ] += options_.step_size * delta_mean;
+			update( var_[ pi ], var, options_.var_update );
 		}
 	}
 
-	bool mes_optimizer::internal_step()
+	bool eva_optimizer::internal_step()
 	{
 		XO_PROFILE_FUNCTION( profiler_ );
 
