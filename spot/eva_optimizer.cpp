@@ -61,18 +61,6 @@ namespace spot
 		return result;
 	}
 
-	par_t eva_optimizer::sample_parameter( par_t mean, par_t stdev, const par_info& pi )
-	{
-		auto dist = std::normal_distribution( mean, stdev );
-		for ( int i = 0; i < max_resample_count; ++i ) {
-			auto v = dist( random_engine_ );
-			if ( pi.is_within_range( v ) )
-				return v;
-		}
-		xo::log::warning( "Could not sample parameter after ", max_resample_count, " attempts. Clamping value instead (this should not happen)." );
-		return xo::clamped( dist( random_engine_ ), pi.min, pi.max );
-	}
-
 	inline par_t length( const par_vec& vec ) {
 		par_t sum = 0;
 		for ( const auto& v : vec )
@@ -122,22 +110,36 @@ namespace spot
 		else return a;
 	}
 
+	par_t eva_optimizer::sample_parameter( par_t mean, par_t stdev, const par_info& pi )
+	{
+		auto dist = std::normal_distribution( mean, stdev );
+		for ( int i = 0; i < max_resample_count; ++i ) {
+			auto v = dist( random_engine_ );
+			if ( pi.is_within_range( v ) )
+				return v;
+		}
+		xo::log::warning( "Could not sample parameter after ", max_resample_count, " attempts. Clamping value instead (this should not happen)." );
+		return xo::clamped( dist( random_engine_ ), pi.min, pi.max );
+	}
+
 	void eva_optimizer::sample_population()
 	{
 		XO_PROFILE_FUNCTION( profiler_ );
 
-		auto mom_dist = std::normal_distribution( options_.ev_offset, options_.ev_stdev );
+		auto ev_distrib = std::normal_distribution( options_.ev_offset, options_.ev_stdev );
 		const auto n = info().dim();
-		par_vec vec( n );
+		par_vec x( n );
 		for ( int ind_idx = 0; ind_idx < lambda_; ++ind_idx )
 		{
-			auto mom_ofs = mom_dist( random_engine_ );
-			for ( index_t i = 0; i < n; ++i )
-			{
-				auto var = var_[ i ] + xo::squared( ev_[ i ] );
-				vec[ i ] = sample_parameter( mean_[ i ] + mom_ofs * ev_[ i ], std::sqrt( var ), info()[ i ] );
+			auto ev_ofs = ev_distrib( random_engine_ );
+			for ( index_t i = 0; i < n; ++i ) {
+				auto sample_mean = mean_[ i ] + ev_ofs * ev_[ i ];
+				//auto sample_var = var_[ i ];
+				auto sample_var = var_[ i ] + xo::squared( ev_[ i ] );
+				x[ i ] = sample_parameter( sample_mean, std::sqrt( sample_var ), info()[ i ] );
 			}
-			population_[ ind_idx ].set_values( vec );
+
+			population_[ ind_idx ].set_values( x );
 		}
 	}
 
@@ -149,8 +151,8 @@ namespace spot
 		auto order = xo::sorted_indices( current_step_fitnesses_, [&]( auto a, auto b ) { return info().is_better( a, b ); } );
 
 		std::vector<par_vec> projected_pop;
-		for ( auto& sp : population_ ) {
-			projected_pop.push_back( projected( mean_, ev_, sp.values() ) );
+		for ( auto& individual : population_ ) {
+			projected_pop.push_back( projected( mean_, ev_, individual.values() ) );
 		}
 
 		par_vec new_mean( n ), new_var( n );
@@ -161,9 +163,11 @@ namespace spot
 				auto& proj_ind = projected_pop[ order[ ui ] ];
 				mean += individual[ pi ];
 				var += xo::squared( individual[ pi ] - proj_ind[ pi ] ); // distance to projected point
+				//var += xo::squared( individual[ pi ] - mean_[ pi ] ); // distance to previous mean
 			}
 			mean /= mu_;
 			var /= mu_;
+			//var /= ( mu_ - 1 );
 
 			// update ev, mean and var
 			auto delta_mean = mean - mean_[ pi ];
