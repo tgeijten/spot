@@ -29,7 +29,6 @@ namespace spot
 		path root_;
 		index_t last_output_step;
 		xo::circular_deque< pair< path, fitness_t > > recent_files;
-		std::ofstream fitness_history_;
-		std::ofstream par_history_;
+		std::ofstream history_;
 	};
 }

@@ -25,31 +25,25 @@ namespace spot
 		// setup history.txt
 		if ( output_fitness_history_ )
 		{
-			fitness_history_ = std::ofstream( ( root_ / "history.txt" ).str() );
-			fitness_history_ << "Step\tBest\tMedian\tPredicted\tProgress" << std::endl;
-		}
+			history_ = std::ofstream( ( root_ / "history.txt" ).str() );
+			history_ << "Step\tBest\tMedian\tPredicted\tProgress";
 
-		// setup par_history.txt
-		if ( output_par_history_ )
-		{
-			par_history_ = std::ofstream( ( root_ / "history_par.txt" ).str() );
-			par_history_ << "Step";
-			for ( auto& pi : opt.obj().info() )
-				par_history_ << '\t' << pi.name;
-
-			for ( auto& l : opt.optimizer_state_labels() )
-				par_history_ << '\t' << l;
-
-			par_history_ << std::endl;
+			// setup par_history.txt
+			if ( output_par_history_ )
+			{
+				for ( auto& pi : opt.obj().info() )
+					history_ << '\t' << pi.name;
+				for ( auto& l : opt.optimizer_state_labels() )
+					history_ << '\t' << l;
+			}
+			history_ << std::endl;
 		}
 	}
 
 	void file_reporter::on_stop( const optimizer& opt, const stop_condition& s )
 	{
 		if ( output_fitness_history_ )
-			fitness_history_.flush();
-		if ( output_par_history_ )
-			par_history_.flush();
+			history_.flush();
 	}
 
 	void file_reporter::on_pre_evaluate_population( const optimizer& opt, const search_point_vec& pop )
@@ -92,25 +86,24 @@ namespace spot
 		{
 			// update history
 			auto cur_trend = opt.fitness_trend();
-			fitness_history_ << opt.current_step() << "\t" << opt.current_step_best_fitness() << "\t" << xo::median( opt.current_step_fitnesses() );
+			history_ << opt.current_step() << "\t" << opt.current_step_best_fitness() << "\t" << xo::median( opt.current_step_fitnesses() );
 
 			if ( opt.fitness_tracking_window_size() > 0 )
-				fitness_history_ << "\t" << opt.predicted_fitness( opt.fitness_tracking_window_size() ) << "\t" << opt.progress();
+				history_ << "\t" << opt.predicted_fitness( opt.fitness_tracking_window_size() ) << "\t" << opt.progress();
 
-			fitness_history_ << "\n";
+			// setup par_history.txt
+			if ( output_par_history_ )
+			{
+				history_ << opt.current_step();
+				for ( auto&& v : opt.current_step_best_point().values() )
+					history_ << '\t' << v;
+				for ( auto&& v : opt.optimizer_state_values() )
+					history_ << '\t' << v;
+			}
+
+			history_ << '\n';
 			if ( opt.current_step() % 10 == 9 ) // flush every 10 entries
-				fitness_history_.flush();
-		}
-
-		// setup par_history.txt
-		if ( output_par_history_ )
-		{
-			par_history_ << opt.current_step();
-			for ( auto&& v : opt.current_step_best_point().values() )
-				par_history_ << '\t' << v;
-			for ( auto&& v : opt.optimizer_state_values() )
-				par_history_ << '\t' << v;
-			par_history_ << '\n';
+				history_.flush();
 		}
 	}
 
