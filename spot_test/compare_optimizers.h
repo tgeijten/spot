@@ -2,11 +2,11 @@
 
 #include "spot/spot_types.h"
 #include "spot/objective.h"
-#include "test_functions.h"
 #include "spot/cma_optimizer.h"
 #include "spot/console_reporter.h"
 #include "xo/system/log.h"
 #include "spot/mes_optimizer.h"
+#include "spot/test_objectives.h"
 
 namespace spot
 {

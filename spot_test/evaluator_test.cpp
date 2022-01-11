@@ -1,11 +1,11 @@
 #include "xo/system/test_case.h"
 
 #include "spot/cma_optimizer.h"
-#include "test_functions.h"
 #include "xo/system/log.h"
 #include "xo/time/stopwatch.h"
 #include "spot/async_evaluator.h"
 #include "spot/batch_evaluator.h"
+#include "spot/test_objectives.h"
 #include "spot/pooled_evaluator.h"
 #include <chrono>
 #include <thread>
@@ -21,7 +21,7 @@ namespace spot
 
 	fitness_t evaluator_test( evaluator& e, size_t num_opt = g_optimizers )
 	{
-		auto obj = make_slow_schwefel_objective( g_dim );
+		auto obj = make_schwefel_objective( g_dim );
 		std::vector<u_ptr<cma_optimizer>> optimizers;
 		std::vector<std::future<const stop_condition*>> threads;
 		while ( optimizers.size() < num_opt )

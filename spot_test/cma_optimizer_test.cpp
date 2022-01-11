@@ -2,8 +2,9 @@
 
 #include <thread>
 #include <chrono>
-#include "test_functions.h"
 #include "spot/async_evaluator.h"
+#include "spot/function_objective.h"
+#include "test_functions.h"
 
 namespace spot
 {
