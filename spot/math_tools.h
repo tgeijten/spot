@@ -3,6 +3,7 @@
 #include "spot_types.h"
 #include "xo/system/assert.h"
 #include "xo/numerical/constants.h"
+#include <cmath>
 
 namespace spot
 {
