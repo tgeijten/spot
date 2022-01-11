@@ -1,12 +1,6 @@
 #pragma once
 
-#include "xo/container/container_tools.h"
-#include "xo/numerical/regression.h"
-#include "xo/numerical/polynomial.h"
-#include "xo/container/circular_deque.h"
-#include "xo/utility/result.h"
-#include "search_point.h"
-#include "math_tools.h"
+#include "spot_types.h"
 
 namespace spot
 {

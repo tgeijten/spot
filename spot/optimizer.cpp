@@ -13,6 +13,7 @@
 #include "xo/container/flat_set.h"
 #include "xo/container/view_if.h"
 #include "xo/system/profiler_config.h"
+#include "xo/container/container_tools.h"
 
 namespace spot
 {

@@ -1,7 +1,9 @@
 #pragma once
 
 #include <random>
+#include <cmath>
 #include "xo/system/log.h"
+#include "xo/container/container_algorithms.h"
 
 namespace spot
 {

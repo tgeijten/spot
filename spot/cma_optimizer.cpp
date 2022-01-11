@@ -9,6 +9,7 @@
 #include "xo/system/assert.h"
 #include "xo/container/container_tools.h"
 #include "xo/system/log.h"
+#include "xo/numerical/math.h"
 
 namespace spot
 {

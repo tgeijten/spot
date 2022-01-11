@@ -1,6 +1,8 @@
 #include "stop_condition.h"
 #include "optimizer.h"
 #include "cma_optimizer.h"
+#include "math_tools.h"
+#include "xo/container/container_algorithms.h"
 
 namespace spot
 {

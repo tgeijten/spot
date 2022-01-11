@@ -8,6 +8,8 @@
 
 #include "optimizer.h"
 #include "xo/system/log.h"
+#include "xo/container/container_algorithms.h"
+#include "xo/numerical/math.h"
 
 namespace spot
 {
