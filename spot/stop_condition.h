@@ -6,7 +6,7 @@
 #include "xo/container/circular_deque.h"
 #include "xo/utility/result.h"
 #include "search_point.h"
-#include "tools.h"
+#include "math_tools.h"
 
 namespace spot
 {

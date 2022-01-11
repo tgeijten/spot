@@ -8,7 +8,7 @@
 #include "xo/container/storage.h"
 #include "xo/system/log.h"
 
-#include "spot/tools.h"
+#include "spot/math_tools.h"
 #include "spot/optimizer_pool.h"
 
 namespace spot
