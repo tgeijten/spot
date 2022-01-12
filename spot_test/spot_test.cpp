@@ -12,10 +12,11 @@ int main( int argc, char** argv )
 
 	try
 	{
-		xo::averaged avg;
-		for ( unsigned int s = 0; s < 100; ++s )
-			avg.add( spot::variance_test( s ) );
-		xo::log::info( "AVERAGE=", avg.get() );
+		std::vector< spot::fitness_t > results;
+		for ( unsigned int s = 0; s < 1000; ++s )
+			results.emplace_back( spot::variance_test( s ) );
+		auto [mean, stdev] = xo::mean_std( results );
+		xo::log::info( "M=", mean, " S=", stdev );
 		//spot::compare_optimizers();
 	}
 	catch ( std::exception& e )

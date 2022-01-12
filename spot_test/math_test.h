@@ -9,12 +9,14 @@ namespace spot
 {
 	double variance_test( unsigned int seed ) {
 		auto rng = std::default_random_engine( seed );
-		const int lambda = 10;
-		const double var_start = 0.1;
-		const double c = 0.2;
+		const int lambda = 6;
+		const int mu = lambda / 2;
+		const double var_start = 1;
+		const double c = 0.1;
+		//const double c = std::log( lambda );
 		//const double cupd = 0.20282;
 
-		std::vector<double> samples( lambda );
+		std::vector<double> x( lambda );
 
 		double mean = 2.0;
 		double var = var_start;
@@ -22,27 +24,39 @@ namespace spot
 		for ( int g = 0; g < 1000; ++g ) {
 			auto dist = std::normal_distribution( mean, stdev );
 			for ( int i = 0; i < lambda; ++i )
-				samples[ i ] = dist( rng );
+				x[ i ] = dist( rng );
+			auto [x_mean, x_var] = xo::mean_var( x );
 
-			auto smean = xo::average( samples );
-			auto svar1 = 0.0, svar2 = 0.0;
-			for ( auto& v : samples )
+			auto lambda_var = 0.0;
+			for ( int i = 0; i < lambda; ++i )
+				lambda_var += xo::squared( x[ i ] - mean );
+			lambda_var /= lambda;
+
+			auto mu_var = 0.0;
+			auto mu_var_x_mean = 0.0;
+			auto x_var_mean = 0.0;
+			for ( int i = 0; i < mu; ++i )
 			{
-				svar1 += xo::squared( v - smean );
-				svar2 += xo::squared( v - mean );
+				mu_var_x_mean += xo::squared( x[ i ] - x_mean );
+				mu_var += xo::squared( x[ i ] - mean );
 			}
-			svar1 /= ( lambda - 1 );
-			svar2 /= lambda;
 
-			var = ( 1 - c ) * var + c * svar1;
-			//var = ( 1 - c ) * var + c * svar2;
-			//var = var + c * ( nvar - var );
+			mu_var_x_mean /= ( mu - 1 );
+			mu_var /= mu;
+			auto rel_mu_var = mu_var / lambda_var;
+			auto rel_mu_std = std::sqrt( mu_var ) / std::sqrt( lambda_var );
+
+			//var = ( 1 - c ) * var + c * mu_var_x_mean;
+			//var = ( 1 - c ) * var + c * mu_var;
+			var = ( 1 - c ) * var + c * ( rel_mu_var * var );
+
 			stdev = std::sqrt( var );
 			//stdev = ( 1 - c ) * stdev + c * std::sqrt( nvar );
 			//var = stdev * stdev;
 			//xo_logvar2( var, stdev );
 		}
-		xo_logvar4( var / var_start, var_start, var, stdev );
+		//xo_logvar4( var / var_start, var_start, var, stdev );
+		xo_logvar2( var, stdev );
 		return var / var_start;
 	}
 }
