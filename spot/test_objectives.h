@@ -8,6 +8,10 @@ namespace spot
 	// optimum: (0, ..., 0) 
 	SPOT_API fitness_t sphere( const par_vec& v );
 
+	// ellipsoid function
+	// optimum: (0, ..., 0) 
+	SPOT_API fitness_t ellipsoid( const par_vec& v );
+
 	// https://en.wikipedia.org/wiki/Himmelblau%27s_function
 	// range: [-5, 5], optima: (3.0,2.0) (-2.805118, 3.131312) (-3.779310,-3.283186) (3.584428,-1.848126)
 	SPOT_API fitness_t himmelblau( const par_vec& v );
@@ -26,6 +30,7 @@ namespace spot
 
 	// create function objectives
 	SPOT_API function_objective make_sphere_objective( size_t d, par_t mean = 0.0, par_t stdev = 1.0 );
+	SPOT_API function_objective make_ellipsoid_objective( size_t d, par_t mean = 0.0, par_t stdev = 1.0 );
 	SPOT_API function_objective make_himmelblau_objective();
 	SPOT_API function_objective make_rosenbrock_objective( size_t d );
 	SPOT_API function_objective make_schwefel_objective( size_t d );

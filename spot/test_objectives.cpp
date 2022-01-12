@@ -10,6 +10,14 @@ namespace spot
 		return sum;
 	}
 
+	fitness_t ellipsoid( const par_vec& v )
+	{
+		fitness_t sum = 0.0;
+		for ( unsigned int i = 0; i < v.size(); ++i )
+			sum += ( i + 1 ) * xo::squared( v[ i ] );
+		return sum;
+	}
+
 	fitness_t himmelblau( const par_vec& v )
 	{
 		return xo::squared( xo::squared( v[ 0 ] ) + v[ 1 ] - 11 ) + xo::squared( v[ 0 ] + xo::squared( v[ 1 ] ) - 7 );
@@ -42,6 +50,11 @@ namespace spot
 	function_objective make_sphere_objective( size_t d, par_t mean, par_t stdev )
 	{
 		return function_objective( sphere, d, mean, stdev, -1e9, 1e9, xo::stringf( "sphere-%d", d ) );
+	}
+
+	function_objective make_ellipsoid_objective( size_t d, par_t mean, par_t stdev )
+	{
+		return function_objective( ellipsoid, d, mean, stdev, -1e9, 1e9, xo::stringf( "ellipsoid-%d", d ) );
 	}
 
 	function_objective make_himmelblau_objective()
