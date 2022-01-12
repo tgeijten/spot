@@ -28,7 +28,7 @@ namespace spot
 		if ( output_fitness_history_ )
 		{
 			history_ = std::ofstream( ( root_ / "history.txt" ).str() );
-			history_ << "Step\tBest\tMedian\tPredicted\tProgress";
+			history_ << "generation\tbest_fitness\tmedian_fitness\tpredicted_fitness\tfitness_progress";
 
 			// setup par_history.txt
 			if ( output_par_history_ )
