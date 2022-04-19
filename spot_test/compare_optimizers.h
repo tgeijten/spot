@@ -7,25 +7,26 @@
 #include "xo/system/log.h"
 #include "spot/mes_optimizer.h"
 #include "spot/test_objectives.h"
+#include "xo/time/stopwatch.h"
 
 namespace spot
 {
 	static constexpr fitness_t min_progress = 1e-5;
 
-	fitness_t test_cma_optimizer( const objective& obj )
+	fitness_t test_cma_optimizer( const objective& obj, size_t max_steps = 1000 )
 	{
 		sequential_evaluator eval;
 		cma_options options;
 		auto cma = cma_optimizer( obj, eval, options );
 		//cma.add_reporter( std::make_unique<spot::console_reporter>( 0, 3 ) );
 		cma.add_stop_condition( std::make_unique<spot::min_progress_condition>( min_progress ) );
-		cma.run( 1000 );
+		cma.run( max_steps );
 		//cma.profiler().log_results();
-		//xo::log::info( xo::stringf( "%-20s\tCMA-ES\t%d\t%g", obj.name().c_str(), cma.current_step(), cma.best_fitness() ));
+		xo::log::info( xo::stringf( "%-20s\tCMA-ES\t%d\t%g", obj.name().c_str(), cma.current_step(), cma.best_fitness() ));
 		return cma.best_fitness();
 	}
 
-	fitness_t test_mes_optimizer( const objective& obj, par_t mean_sigma, par_t var_sigma, par_t mom_sigma )
+	fitness_t test_mes_optimizer( const objective& obj, par_t mean_sigma, par_t var_sigma, par_t mom_sigma, size_t max_steps = 1000 )
 	{
 		sequential_evaluator eval;
 		mes_options options;
@@ -35,9 +36,9 @@ namespace spot
 		auto mes = mes_optimizer( obj, eval, options );
 		//mes.add_reporter( std::make_unique<spot::console_reporter>( 0, 3 ) );
 		mes.add_stop_condition( std::make_unique<spot::min_progress_condition>( min_progress ) );
-		mes.run( 1000 );
+		mes.run( max_steps );
 		//cma.profiler().log_results();
-		//xo::log::info( xo::stringf( "%-20s\tMVM-ES\t%d\t%g", obj.name().c_str(), mes.current_step(), mes.best_fitness() ));
+		xo::log::info( xo::stringf( "%-20s\tMVM-ES\t%d\t%g", obj.name().c_str(), mes.current_step(), mes.best_fitness() ));
 		return mes.best_fitness();
 	}
 
@@ -58,5 +59,18 @@ namespace spot
 				s += "\t" + xo::stringf( "%8g", r );
 			xo::log::info( s );
 		}
+	}
+
+	void benchmark_optimizers() {
+		size_t dim = 200;
+		size_t gens = 500;
+		auto obj = make_schwefel_objective( dim );
+		xo::log::info( "benchmarking start" );
+		xo::stopwatch sw;
+		test_cma_optimizer( obj, gens );
+		sw.split( "cma" );
+		test_mes_optimizer( obj, 0.2, 0.2, 0.0, gens );
+		sw.split( "mes" );
+		xo::log::info( "Benchmark results:\n", sw.get_report() );
 	}
 }

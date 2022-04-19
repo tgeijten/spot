@@ -12,12 +12,13 @@ int main( int argc, char** argv )
 
 	try
 	{
-		std::vector< spot::fitness_t > results;
-		for ( unsigned int s = 0; s < 1000; ++s )
-			results.emplace_back( spot::variance_test( s ) );
-		auto [mean, stdev] = xo::mean_std( results );
-		xo::log::info( "M=", mean, " S=", stdev );
+		//std::vector< spot::fitness_t > results;
+		//for ( unsigned int s = 0; s < 1000; ++s )
+		//	results.emplace_back( spot::variance_test( s ) );
+		//auto [mean, stdev] = xo::mean_std( results );
+		//xo::log::info( "M=", mean, " S=", stdev );
 		//spot::compare_optimizers();
+		spot::benchmark_optimizers();
 	}
 	catch ( std::exception& e )
 	{
