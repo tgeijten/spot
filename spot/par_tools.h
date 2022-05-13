@@ -21,9 +21,9 @@ namespace spot
 	{
 		if ( auto* p = pn.try_get_child( name ) )
 			return T( ps.get( name, *p ) );
-		else if ( auto* p = pn.try_get_query( name ) )
+		if ( auto* p = pn.try_get_query( name ) )
 			return T( ps.get( name, *p ) );
-		else return def;
+		return def;
 	}
 
 	template< typename T >
@@ -31,9 +31,9 @@ namespace spot
 	{
 		if ( auto* p = pn.try_get_child( name ) )
 			return T( ps.get( name, *p ) );
-		else if ( auto* p = pn.try_get_query( name ) )
+		if ( auto* p = pn.try_get_query( name ) )
 			return T( ps.get( name, *p ) );
-		else return T( ps.get( name, par_t( mean ), std, lower, upper ) );
+		return T( ps.get( name, par_t( mean ), std, lower, upper ) );
 	}
 
 	template< typename T >
