@@ -18,7 +18,10 @@ namespace spot
 
 	par_t par_io::get( const string& name, const prop_node& pn )
 	{
+		// get full name, replace aliases
 		auto full_name = prefix() + name;
+		for ( auto& [name, alias] : options().aliases_ )
+			xo::replace_str( full_name, name, alias );
 
 		// check if we already have a value for this name
 		if ( auto val = try_get( full_name ) )

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "spot_types.h"
+#include "xo/container/flat_map.h"
 
 namespace spot
 {
@@ -14,5 +15,6 @@ namespace spot
 		par_t auto_std_minimum = par_t( 0.01 );
 		par_t lower_boundaray = default_lower_boundaray;
 		par_t upper_boundaray = default_upper_boundaray;
+		xo::flat_map<string, string> aliases_;
 	};
 }

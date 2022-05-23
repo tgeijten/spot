@@ -8,6 +8,7 @@
 #include "par_options.h"
 #include <stack>
 #include <vector>
+#include "xo/system/log.h"
 
 namespace spot
 {
@@ -71,6 +72,7 @@ namespace spot
 			pn.try_get( ps_.options().auto_std_factor, "auto_std_factor" );
 			pn.try_get( ps_.options().auto_std_offset, "auto_std_offset" );
 			pn.try_get( ps_.options().auto_std_minimum, "auto_std_minimum" );
+			pn.try_get( ps_.options().aliases_, "parameter_aliases" );
 		}
 		~scoped_par_options() {
 			ps_.pop_options();
