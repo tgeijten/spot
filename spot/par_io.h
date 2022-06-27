@@ -55,6 +55,14 @@ namespace spot
 		par_io& ps_;
 	};
 
+	class SPOT_API null_objective_info : public par_io
+	{
+	public:
+		size_t dim() const override { return 0; }
+		xo::optional<par_t> try_get( const string& name ) const override { return {}; }
+		par_t add( const par_info& pi ) override { return pi.mean; }
+	};
+
 	struct scoped_prefix_setter
 	{
 		scoped_prefix_setter( par_io& ps, const string& prefix ) : ps_( ps ), previous_( ps_.prefix() ) { ps_.set_prefix( prefix ); }
