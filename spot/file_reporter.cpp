@@ -53,12 +53,11 @@ namespace spot
 
 	void file_reporter::on_pre_evaluate_population( const optimizer& opt, const search_point_vec& pop )
 	{
-		if ( output_temp_files )
+		if ( output_individual_search_points )
 		{
-			// create temp files for debugging purposes
 			for ( index_t i = 0; i < pop.size(); ++i )
 			{
-				path p = root_ / xo::stringf( "%04d_%02d.tmp", opt.current_step(), i );
+				path p = root_ / xo::stringf( "%04d_individual%02d.par", opt.current_step(), i );
 				std::ofstream( p.str() ) << pop[ i ];
 			}
 		}
@@ -66,16 +65,6 @@ namespace spot
 
 	void file_reporter::on_post_evaluate_population( const optimizer& opt, const search_point_vec& pop, const fitness_vec& fitnesses, bool new_best )
 	{
-		if ( output_temp_files )
-		{
-			// remove temp files
-			for ( index_t i = 0; i < pop.size(); ++i )
-			{
-				path p = root_ / xo::stringf( "%04d_%02d.tmp", opt.current_step(), i );
-				remove( p );
-			}
-		}
-
 		if ( opt.current_step() - last_output_step >= max_steps_without_file_output_ )
 			write_par_file( opt, false );
 	}

@@ -19,9 +19,9 @@ namespace spot
 
 		double min_improvement_for_file_output_ = 0.05;
 		size_t max_steps_without_file_output_ = 1000;
-		bool output_temp_files = false;
 		bool output_fitness_history_ = true;
 		bool output_par_history_ = false;
+		bool output_individual_search_points = false;
 
 	private:
 		void write_par_file( const optimizer& opt, bool try_cleanup );
