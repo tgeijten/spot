@@ -144,7 +144,7 @@ namespace spot
 		else return 0.0f;
 	}
 
-	par_vec& optimizer::boundary_transform( par_vec& v ) const
+	par_vec& optimizer::try_apply_boundary_transform( par_vec& v ) const
 	{
 		if ( boundary_transformer_ )
 			boundary_transformer_->apply( v );

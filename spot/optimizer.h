@@ -53,6 +53,9 @@ namespace spot
 		const objective& obj() const { return objective_; }
 		bool is_better( fitness_t a, fitness_t b ) const { return objective_.info().is_better( a, b ); }
 
+		// boundary transform
+		void set_boundary_transformer( u_ptr<boundary_transformer> bt ) { boundary_transformer_ = std::move( bt ); }
+
 		// fitness tracking and prediction
 		void set_fitness_tracking_window_size( size_t window_size ) { fitness_history_.reserve( window_size ); }
 		size_t fitness_tracking_window_size() const { return fitness_history_.capacity(); }
@@ -76,7 +79,7 @@ namespace spot
 
 	protected:
 		virtual bool internal_step() = 0;
-		par_vec& boundary_transform( par_vec& v ) const;
+		par_vec& try_apply_boundary_transform( par_vec& v ) const;
 		vector< result<fitness_t> > evaluate( const search_point_vec& point_vec, priority_t prio = 0 );
 		bool evaluate_step( const search_point_vec& point_vec, priority_t prio = 0 );
 		bool verify_results( const vector< result<fitness_t> >& results );

@@ -1210,7 +1210,7 @@ namespace spot
 			for ( size_t attempts = 0; !found_individual && attempts < max_resample_count; ++attempts )
 			{
 				// apply boundary transformation (if any)
-				boundary_transform( individual );
+				try_apply_boundary_transform( individual );
 				if ( !info().is_feasible( individual ) )
 				{
 					cmaes_ReSampleSingle( &pimpl->cmaes, ind_idx );
@@ -1249,7 +1249,7 @@ namespace spot
 	par_vec cma_optimizer::current_mean() const
 	{
 		par_vec individual( pimpl->cmaes.current_mean.begin(), pimpl->cmaes.current_mean.begin() + info().dim() );
-		return boundary_transform( individual );
+		return try_apply_boundary_transform( individual );
 	}
 
 	par_vec cma_optimizer::current_std() const
