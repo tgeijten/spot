@@ -21,9 +21,14 @@ namespace spot
 			xo::soft_clamp( v[ i ], info_[ i ].min, info_[ i ].max, boundary_limit_threshold_ );
 	}
 
-	void soft_limit_boundary_transformer::apply_inverse( par_vec& v )
+	void reflective_boundary_transformer::apply( par_vec& v )
 	{
-		XO_NOT_IMPLEMENTED;
+		xo_assert( v.size() == info_.dim() );
+		for ( index_t i = 0; i < v.size(); ++i ) {
+			auto l = info_[ i ].min, u = info_[ i ].max;
+			if ( v[ i ] < l || v[ i ] > u )
+				v[ i ] = xo::triangle_wave( v[ i ], l, u );
+		}
 	}
 
 	cmaes_boundary_transformer::cmaes_boundary_transformer( const objective_info& info ) :
@@ -97,10 +102,5 @@ namespace spot
 				y = ub - ( y - ( ub + au ) ) * ( y - ( ub + au ) ) / 4. / au;
 			x[ i ] = y;
 		}
-	}
-
-	void cmaes_boundary_transformer::apply_inverse( par_vec& v )
-	{
-		XO_NOT_IMPLEMENTED;
 	}
 }
