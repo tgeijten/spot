@@ -4,7 +4,7 @@
 
 namespace spot
 {
-	class boundary_transformer
+	class SPOT_API boundary_transformer
 	{
 	public:
 		boundary_transformer( const objective_info& i ) : info_( i ) {}
@@ -16,7 +16,7 @@ namespace spot
 		const objective_info& info_;
 	};
 
-	class soft_limit_boundary_transformer : public boundary_transformer
+	class SPOT_API soft_limit_boundary_transformer : public boundary_transformer
 	{
 	public:
 		soft_limit_boundary_transformer( const objective_info& i, par_t threshold = 0.1 );
@@ -25,14 +25,14 @@ namespace spot
 		par_t boundary_limit_threshold_;
 	};
 
-	class reflective_boundary_transformer : public boundary_transformer
+	class SPOT_API reflective_boundary_transformer : public boundary_transformer
 	{
 	public:
 		reflective_boundary_transformer( const objective_info& i ) : boundary_transformer( i ) {}
 		virtual void apply( par_vec& v ) override;
 	};
 
-	class cmaes_boundary_transformer : public boundary_transformer
+	class SPOT_API cmaes_boundary_transformer : public boundary_transformer
 	{
 	public:
 		cmaes_boundary_transformer( const objective_info& i );
