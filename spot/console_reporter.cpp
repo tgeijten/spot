@@ -29,18 +29,19 @@ namespace spot
 		else printf( "\r" );
 	}
 
-	void console_reporter::on_stop( const optimizer& opt, const stop_condition& s )
+	void console_reporter::on_start( const optimizer& opt )
 	{
-		printf( "\nOptimization finished: %s\n", s.what().c_str() );
+		printf( "Starting optimization, dim=%d\n", (int)opt.info().dim() );
+		timer_.restart();
 	}
 
 	void console_reporter::on_pre_step( const optimizer& opt )
 	{
-		printf( "%04d: ", ( int )opt.current_step() );
+		printf( "%04d: ", (int)opt.current_step() );
 	}
 
-	void console_reporter::on_start( const optimizer& opt )
+	void console_reporter::on_stop( const optimizer& opt, const stop_condition& s )
 	{
-		printf( "Starting optimization, dim=%d\n", ( int )opt.info().dim() );
+		printf( "\nOptimization finished in %.2fs: %s\n", timer_().secondsd(), s.what().c_str() );
 	}
 }
