@@ -41,10 +41,10 @@ namespace spot
 		while ( finished < threads.size() )
 		{
 			for ( index_t i = 0; i < threads.size(); ++i )
-				if ( threads[ i ].valid() && threads[ i ].wait_for( 1ms ) == std::future_status::ready )
+				if ( threads[i].valid() && threads[i].wait_for( 1ms ) == std::future_status::ready )
 				{
 					printf( "-%zd", i );
-					threads[ i ] = std::future<const stop_condition*>();
+					threads[i] = std::future<const stop_condition*>();
 					++finished;
 				}
 		}

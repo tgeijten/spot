@@ -59,16 +59,16 @@ namespace spot
 			{
 				string s = stringf( "%2d: ", i );
 
-				if ( opt[ i ].is_active() && opt[ i ].step() )
+				if ( opt[i].is_active() && opt[i].step() )
 					--active_count;
-				sto( step, i * 2 ) = (float)opt[ i ].current_mean()[ 0 ];
-				sto( step, i * 2 + 1 ) = (float)opt[ i ].current_mean()[ 1 ];
+				sto( step, i * 2 ) = (float)opt[i].current_mean()[0];
+				sto( step, i * 2 + 1 ) = (float)opt[i].current_mean()[1];
 
-				s += stringf( " F=%6.3f", opt[ i ].current_step_best() );
+				s += stringf( " F=%6.3f", opt[i].current_step_best() );
 
 				for ( int j = 0; j < opt_count; ++j )
 				{
-					auto d = normalized_distance( opt[ i ].current_mean(), opt[ j ].current_mean(), opt[ i ].current_std() );
+					auto d = normalized_distance( opt[i].current_mean(), opt[j].current_mean(), opt[i].current_std() );
 					s += stringf( " %6.3f", d );
 				}
 				log::info( s );

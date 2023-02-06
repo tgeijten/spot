@@ -39,7 +39,7 @@ namespace spot
 		if ( use_predicted_fitness_stop_condition_ )
 			opt->add_stop_condition(
 				std::make_unique< predicted_fitness_condition >(
-				info().worst_fitness(), prediction_look_ahead_, prediction_start_ ) );
+					info().worst_fitness(), prediction_look_ahead_, prediction_start_ ) );
 		optimizers_.push_back( std::move( opt ) );
 	}
 
@@ -53,7 +53,7 @@ namespace spot
 	objective_info optimizer_pool::make_updated_objective_info() const
 	{
 		xo_assert( best_optimizer_idx_ != no_index );
-		return optimizers_[ best_optimizer_idx_ ]->make_updated_objective_info();
+		return optimizers_[best_optimizer_idx_]->make_updated_objective_info();
 	}
 
 	fitness_vec optimizer_pool::compute_predicted_fitnesses()
@@ -86,11 +86,11 @@ namespace spot
 			auto predictions = compute_predicted_fitnesses();
 			auto best_indices = xo::sorted_indices( predictions, [&]( fitness_t a, fitness_t b ) { return info().is_better( a, b ); } );
 
-			for ( auto it = best_indices.begin(); it != best_indices.end() && !optimizers_[ *it ]->test_stop_conditions(); ++it )
+			for ( auto it = best_indices.begin(); it != best_indices.end() && !optimizers_[*it]->test_stop_conditions(); ++it )
 			{
 				step_queue_.push_back( *it );
 				if ( ( it < best_indices.end() - 1 )
-					&& predictions[ *it ] != predictions[ *( it + 1 ) ] // next one is worse
+					&& predictions[*it] != predictions[*( it + 1 )] // next one is worse
 					&& step_queue_.size() >= concurrent_optimizations_ )
 					break; // stop if the next one is worse
 			}
@@ -98,9 +98,9 @@ namespace spot
 			string str = xo::stringf( "%d (%.0f):", current_step(), current_step() > 0 ? best_fitness() : 0.0 );
 			for ( int i = 0; i < optimizers_.size(); ++i )
 			{
-				auto& opt = *optimizers_[ i ];
+				auto& opt = *optimizers_[i];
 				auto bf = xo::clamped( opt.best_fitness(), fitness_t( -9999 ), fitness_t( 9999 ) );
-				auto pf = xo::clamped( predictions[ i ], fitness_t( -9999 ), fitness_t( 9999 ) );
+				auto pf = xo::clamped( predictions[i], fitness_t( -9999 ), fitness_t( 9999 ) );
 				str += xo::stringf( "\t%d/%.0f/%.0f", opt.current_step(), bf, pf );
 			}
 		}
@@ -108,14 +108,14 @@ namespace spot
 		vector< std::future< index_t > > futures;
 		while ( !step_queue_.empty() && futures.size() < concurrent_optimizations_ )
 		{
-			futures.push_back( std::async( [&]( index_t i ) { optimizers_[ i ]->step(); return i; }, step_queue_.front() ) );
+			futures.push_back( std::async( [&]( index_t i ) { optimizers_[i]->step(); return i; }, step_queue_.front() ) );
 			step_queue_.pop_front();
 		}
 
 		for ( auto& f : futures )
 		{
 			auto idx = f.get();
-			bool new_best = best_optimizer_idx_ == no_index || is_better( optimizers_[ idx ]->best_fitness(), best_fitness_ );
+			bool new_best = best_optimizer_idx_ == no_index || is_better( optimizers_[idx]->best_fitness(), best_fitness_ );
 			if ( new_best )
 			{
 				// copy results if better

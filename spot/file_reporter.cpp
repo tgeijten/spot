@@ -58,7 +58,7 @@ namespace spot
 			for ( index_t i = 0; i < pop.size(); ++i )
 			{
 				path p = root_ / xo::stringf( "%04d_individual%02d.par", opt.current_step(), i );
-				std::ofstream( p.str() ) << pop[ i ];
+				std::ofstream( p.str() ) << pop[i];
 			}
 		}
 	}
@@ -119,9 +119,9 @@ namespace spot
 			if ( recent_files.size() == 3 )
 			{
 				// see if we should delete the second last file
-				auto& f1 = recent_files[ 0 ].second;
-				auto& f2 = recent_files[ 1 ].second;
-				auto& f3 = recent_files[ 2 ].second;
+				auto& f1 = recent_files[0].second;
+				auto& f2 = recent_files[1].second;
+				auto& f3 = recent_files[2].second;
 
 				double imp1 = ( f2 - f1 ) / abs( f1 );
 				double imp2 = ( f3 - f2 ) / abs( f2 );
@@ -131,8 +131,8 @@ namespace spot
 				if ( imp1 < min_improvement_for_file_output_ && imp2 < min_improvement_for_file_output_ )
 				{
 					//xo::log::info( "Cleaning up file ", recent_files[ 1 ].first );
-					xo::remove( recent_files[ 1 ].first );
-					recent_files[ 1 ] = recent_files[ 2 ];
+					xo::remove( recent_files[1].first );
+					recent_files[1] = recent_files[2];
 					recent_files.pop_back();
 				}
 				else recent_files.pop_front();

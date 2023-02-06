@@ -4,6 +4,6 @@
 
 namespace spot
 {
-	double cigtab_c( double const *x, int N );
+	double cigtab_c( double const* x, int N );
 	double cigtab( const par_vec& x );
 }

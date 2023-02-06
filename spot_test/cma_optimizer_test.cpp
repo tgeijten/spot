@@ -21,7 +21,7 @@ namespace spot
 
 		// init c-cmaes
 		cmaes_t evo;
-		double *arFunvals = cmaes_init( &evo, dim, &init_mean[ 0 ], &init_std[ 0 ], seed, lambda, "no" );
+		double* arFunvals = cmaes_init( &evo, dim, &init_mean[0], &init_std[0], seed, lambda, "no" );
 
 		// init cma_optimizer
 		function_objective obj( cigtab, init_mean, init_std, lower, upper );
@@ -40,7 +40,7 @@ namespace spot
 
 				/* evaluate the new search points using fitfun */
 				for ( int i = 0; i < cmaes_Get( &evo, "lambda" ); ++i ) {
-					arFunvals[ i ] = cigtab_c( pop[ i ], (int)cmaes_Get( &evo, "dim" ) );
+					arFunvals[i] = cigtab_c( pop[i], (int)cmaes_Get( &evo, "dim" ) );
 					//printf( "%.2f ", arFunvals[ i ] );
 				}
 
@@ -81,11 +81,11 @@ namespace spot
 			// update cma_optimizer
 			{
 				cma.step();
-				
+
 				auto results = cma.current_step_fitnesses();
 				printf( "D%03d: ", gen );
 				for ( int i = 0; i < cma.lambda(); ++i ) {
-					printf( "%.2f ", results[ i ] );
+					printf( "%.2f ", results[i] );
 				}
 				printf( "\n" );
 			}

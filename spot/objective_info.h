@@ -40,7 +40,7 @@ namespace spot
 		void set_minimize( bool m ) { minimize_ = m; }
 
 		/// access by index
-		const par_info& operator[]( index_t i ) const { return par_infos_[ i ]; }
+		const par_info& operator[]( index_t i ) const { return par_infos_[i]; }
 
 		/// access by name
 		index_t find_index( const string& name ) const;

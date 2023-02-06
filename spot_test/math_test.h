@@ -24,12 +24,12 @@ namespace spot
 		for ( int g = 0; g < 1000; ++g ) {
 			auto dist = std::normal_distribution( mean, stdev );
 			for ( int i = 0; i < lambda; ++i )
-				x[ i ] = dist( rng );
+				x[i] = dist( rng );
 			auto [x_mean, x_var] = xo::mean_var( x );
 
 			auto lambda_var = 0.0;
 			for ( int i = 0; i < lambda; ++i )
-				lambda_var += xo::squared( x[ i ] - mean );
+				lambda_var += xo::squared( x[i] - mean );
 			lambda_var /= lambda;
 
 			auto mu_var = 0.0;
@@ -37,8 +37,8 @@ namespace spot
 			auto x_var_mean = 0.0;
 			for ( int i = 0; i < mu; ++i )
 			{
-				mu_var_x_mean += xo::squared( x[ i ] - x_mean );
-				mu_var += xo::squared( x[ i ] - mean );
+				mu_var_x_mean += xo::squared( x[i] - x_mean );
+				mu_var += xo::squared( x[i] - mean );
 			}
 
 			mu_var_x_mean /= ( mu - 1 );

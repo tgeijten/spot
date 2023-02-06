@@ -55,6 +55,6 @@ namespace spot
 		vector< u_ptr< optimizer > > optimizers_;
 		std::deque< index_t > step_queue_;
 		index_t best_optimizer_idx_;
-		const optimizer& best_optimizer() const { xo_assert( best_optimizer_idx_ < optimizers_.size() ); return *optimizers_[ best_optimizer_idx_ ]; }
+		const optimizer& best_optimizer() const { xo_assert( best_optimizer_idx_ < optimizers_.size() ); return *optimizers_[best_optimizer_idx_]; }
 	};
 }

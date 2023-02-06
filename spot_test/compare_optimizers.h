@@ -22,7 +22,7 @@ namespace spot
 		cma.add_stop_condition( std::make_unique<spot::min_progress_condition>( min_progress ) );
 		cma.run( max_steps );
 		//cma.profiler().log_results();
-		xo::log::info( xo::stringf( "%-20s\tCMA-ES\t%d\t%g", obj.name().c_str(), cma.current_step(), cma.best_fitness() ));
+		xo::log::info( xo::stringf( "%-20s\tCMA-ES\t%d\t%g", obj.name().c_str(), cma.current_step(), cma.best_fitness() ) );
 		return cma.best_fitness();
 	}
 
@@ -38,7 +38,7 @@ namespace spot
 		mes.add_stop_condition( std::make_unique<spot::min_progress_condition>( min_progress ) );
 		mes.run( max_steps );
 		//cma.profiler().log_results();
-		xo::log::info( xo::stringf( "%-20s\tMVM-ES\t%d\t%g", obj.name().c_str(), mes.current_step(), mes.best_fitness() ));
+		xo::log::info( xo::stringf( "%-20s\tMVM-ES\t%d\t%g", obj.name().c_str(), mes.current_step(), mes.best_fitness() ) );
 		return mes.best_fitness();
 	}
 

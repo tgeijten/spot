@@ -21,7 +21,7 @@ namespace spot
 		results.reserve( point_vec.size() );
 		for ( const auto& sp : point_vec )
 			results.push_back( o.evaluate_noexcept( sp, st ) );
-	
+
 		return results;
 	}
 }

@@ -43,7 +43,7 @@ namespace spot
 		// see if this is a parameter
 		auto idx = info_.find_index( full_name );
 		if ( idx != no_index )
-			return values_[ idx ];
+			return values_[idx];
 		else return info_.try_get_locked( full_name );
 	}
 
@@ -70,7 +70,7 @@ namespace spot
 				index_t idx = info().find_index( name );
 				if ( idx != no_index )
 				{
-					values_[ idx ] = value;
+					values_[idx] = value;
 					++params_set;
 				}
 				else ++params_skipped;
@@ -83,7 +83,7 @@ namespace spot
 	{
 		xo_assert( values_.size() == values.size() );
 		for ( size_t idx = 0; idx < values.size(); ++idx )
-			values_[ idx ] = rounded( values[ idx ] );
+			values_[idx] = rounded( values[idx] );
 	}
 
 	void search_point::round_values()
@@ -108,9 +108,9 @@ namespace spot
 
 		for ( index_t idx = 0; idx < ps.size(); ++idx )
 		{
-			auto& inf = ps.info()[ idx ];
+			auto& inf = ps.info()[idx];
 			str << std::left << std::setw( max_width ) << inf.name << "\t";
-			str << std::setprecision( 8 ) << ps[ idx ] << "\t" << inf.mean << "\t" << inf.std << "\t" << std::endl;
+			str << std::setprecision( 8 ) << ps[idx] << "\t" << inf.mean << "\t" << inf.std << "\t" << std::endl;
 		}
 		return str;
 	}
@@ -123,17 +123,17 @@ namespace spot
 		for ( auto& ind : pop )
 		{
 			for ( index_t i = 0; i < info.dim(); ++i )
-				mean[ i ] += ind[ i ] / pop.size();
+				mean[i] += ind[i] / pop.size();
 		}
 
 		vector< par_t > stds( info.dim() );
 		for ( index_t pop_idx = 0; pop_idx < pop.size(); ++pop_idx )
 		{
 			for ( index_t i = 0; i < info.dim(); ++i )
-				stds[ i ] += xo::squared( pop[ pop_idx ][ i ] - mean[ i ] ) / pop.size();
+				stds[i] += xo::squared( pop[pop_idx][i] - mean[i] ) / pop.size();
 		}
 		for ( index_t i = 0; i < info.dim(); ++i )
-			stds[ i ] = sqrt( stds[ i ] );
+			stds[i] = sqrt( stds[i] );
 
 		return std::make_pair( std::move( mean ), std::move( stds ) );
 	}

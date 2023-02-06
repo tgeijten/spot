@@ -16,10 +16,10 @@ namespace spot
 		for ( const auto& point : point_vec )
 		{
 			futures.emplace_back(
-				std::async( std::launch::async,	[&]() {
+				std::async( std::launch::async, [&]() {
 					xo::set_thread_priority( thread_prio_ );
 					return o.evaluate_noexcept( point, st );
-				} )
+					} )
 			);
 		}
 

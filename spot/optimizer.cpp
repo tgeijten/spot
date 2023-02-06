@@ -171,19 +171,19 @@ namespace spot
 			// copy results
 			current_step_fitnesses_.resize( results.size() );
 			for ( index_t i = 0; i < results.size(); ++i )
-				current_step_fitnesses_[ i ] = results[ i ] ? results[ i ].value() : info().worst_fitness();
+				current_step_fitnesses_[i] = results[i] ? results[i].value() : info().worst_fitness();
 
 			// update current step best
 			auto best_idx = objective_.info().find_best_fitness( current_step_fitnesses_ );
-			current_step_best_fitness_ = current_step_fitnesses_[ best_idx ];
-			current_step_best_point_ = point_vec[ best_idx ];
+			current_step_best_fitness_ = current_step_fitnesses_[best_idx];
+			current_step_best_point_ = point_vec[best_idx];
 
 			// update all-time best
-			bool has_new_best = objective_.info().is_better( current_step_fitnesses_[ best_idx ], best_fitness_ );
+			bool has_new_best = objective_.info().is_better( current_step_fitnesses_[best_idx], best_fitness_ );
 			if ( has_new_best )
 			{
-				best_fitness_ = current_step_fitnesses_[ best_idx ];
-				best_point_.set_values( point_vec[ best_idx ].values() );
+				best_fitness_ = current_step_fitnesses_[best_idx];
+				best_point_.set_values( point_vec[best_idx].values() );
 				signal_reporters( &reporter::on_new_best, *this, best_point_, best_fitness_ );
 			}
 

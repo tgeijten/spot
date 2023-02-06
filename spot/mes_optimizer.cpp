@@ -59,7 +59,7 @@ namespace spot
 		vector<par_t> result;
 		result.reserve( 3 * info().dim() );
 		for ( index_t i = 0; i < info().dim(); ++i )
-			result.insert( result.end(), { mean_[ i ], std::sqrt( var_[ i ] ), mom_[ i ] } );
+			result.insert( result.end(), { mean_[i], std::sqrt( var_[i] ), mom_[i] } );
 		return result;
 	}
 
@@ -87,10 +87,10 @@ namespace spot
 			auto mom_ofs = mom_dist( random_engine_ );
 			for ( index_t i = 0; i < n; ++i )
 			{
-				auto var = var_[ i ] + xo::squared( mom_[ i ] );
-				vec[ i ] = sample_parameter( mean_[ i ] + mom_ofs * mom_[ i ], std::sqrt( var ), info()[ i ] );
+				auto var = var_[i] + xo::squared( mom_[i] );
+				vec[i] = sample_parameter( mean_[i] + mom_ofs * mom_[i], std::sqrt( var ), info()[i] );
 			}
-			population_[ ind_idx ].set_values( vec );
+			population_[ind_idx].set_values( vec );
 		}
 	}
 
@@ -110,11 +110,11 @@ namespace spot
 		for ( index_t pi = 0; pi < n; ++pi ) {
 			par_t mean = 0, var = 0;
 			for ( index_t ui = 0; ui < mu_; ++ui ) {
-				auto& individual = population_[ order[ ui ] ];
-				auto& proj_ind = projected_pop[ order[ ui ] ];
-				mean += individual[ pi ];
+				auto& individual = population_[order[ui]];
+				auto& proj_ind = projected_pop[order[ui]];
+				mean += individual[pi];
 				//var += xo::squared( individual[ pi ] - ( mean_[ pi ] + options_.mom_offset * mom_[ pi ] ) );
-				var += xo::squared( individual[ pi ] - proj_ind[ pi ] ); // distance to projected point
+				var += xo::squared( individual[pi] - proj_ind[pi] ); // distance to projected point
 			}
 			mean /= mu_;
 			var /= mu_;
@@ -122,16 +122,16 @@ namespace spot
 			if ( options_.mom_sigma > 0 )
 			{
 				// update momentum, then mean
-				auto delta_mean = mean - mean_[ pi ];
-				update( mom_[ pi ], delta_mean, options_.mom_sigma );
-				mean_[ pi ] += options_.mean_sigma * mom_[ pi ];
-				update( var_[ pi ], var, options_.var_sigma );
+				auto delta_mean = mean - mean_[pi];
+				update( mom_[pi], delta_mean, options_.mom_sigma );
+				mean_[pi] += options_.mean_sigma * mom_[pi];
+				update( var_[pi], var, options_.var_sigma );
 			}
 			else
 			{
 				// update mean directly
-				update( mean_[ pi ], mean, options_.mean_sigma );
-				update( var_[ pi ], var, options_.var_sigma );
+				update( mean_[pi], mean, options_.mean_sigma );
+				update( var_[pi], var, options_.var_sigma );
 			}
 		}
 	}

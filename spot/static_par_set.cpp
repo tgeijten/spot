@@ -15,7 +15,7 @@ namespace spot
 			double value, mean, std;
 			str >> name >> value >> mean >> std;
 			if ( !str.fail() )
-				values_[ name ] = value;
+				values_[name] = value;
 		}
 
 		return values_.size();
@@ -34,7 +34,7 @@ namespace spot
 			{
 				if ( overwrite || values_.find( name ) == values_.end() )
 				{
-					values_[ name ] = value;
+					values_[name] = value;
 					++read;
 				}
 			}
@@ -53,6 +53,6 @@ namespace spot
 
 	par_t static_par_set::add( const par_info& pi )
 	{
-		return values_[ pi.name ] = pi.mean;
+		return values_[pi.name] = pi.mean;
 	}
 }

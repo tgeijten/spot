@@ -5,8 +5,8 @@
 
 namespace spot
 {
-	
-	console_reporter::console_reporter( int individual_precision, int summary_precision , bool newline_best ) :
+
+	console_reporter::console_reporter( int individual_precision, int summary_precision, bool newline_best ) :
 		individual_precision_( individual_precision ),
 		summary_precision_( summary_precision ),
 		newline_best_( newline_best )

@@ -42,7 +42,7 @@ namespace spot
 					if ( it->first.wait_for( std::chrono::milliseconds( 1 ) ) == std::future_status::ready )
 					{
 						// a thread is finished, set the result
-						results[ it->second ] = it->first.get();
+						results[it->second] = it->first.get();
 
 						// remove the thread to make room for a new one
 						it = threads.erase( it );
@@ -52,12 +52,12 @@ namespace spot
 			}
 
 			// add new thread
-			threads.push_back( std::make_pair( evaluate_async( o, point_vec[ eval_idx ], st ), eval_idx ) );
+			threads.push_back( std::make_pair( evaluate_async( o, point_vec[eval_idx], st ), eval_idx ) );
 		}
 
 		// wait for remaining threads
-		for ( auto it = threads.begin(); it != threads.end() ; ++it )
-			results[ it->second ] = it->first.get();
+		for ( auto it = threads.begin(); it != threads.end(); ++it )
+			results[it->second] = it->first.get();
 
 		return results;
 	}

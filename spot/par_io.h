@@ -49,7 +49,7 @@ namespace spot
 				ps_.push_prefix( prefix + '.' );
 			else ps_.push_prefix( prefix );
 		}
-		operator par_io&( ) { return ps_; }
+		operator par_io& ( ) { return ps_; }
 		~scoped_prefix() { ps_.pop_prefix(); }
 	private:
 		par_io& ps_;
@@ -66,7 +66,7 @@ namespace spot
 	struct scoped_prefix_setter
 	{
 		scoped_prefix_setter( par_io& ps, const string& prefix ) : ps_( ps ), previous_( ps_.prefix() ) { ps_.set_prefix( prefix ); }
-		operator par_io&() { return ps_; }
+		operator par_io& ( ) { return ps_; }
 		~scoped_prefix_setter() { ps_.set_prefix( previous_ ); }
 	private:
 		par_io& ps_;

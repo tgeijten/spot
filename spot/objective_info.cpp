@@ -129,15 +129,15 @@ namespace spot
 		xo_assert( mean.size() == size() && std.size() == size() );
 		for ( index_t i = 0; i < size(); ++i )
 		{
-			par_infos_[ i ].mean = mean[ i ];
-			par_infos_[ i ].std = std[ i ];
+			par_infos_[i].mean = mean[i];
+			par_infos_[i].std = std[i];
 		}
 	}
 
 	bool objective_info::is_feasible( const par_vec& vec ) const
 	{
 		for ( index_t i = 0; i < size(); ++i )
-			if ( vec[ i ] > par_infos_[ i ].max || vec[ i ] < par_infos_[ i ].min )
+			if ( vec[i] > par_infos_[i].max || vec[i] < par_infos_[i].min )
 				return false;
 		return true;
 	}
@@ -146,12 +146,12 @@ namespace spot
 	{
 		for ( index_t i = 0; i < size(); ++i )
 		{
-			auto& pi = par_infos_[ i ];
-			if ( !xo::is_between( vec[ i ], pi.min, pi.max ) )
+			auto& pi = par_infos_[i];
+			if ( !xo::is_between( vec[i], pi.min, pi.max ) )
 			{
-				auto value_before = vec[ i ];
-				xo::clamp( vec[ i ], pi.min, pi.max );
-				xo::log::info( "Clamping parameter ", pi.name, " from ", value_before, " to ", vec[ i ], "; range=[", pi.min, ", ", pi.max, "]" );
+				auto value_before = vec[i];
+				xo::clamp( vec[i], pi.min, pi.max );
+				xo::log::info( "Clamping parameter ", pi.name, " from ", value_before, " to ", vec[i], "; range=[", pi.min, ", ", pi.max, "]" );
 			}
 		}
 	}
@@ -184,7 +184,7 @@ namespace spot
 		if ( iter != par_infos_.end() )
 		{
 			// convert parameter to locked
-			locked_pars_[ iter->name ] = value;
+			locked_pars_[iter->name] = value;
 			par_infos_.erase( iter ); // remove existing parameter
 			return true;
 		}
@@ -199,7 +199,7 @@ namespace spot
 			}
 		}
 		return false;
- 	}
+	}
 
 	objective_info make_objective_info( size_t d, par_t mean, par_t stdev, par_t lower, par_t upper )
 	{
@@ -217,7 +217,7 @@ namespace spot
 		vector<par_info> pi;
 		pi.reserve( d );
 		for ( size_t i = 0; i < d; ++i )
-			pi.emplace_back( xo::stringf( "%d", i ), mean[ i ], stdev[ i ], lower[ i ], upper[ i ] );
+			pi.emplace_back( xo::stringf( "%d", i ), mean[i], stdev[i], lower[i], upper[i] );
 		return pi;
 	}
 }

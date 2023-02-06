@@ -59,7 +59,7 @@ namespace spot
 		vector<par_t> result;
 		result.reserve( 3 * info().dim() );
 		for ( index_t i = 0; i < info().dim(); ++i )
-			result.insert( result.end(), { mean_[ i ], std::sqrt( var_[ i ] ), ev_[ i ] } );
+			result.insert( result.end(), { mean_[i], std::sqrt( var_[i] ), ev_[i] } );
 		return result;
 	}
 
@@ -86,13 +86,13 @@ namespace spot
 		{
 			auto ev_ofs = ev_distrib( random_engine_ );
 			for ( index_t i = 0; i < n; ++i ) {
-				auto sample_mean = mean_[ i ] + ev_ofs * ev_[ i ];
+				auto sample_mean = mean_[i] + ev_ofs * ev_[i];
 				//auto sample_var = var_[ i ];
-				auto sample_var = var_[ i ] + xo::squared( ev_[ i ] );
-				x[ i ] = sample_parameter( sample_mean, std::sqrt( sample_var ), info()[ i ] );
+				auto sample_var = var_[i] + xo::squared( ev_[i] );
+				x[i] = sample_parameter( sample_mean, std::sqrt( sample_var ), info()[i] );
 			}
 
-			population_[ ind_idx ].set_values( x );
+			population_[ind_idx].set_values( x );
 		}
 	}
 
@@ -112,10 +112,10 @@ namespace spot
 		for ( index_t pi = 0; pi < n; ++pi ) {
 			par_t mean = 0, var = 0;
 			for ( index_t ui = 0; ui < mu_; ++ui ) {
-				auto& individual = population_[ order[ ui ] ];
-				auto& proj_ind = projected_pop[ order[ ui ] ];
-				mean += individual[ pi ];
-				var += xo::squared( individual[ pi ] - proj_ind[ pi ] ); // distance to projected point
+				auto& individual = population_[order[ui]];
+				auto& proj_ind = projected_pop[order[ui]];
+				mean += individual[pi];
+				var += xo::squared( individual[pi] - proj_ind[pi] ); // distance to projected point
 				//var += xo::squared( individual[ pi ] - mean_[ pi ] ); // distance to previous mean
 			}
 			mean /= mu_;
@@ -123,10 +123,10 @@ namespace spot
 			//var /= ( mu_ - 1 );
 
 			// update ev, mean and var
-			auto delta_mean = mean - mean_[ pi ];
-			update( ev_[ pi ], delta_mean, options_.ev_update );
-			mean_[ pi ] += options_.step_size * delta_mean;
-			update( var_[ pi ], var, options_.var_update );
+			auto delta_mean = mean - mean_[pi];
+			update( ev_[pi], delta_mean, options_.ev_update );
+			mean_[pi] += options_.step_size * delta_mean;
+			update( var_[pi], var, options_.var_update );
 		}
 	}
 

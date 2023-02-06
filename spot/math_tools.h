@@ -24,27 +24,27 @@ namespace spot
 		xo_assert( v1.size() == v2.size() );
 		par_t sum = 0;
 		for ( index_t i = 0; i < v1.size(); ++i )
-			sum += v1[ i ] * v2[ i ];
+			sum += v1[i] * v2[i];
 		return sum;
 	}
 
 	inline par_vec vec_sub( par_vec a, const par_vec& b ) {
 		xo_assert( a.size() == b.size() );
 		for ( index_t i = 0; i < a.size(); ++i )
-			a[ i ] -= b[ i ];
+			a[i] -= b[i];
 		return a;
 	}
 
 	inline par_vec vec_add( par_vec a, const par_vec& b ) {
 		xo_assert( a.size() == b.size() );
 		for ( index_t i = 0; i < a.size(); ++i )
-			a[ i ] += b[ i ];
+			a[i] += b[i];
 		return a;
 	}
 
 	inline par_vec vec_mul( par_t s, par_vec a ) {
 		for ( index_t i = 0; i < a.size(); ++i )
-			a[ i ] *= s;
+			a[i] *= s;
 		return a;
 	}
 

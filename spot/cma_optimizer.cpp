@@ -136,9 +136,9 @@ namespace spot
 				- 2836 * tmp;
 			if ( t->aktseed < 0 ) t->aktseed += 2147483647;
 			if ( i < 32 )
-				t->rgrand[ i ] = t->aktseed;
+				t->rgrand[i] = t->aktseed;
 		}
-		t->aktrand = t->rgrand[ 0 ];
+		t->aktrand = t->rgrand[0];
 		return inseed;
 	}
 
@@ -154,15 +154,15 @@ namespace spot
 		{
 		case cma_weights::linear:
 			for ( i = 0; i < t->mu; ++i )
-				t->weights[ i ] = t->mu - i;
+				t->weights[i] = t->mu - i;
 			break;
 		case cma_weights::equal:
 			for ( i = 0; i < t->mu; ++i )
-				t->weights[ i ] = 1;
+				t->weights[i] = 1;
 			break;
 		case cma_weights::log:
 			for ( i = 0; i < t->mu; ++i )
-				t->weights[ i ] = std::log( t->mu + 1. ) - std::log( i + 1. );
+				t->weights[i] = std::log( t->mu + 1. ) - std::log( i + 1. );
 			break;
 		default:
 			xo_error( "Invalid weighting mode " + xo::to_str( int( t->weigh_mode ) ) );
@@ -171,15 +171,15 @@ namespace spot
 
 		/* normalize weights vector and set mueff */
 		for ( i = 0, s1 = 0, s2 = 0; i < t->mu; ++i ) {
-			s1 += t->weights[ i ];
-			s2 += t->weights[ i ] * t->weights[ i ];
+			s1 += t->weights[i];
+			s2 += t->weights[i] * t->weights[i];
 		}
 		t->mueff = s1 * s1 / s2;
 		for ( i = 0; i < t->mu; ++i )
-			t->weights[ i ] /= s1;
+			t->weights[i] /= s1;
 
 		if ( t->mu < 1 || t->mu > t->lambda ||
-			( t->mu == t->lambda && t->weights[ 0 ] == t->weights[ t->mu - 1 ] ) )
+			( t->mu == t->lambda && t->weights[0] == t->weights[t->mu - 1] ) )
 			xo_error( "cmaes_readpara_SetWeights(): invalid setting of mu or lambda" );
 	} /* cmaes_readpara_SetWeights() */
 
@@ -194,8 +194,8 @@ namespace spot
 		if ( t->aktseed < 0 )
 			t->aktseed += 2147483647;
 		tmp = t->aktrand / 67108865;
-		t->aktrand = t->rgrand[ tmp ];
-		t->rgrand[ tmp ] = t->aktseed;
+		t->aktrand = t->rgrand[tmp];
+		t->rgrand[tmp] = t->aktseed;
 		return (double)( t->aktrand ) / ( 2.147483647e9 );
 	}
 
@@ -265,13 +265,13 @@ namespace spot
 
 			/* put inxstart into xstart */
 			for ( int i = 0; i < N; ++i )
-				t->sp.xstart[ i ] = inxstart[ i ];
+				t->sp.xstart[i] = inxstart[i];
 		} /* xstart == NULL */
 
 		if ( t->sp.rgInitialStds.empty() ) {
 			t->sp.rgInitialStds.resize( N );
 			for ( int i = 0; i < N; ++i )
-				t->sp.rgInitialStds[ i ] = inrgsigma[ i ];
+				t->sp.rgInitialStds[i] = inrgsigma[i];
 		}
 	}
 
@@ -327,7 +327,7 @@ namespace spot
 		t->sp.damps = t->sp.damps
 			* ( 1 + 2 * std::max( 0., sqrt( ( t->sp.mueff - 1. ) / ( N + 1. ) ) - 1 ) )     /* basic factor */
 			* std::max( 0.3, 1. -                                       /* modify for short runs */
-			(double)N / ( 1e-6 + std::min( t->sp.stopMaxIter, t->sp.stopMaxFunEvals / t->sp.lambda ) ) )
+				(double)N / ( 1e-6 + std::min( t->sp.stopMaxIter, t->sp.stopMaxFunEvals / t->sp.lambda ) ) )
 			+ t->sp.cs;                                                 /* minor increment */
 
 		if ( t->sp.updateCmode.modulo < 0 )
@@ -349,7 +349,7 @@ namespace spot
 
 		/* initialization  */
 		for ( i = 0, trace = 0.; i < N; ++i )
-			trace += t->sp.rgInitialStds[ i ] * t->sp.rgInitialStds[ i ];
+			trace += t->sp.rgInitialStds[i] * t->sp.rgInitialStds[i];
 		t->sigma = sqrt( trace / N ); /* t->sp.mueff/(0.2*t->sp.mueff+sqrt(N)) * sqrt(trace/N); */
 
 		t->chiN = sqrt( (double)N ) * ( 1. - 1. / ( 4. * N ) + 1. / ( 21. * N * N ) );
@@ -386,29 +386,29 @@ namespace spot
 		// WTF? t->arFuncValueHist[ 0 ] = (double)( 10 + (int)ceil( 3.*10.*N / t->sp.lambda ) ); t->arFuncValueHist++; fixed!
 
 		for ( i = 0; i < N; ++i ) {
-			t->C[ i ].resize( i + 1 );
-			t->B[ i ].resize( N );
+			t->C[i].resize( i + 1 );
+			t->B[i].resize( N );
 		}
 		t->index.resize( t->sp.lambda );
 		for ( i = 0; i < t->sp.lambda; ++i )
-			t->index[ i ] = i; /* should not be necessary */
+			t->index[i] = i; /* should not be necessary */
 		t->current_pop.resize( t->sp.lambda );
 		for ( i = 0; i < t->sp.lambda; ++i ) {
-			t->current_pop[ i ].resize( N + 1 ); // WTF? t->rgrgx[ i ][ 0 ] = N; t->rgrgx[ i ]++; fixed!
+			t->current_pop[i].resize( N + 1 ); // WTF? t->rgrgx[ i ][ 0 ] = N; t->rgrgx[ i ]++; fixed!
 		}
 
 		/* Initialize newed space  */
 
 		for ( i = 0; i < N; ++i )
 			for ( j = 0; j < i; ++j )
-				t->C[ i ][ j ] = t->B[ i ][ j ] = t->B[ j ][ i ] = 0.;
+				t->C[i][j] = t->B[i][j] = t->B[j][i] = 0.;
 
 		for ( i = 0; i < N; ++i )
 		{
-			t->B[ i ][ i ] = 1.;
-			t->C[ i ][ i ] = t->rgD[ i ] = t->sp.rgInitialStds[ i ] * sqrt( N / trace );
-			t->C[ i ][ i ] = t->C[ i ][ i ] * t->C[ i ][ i ];
-			t->rgpc[ i ] = t->rgps[ i ] = 0.;
+			t->B[i][i] = 1.;
+			t->C[i][i] = t->rgD[i] = t->sp.rgInitialStds[i] * sqrt( N / trace );
+			t->C[i][i] = t->C[i][i] * t->C[i][i];
+			t->rgpc[i] = t->rgps[i] = 0.;
 		}
 
 		t->minEW = *std::min_element( t->rgD.begin(), t->rgD.end() );
@@ -416,12 +416,12 @@ namespace spot
 		t->maxEW = *std::max_element( t->rgD.begin(), t->rgD.end() );
 		t->maxEW = t->maxEW * t->maxEW;
 
-		t->maxdiagC = t->C[ 0 ][ 0 ]; for ( i = 1; i < N; ++i ) if ( t->maxdiagC < t->C[ i ][ i ] ) t->maxdiagC = t->C[ i ][ i ];
-		t->mindiagC = t->C[ 0 ][ 0 ]; for ( i = 1; i < N; ++i ) if ( t->mindiagC > t->C[ i ][ i ] ) t->mindiagC = t->C[ i ][ i ];
+		t->maxdiagC = t->C[0][0]; for ( i = 1; i < N; ++i ) if ( t->maxdiagC < t->C[i][i] ) t->maxdiagC = t->C[i][i];
+		t->mindiagC = t->C[0][0]; for ( i = 1; i < N; ++i ) if ( t->mindiagC > t->C[i][i] ) t->mindiagC = t->C[i][i];
 
 		/* set xmean */
 		for ( i = 0; i < N; ++i )
-			t->current_mean[ i ] = t->rgxold[ i ] = t->sp.xstart[ i ];
+			t->current_mean[i] = t->rgxold[i] = t->sp.xstart[i];
 	}
 
 
@@ -465,18 +465,18 @@ namespace spot
 
 			/* shift input e */
 		for ( i = 1; i < n; i++ ) {
-			e[ i - 1 ] = e[ i ];
+			e[i - 1] = e[i];
 		}
-		e[ n - 1 ] = 0.0; /* never changed again */
+		e[n - 1] = 0.0; /* never changed again */
 
 		for ( l = 0; l < n; l++ ) {
 
 			/* Find small subdiagonal element */
-			if ( tst1 < fabs( d[ l ] ) + fabs( e[ l ] ) )
-				tst1 = fabs( d[ l ] ) + fabs( e[ l ] );
+			if ( tst1 < fabs( d[l] ) + fabs( e[l] ) )
+				tst1 = fabs( d[l] ) + fabs( e[l] );
 			m = l;
 			while ( m < n ) {
-				if ( fabs( e[ m ] ) <= eps * tst1 ) {
+				if ( fabs( e[m] ) <= eps * tst1 ) {
 					break;
 				}
 				m++;
@@ -488,8 +488,8 @@ namespace spot
 				int iter = 0;
 				do { /* while (fabs(e[l]) > eps*tst1); */
 					double dl1, h;
-					double g = d[ l ];
-					double p = ( d[ l + 1 ] - g ) / ( 2.0 * e[ l ] );
+					double g = d[l];
+					double p = ( d[l + 1] - g ) / ( 2.0 * e[l] );
 					double r = myhypot( p, 1. );
 
 					iter = iter + 1;  /* Could check iteration count here */
@@ -498,54 +498,54 @@ namespace spot
 					if ( p < 0 ) {
 						r = -r;
 					}
-					d[ l ] = e[ l ] / ( p + r );
-					d[ l + 1 ] = e[ l ] * ( p + r );
-					dl1 = d[ l + 1 ];
-					h = g - d[ l ];
+					d[l] = e[l] / ( p + r );
+					d[l + 1] = e[l] * ( p + r );
+					dl1 = d[l + 1];
+					h = g - d[l];
 					for ( i = l + 2; i < n; i++ ) {
-						d[ i ] -= h;
+						d[i] -= h;
 					}
 					f = f + h;
 
 					/* Implicit QL transformation. */
-					p = d[ m ];
+					p = d[m];
 					{
 						double c = 1.0;
 						double c2 = c;
 						double c3 = c;
-						double el1 = e[ l + 1 ];
+						double el1 = e[l + 1];
 						double s = 0.0;
 						double s2 = 0.0;
 						for ( i = m - 1; i >= l; i-- ) {
 							c3 = c2;
 							c2 = c;
 							s2 = s;
-							g = c * e[ i ];
+							g = c * e[i];
 							h = c * p;
-							r = myhypot( p, e[ i ] );
-							e[ i + 1 ] = s * r;
-							s = e[ i ] / r;
+							r = myhypot( p, e[i] );
+							e[i + 1] = s * r;
+							s = e[i] / r;
 							c = p / r;
-							p = c * d[ i ] - s * g;
-							d[ i + 1 ] = h + s * ( c * g + s * d[ i ] );
+							p = c * d[i] - s * g;
+							d[i + 1] = h + s * ( c * g + s * d[i] );
 
 							/* Accumulate transformation. */
 							for ( k = 0; k < n; k++ ) {
-								h = V[ k ][ i + 1 ];
-								V[ k ][ i + 1 ] = s * V[ k ][ i ] + c * h;
-								V[ k ][ i ] = c * V[ k ][ i ] - s * h;
+								h = V[k][i + 1];
+								V[k][i + 1] = s * V[k][i] + c * h;
+								V[k][i] = c * V[k][i] - s * h;
 							}
 						}
-						p = -s * s2 * c3 * el1 * e[ l ] / dl1;
-						e[ l ] = s * p;
-						d[ l ] = c * p;
+						p = -s * s2 * c3 * el1 * e[l] / dl1;
+						e[l] = s * p;
+						d[l] = c * p;
 					}
 
 					/* Check for convergence. */
-				} while ( fabs( e[ l ] ) > eps* tst1 );
+				} while ( fabs( e[l] ) > eps * tst1 );
 			}
-			d[ l ] = d[ l ] + f;
-			e[ l ] = 0.0;
+			d[l] = d[l] + f;
+			e[l] = 0.0;
 		}
 
 		/* Sort eigenvalues and corresponding vectors. */
@@ -556,20 +556,20 @@ namespace spot
 			double p;
 			for ( i = 0; i < n - 1; i++ ) {
 				k = i;
-				p = d[ i ];
+				p = d[i];
 				for ( j = i + 1; j < n; j++ ) {
-					if ( d[ j ] < p ) {
+					if ( d[j] < p ) {
 						k = j;
-						p = d[ j ];
+						p = d[j];
 					}
 				}
 				if ( k != i ) {
-					d[ k ] = d[ i ];
-					d[ i ] = p;
+					d[k] = d[i];
+					d[i] = p;
 					for ( j = 0; j < n; j++ ) {
-						p = V[ j ][ i ];
-						V[ j ][ i ] = V[ j ][ k ];
-						V[ j ][ k ] = p;
+						p = V[j][i];
+						V[j][i] = V[j][k];
+						V[j][k] = p;
 					}
 				}
 			}
@@ -595,7 +595,7 @@ namespace spot
 		int i, j, k;
 
 		for ( j = 0; j < n; j++ ) {
-			d[ j ] = V[ n - 1 ][ j ];
+			d[j] = V[n - 1][j];
 		}
 
 		/* Householder reduction to tridiagonal form */
@@ -605,14 +605,14 @@ namespace spot
 			double scale = 0.0;
 			double h = 0.0;
 			for ( k = 0; k < i; k++ ) {
-				scale = scale + fabs( d[ k ] );
+				scale = scale + fabs( d[k] );
 			}
 			if ( scale == 0.0 ) {
-				e[ i ] = d[ i - 1 ];
+				e[i] = d[i - 1];
 				for ( j = 0; j < i; j++ ) {
-					d[ j ] = V[ i - 1 ][ j ];
-					V[ i ][ j ] = 0.0;
-					V[ j ][ i ] = 0.0;
+					d[j] = V[i - 1][j];
+					V[i][j] = 0.0;
+					V[j][i] = 0.0;
 				}
 			}
 			else {
@@ -621,84 +621,84 @@ namespace spot
 				double f, g, hh;
 
 				for ( k = 0; k < i; k++ ) {
-					d[ k ] /= scale;
-					h += d[ k ] * d[ k ];
+					d[k] /= scale;
+					h += d[k] * d[k];
 				}
-				f = d[ i - 1 ];
+				f = d[i - 1];
 				g = sqrt( h );
 				if ( f > 0 ) {
 					g = -g;
 				}
-				e[ i ] = scale * g;
+				e[i] = scale * g;
 				h = h - f * g;
-				d[ i - 1 ] = f - g;
+				d[i - 1] = f - g;
 				for ( j = 0; j < i; j++ ) {
-					e[ j ] = 0.0;
+					e[j] = 0.0;
 				}
 
 				/* Apply similarity transformation to remaining columns */
 				for ( j = 0; j < i; j++ ) {
-					f = d[ j ];
-					V[ j ][ i ] = f;
-					g = e[ j ] + V[ j ][ j ] * f;
+					f = d[j];
+					V[j][i] = f;
+					g = e[j] + V[j][j] * f;
 					for ( k = j + 1; k <= i - 1; k++ ) {
-						g += V[ k ][ j ] * d[ k ];
-						e[ k ] += V[ k ][ j ] * f;
+						g += V[k][j] * d[k];
+						e[k] += V[k][j] * f;
 					}
-					e[ j ] = g;
+					e[j] = g;
 				}
 				f = 0.0;
 				for ( j = 0; j < i; j++ ) {
-					e[ j ] /= h;
-					f += e[ j ] * d[ j ];
+					e[j] /= h;
+					f += e[j] * d[j];
 				}
 				hh = f / ( h + h );
 				for ( j = 0; j < i; j++ ) {
-					e[ j ] -= hh * d[ j ];
+					e[j] -= hh * d[j];
 				}
 				for ( j = 0; j < i; j++ ) {
-					f = d[ j ];
-					g = e[ j ];
+					f = d[j];
+					g = e[j];
 					for ( k = j; k <= i - 1; k++ ) {
-						V[ k ][ j ] -= ( f * e[ k ] + g * d[ k ] );
+						V[k][j] -= ( f * e[k] + g * d[k] );
 					}
-					d[ j ] = V[ i - 1 ][ j ];
-					V[ i ][ j ] = 0.0;
+					d[j] = V[i - 1][j];
+					V[i][j] = 0.0;
 				}
 			}
-			d[ i ] = h;
+			d[i] = h;
 		}
 
 		/* Accumulate transformations */
 		for ( i = 0; i < n - 1; i++ ) {
 			double h;
-			V[ n - 1 ][ i ] = V[ i ][ i ];
-			V[ i ][ i ] = 1.0;
-			h = d[ i + 1 ];
+			V[n - 1][i] = V[i][i];
+			V[i][i] = 1.0;
+			h = d[i + 1];
 			if ( h != 0.0 ) {
 				for ( k = 0; k <= i; k++ ) {
-					d[ k ] = V[ k ][ i + 1 ] / h;
+					d[k] = V[k][i + 1] / h;
 				}
 				for ( j = 0; j <= i; j++ ) {
 					double g = 0.0;
 					for ( k = 0; k <= i; k++ ) {
-						g += V[ k ][ i + 1 ] * V[ k ][ j ];
+						g += V[k][i + 1] * V[k][j];
 					}
 					for ( k = 0; k <= i; k++ ) {
-						V[ k ][ j ] -= g * d[ k ];
+						V[k][j] -= g * d[k];
 					}
 				}
 			}
 			for ( k = 0; k <= i; k++ ) {
-				V[ k ][ i + 1 ] = 0.0;
+				V[k][i + 1] = 0.0;
 			}
 		}
 		for ( j = 0; j < n; j++ ) {
-			d[ j ] = V[ n - 1 ][ j ];
-			V[ n - 1 ][ j ] = 0.0;
+			d[j] = V[n - 1][j];
+			V[n - 1][j] = 0.0;
 		}
-		V[ n - 1 ][ n - 1 ] = 1.0;
-		e[ 0 ] = 0.0;
+		V[n - 1][n - 1] = 1.0;
+		e[0] = 0.0;
 
 	} /* Housholder() */
 
@@ -721,7 +721,7 @@ namespace spot
 		if ( C != Q ) {
 			for ( i = 0; i < N; ++i )
 				for ( j = 0; j <= i; ++j )
-					Q[ i ][ j ] = Q[ j ][ i ] = C[ i ][ j ];
+					Q[i][j] = Q[j][i] = C[i][j];
 		}
 
 		Householder2( N, Q, diag, rgtmp );
@@ -744,14 +744,14 @@ namespace spot
 		for ( i = 0; i < N; ++i )
 			for ( j = 0; j < N; ++j ) {
 				for ( cc = 0., dd = 0., k = 0; k < N; ++k ) {
-					cc += diag[ k ] * Q[ i ][ k ] * Q[ j ][ k ];
-					dd += Q[ i ][ k ] * Q[ j ][ k ];
+					cc += diag[k] * Q[i][k] * Q[j][k];
+					dd += Q[i][k] * Q[j][k];
 				}
 				/* check here, is the normalization the right one? */
-				if ( fabs( cc - C[ i > j ? i : j ][ i > j ? j : i ] ) / sqrt( C[ i ][ i ] * C[ j ][ j ] ) > 1e-10
-					&& fabs( cc - C[ i > j ? i : j ][ i > j ? j : i ] ) > 3e-14 ) {
+				if ( fabs( cc - C[i > j ? i : j][i > j ? j : i] ) / sqrt( C[i][i] * C[j][j] ) > 1e-10
+					&& fabs( cc - C[i > j ? i : j][i > j ? j : i] ) > 3e-14 ) {
 					auto s = xo::stringf( "%d %d: %.17e %.17e, %e",
-						i, j, cc, C[ i > j ? i : j ][ i > j ? j : i ], cc - C[ i > j ? i : j ][ i > j ? j : i ] );
+						i, j, cc, C[i > j ? i : j][i > j ? j : i], cc - C[i > j ? i : j][i > j ? j : i] );
 					xo::log::error( "pimpl_t:Eigen(): imprecise result detected ", s );
 					++res;
 				}
@@ -790,7 +790,7 @@ namespace spot
 			i = Check_Eigen( N, t->C, t->rgD, t->B );
 
 		for ( i = 0; i < N; ++i )
-			t->rgD[ i ] = sqrt( t->rgD[ i ] );
+			t->rgD[i] = sqrt( t->rgD[i] );
 
 		t->flgEigensysIsUptodate = 1;
 		t->genOfEigensysUpdate = t->gen;
@@ -804,7 +804,7 @@ namespace spot
 			return;
 
 		for ( i = 0; i < N; ++i )
-			while ( t->sigma * sqrt( t->C[ i ][ i ] ) < t->sp.rgDiffMinChange[ i ] )
+			while ( t->sigma * sqrt( t->C[i][i] ) < t->sp.rgDiffMinChange[i] )
 				t->sigma *= exp( 0.05 + t->sp.cs / t->sp.damps );
 
 	} /* cmaes_TestMinStdDevs() */
@@ -824,7 +824,7 @@ namespace spot
 				cmaes_UpdateEigensystem( t, 0 );
 			else {
 				for ( i = 0; i < N; ++i )
-					t->rgD[ i ] = sqrt( t->C[ i ][ i ] );
+					t->rgD[i] = sqrt( t->C[i][i] );
 				t->minEW = xo::squared( *std::min_element( t->rgD.begin(), t->rgD.end() ) );
 				t->maxEW = xo::squared( *std::max_element( t->rgD.begin(), t->rgD.end() ) );
 				t->flgEigensysIsUptodate = 1;
@@ -838,15 +838,15 @@ namespace spot
 		{ /* generate scaled cmaes_random vector (D * z)    */
 			for ( i = 0; i < N; ++i )
 				if ( flgdiag )
-					t->current_pop[ iNk ][ i ] = xmean[ i ] + t->sigma * t->rgD[ i ] * cmaes_random_Gauss( &t->rand );
+					t->current_pop[iNk][i] = xmean[i] + t->sigma * t->rgD[i] * cmaes_random_Gauss( &t->rand );
 				else
-					t->rgdTmp[ i ] = t->rgD[ i ] * cmaes_random_Gauss( &t->rand );
+					t->rgdTmp[i] = t->rgD[i] * cmaes_random_Gauss( &t->rand );
 			if ( !flgdiag )
 				/* add mutation (sigma * B * (D*z)) */
 				for ( i = 0; i < N; ++i ) {
 					for ( j = 0, sum = 0.; j < N; ++j )
-						sum += t->B[ i ][ j ] * t->rgdTmp[ j ];
-					t->current_pop[ iNk ][ i ] = xmean[ i ] + t->sigma * sum;
+						sum += t->B[i][j] * t->rgdTmp[j];
+					t->current_pop[iNk][i] = xmean[i] + t->sigma * sum;
 				}
 		}
 		if ( t->state == 3 || t->gen == 0 )
@@ -861,15 +861,15 @@ namespace spot
 		int N = t->sp.N;
 
 		for ( int i = 0; i < N; ++i )
-			t->rgdTmp[ i ] = t->rgD[ i ] * cmaes_random_Gauss( &t->rand );
+			t->rgdTmp[i] = t->rgD[i] * cmaes_random_Gauss( &t->rand );
 
 		/* add mutation (sigma * B * (D*z)) */
 		for ( int i = 0; i < N; ++i ) {
 			double sum = 0;
 			for ( int j = 0; j < N; ++j )
-				sum += t->B[ i ][ j ] * t->rgdTmp[ j ];
+				sum += t->B[i][j] * t->rgdTmp[j];
 
-			t->current_pop[ iindex ][ i ] = t->current_mean[ i ] + t->sigma * sum;
+			t->current_pop[iindex][i] = t->current_mean[i] + t->sigma * sum;
 		}
 
 		return  t->current_pop;
@@ -880,7 +880,7 @@ namespace spot
 		// TG: overwrite parameters of a single individual
 		// This is required in case of clamping when no individual can be found
 		for ( int i = 0; i < t->sp.N; ++i )
-			t->current_pop[ iindex ][ i ] = params[ i ];
+			t->current_pop[iindex][i] = params[i];
 
 		return  t->current_pop;
 	}
@@ -888,13 +888,13 @@ namespace spot
 	static void Sorted_index( const dbl_vec& rgFunVal, vector< int >& iindex, int n )
 	{
 		int i, j;
-		for ( i = 1, iindex[ 0 ] = 0; i < n; ++i ) {
+		for ( i = 1, iindex[0] = 0; i < n; ++i ) {
 			for ( j = i; j > 0; --j ) {
-				if ( rgFunVal[ iindex[ j - 1 ] ] < rgFunVal[ i ] )
+				if ( rgFunVal[iindex[j - 1]] < rgFunVal[i] )
 					break;
-				iindex[ j ] = iindex[ j - 1 ]; /* shift up */
+				iindex[j] = iindex[j - 1]; /* shift up */
 			}
-			iindex[ j ] = i; /* insert i */
+			iindex[j] = i; /* insert i */
 		}
 	}
 
@@ -915,24 +915,24 @@ namespace spot
 			/* update covariance matrix */
 			for ( i = 0; i < N; ++i )
 				for ( j = flgdiag ? i : 0; j <= i; ++j ) {
-					t->C[ i ][ j ] = ( 1 - ccov1 - ccovmu ) * t->C[ i ][ j ]
+					t->C[i][j] = ( 1 - ccov1 - ccovmu ) * t->C[i][j]
 						+ ccov1
-						* ( t->rgpc[ i ] * t->rgpc[ j ]
-							+ ( 1 - hsig ) * t->sp.ccumcov * ( 2. - t->sp.ccumcov ) * t->C[ i ][ j ] );
+						* ( t->rgpc[i] * t->rgpc[j]
+							+ ( 1 - hsig ) * t->sp.ccumcov * ( 2. - t->sp.ccumcov ) * t->C[i][j] );
 					for ( k = 0; k < t->sp.mu; ++k ) { /* additional rank mu update */
-						t->C[ i ][ j ] += ccovmu * t->sp.weights[ k ]
-							* ( t->current_pop[ t->index[ k ] ][ i ] - t->rgxold[ i ] )
-							* ( t->current_pop[ t->index[ k ] ][ j ] - t->rgxold[ j ] )
+						t->C[i][j] += ccovmu * t->sp.weights[k]
+							* ( t->current_pop[t->index[k]][i] - t->rgxold[i] )
+							* ( t->current_pop[t->index[k]][j] - t->rgxold[j] )
 							/ sigmasquare;
 					}
 				}
 			/* update maximal and minimal diagonal value */
-			t->maxdiagC = t->mindiagC = t->C[ 0 ][ 0 ];
+			t->maxdiagC = t->mindiagC = t->C[0][0];
 			for ( i = 1; i < N; ++i ) {
-				if ( t->maxdiagC < t->C[ i ][ i ] )
-					t->maxdiagC = t->C[ i ][ i ];
-				else if ( t->mindiagC > t->C[ i ][ i ] )
-					t->mindiagC = t->C[ i ][ i ];
+				if ( t->maxdiagC < t->C[i][i] )
+					t->maxdiagC = t->C[i][i];
+				else if ( t->mindiagC > t->C[i][i] )
+					t->mindiagC = t->C[i][i];
 			}
 		} /* if ccov... */
 	}
@@ -956,71 +956,71 @@ namespace spot
 
 		/* assign function values */
 		for ( i = 0; i < t->sp.lambda; ++i )
-			t->current_pop[ i ][ N ] = t->rgFuncValue[ i ] = rgFunVal[ i ];
+			t->current_pop[i][N] = t->rgFuncValue[i] = rgFunVal[i];
 
 
 		/* Generate index */
 		Sorted_index( rgFunVal, t->index, t->sp.lambda );
 
 		/* Test if function values are identical, escape flat fitness */
-		if ( t->rgFuncValue[ t->index[ 0 ] ] ==
-			t->rgFuncValue[ t->index[ (int)t->sp.lambda / 2 ] ] ) {
+		if ( t->rgFuncValue[t->index[0]] ==
+			t->rgFuncValue[t->index[(int)t->sp.lambda / 2]] ) {
 			t->sigma *= exp( 0.2 + t->sp.cs / t->sp.damps );
 			xo::log::warning( "Warning: sigma increased due to equal function values. Reconsider the formulation of the objective function" );
 		}
 
 		/* update function value history */
 		for ( i = (int)t->arFuncValueHist.size() - 1; i > 0; --i )
-			t->arFuncValueHist[ i ] = t->arFuncValueHist[ i - 1 ];
-		t->arFuncValueHist[ 0 ] = rgFunVal[ t->index[ 0 ] ];
+			t->arFuncValueHist[i] = t->arFuncValueHist[i - 1];
+		t->arFuncValueHist[0] = rgFunVal[t->index[0]];
 
 		/* update xbestever */
-		if ( t->current_best[ N ] > t->current_pop[ t->index[ 0 ] ][ N ] || t->gen == 1 )
+		if ( t->current_best[N] > t->current_pop[t->index[0]][N] || t->gen == 1 )
 			for ( i = 0; i <= N; ++i ) {
-				t->current_best[ i ] = t->current_pop[ t->index[ 0 ] ][ i ];
-				t->current_best[ N + 1 ] = t->countevals;
+				t->current_best[i] = t->current_pop[t->index[0]][i];
+				t->current_best[N + 1] = t->countevals;
 			}
 
 		/* calculate xmean and rgBDz~N(0,C) */
 		for ( i = 0; i < N; ++i ) {
-			t->rgxold[ i ] = t->current_mean[ i ];
-			t->current_mean[ i ] = 0.;
+			t->rgxold[i] = t->current_mean[i];
+			t->current_mean[i] = 0.;
 			for ( iNk = 0; iNk < t->sp.mu; ++iNk )
-				t->current_mean[ i ] += t->sp.weights[ iNk ] * t->current_pop[ t->index[ iNk ] ][ i ];
-			t->rgBDz[ i ] = sqrt( t->sp.mueff ) * ( t->current_mean[ i ] - t->rgxold[ i ] ) / t->sigma;
+				t->current_mean[i] += t->sp.weights[iNk] * t->current_pop[t->index[iNk]][i];
+			t->rgBDz[i] = sqrt( t->sp.mueff ) * ( t->current_mean[i] - t->rgxold[i] ) / t->sigma;
 		}
 
 		/* calculate z := D^(-1) * B^(-1) * rgBDz into rgdTmp */
 		for ( i = 0; i < N; ++i ) {
 			if ( !flgdiag )
 				for ( j = 0, sum = 0.; j < N; ++j )
-					sum += t->B[ j ][ i ] * t->rgBDz[ j ];
+					sum += t->B[j][i] * t->rgBDz[j];
 			else
-				sum = t->rgBDz[ i ];
-			t->rgdTmp[ i ] = sum / t->rgD[ i ];
+				sum = t->rgBDz[i];
+			t->rgdTmp[i] = sum / t->rgD[i];
 		}
 
 		/* cumulation for sigma (ps) using B*z */
 		for ( i = 0; i < N; ++i ) {
 			if ( !flgdiag )
 				for ( j = 0, sum = 0.; j < N; ++j )
-					sum += t->B[ i ][ j ] * t->rgdTmp[ j ];
+					sum += t->B[i][j] * t->rgdTmp[j];
 			else
-				sum = t->rgdTmp[ i ];
-			t->rgps[ i ] = ( 1. - t->sp.cs ) * t->rgps[ i ] +
+				sum = t->rgdTmp[i];
+			t->rgps[i] = ( 1. - t->sp.cs ) * t->rgps[i] +
 				sqrt( t->sp.cs * ( 2. - t->sp.cs ) ) * sum;
 		}
 
 		/* calculate norm(ps)^2 */
 		for ( i = 0, psxps = 0.; i < N; ++i )
-			psxps += t->rgps[ i ] * t->rgps[ i ];
+			psxps += t->rgps[i] * t->rgps[i];
 
 		/* cumulation for covariance matrix (pc) using B*D*z~N(0,C) */
 		hsig = sqrt( psxps ) / sqrt( 1. - pow( 1. - t->sp.cs, 2 * t->gen ) ) / t->chiN
 			< 1.4 + 2. / ( N + 1 );
 		for ( i = 0; i < N; ++i ) {
-			t->rgpc[ i ] = ( 1. - t->sp.ccumcov ) * t->rgpc[ i ] +
-				hsig * sqrt( t->sp.ccumcov * ( 2. - t->sp.ccumcov ) ) * t->rgBDz[ i ];
+			t->rgpc[i] = ( 1. - t->sp.ccumcov ) * t->rgpc[i] +
+				hsig * sqrt( t->sp.ccumcov * ( 2. - t->sp.ccumcov ) ) * t->rgBDz[i];
 		}
 
 		/* stop initial phase */
@@ -1070,12 +1070,12 @@ namespace spot
 		auto& lb = t->lower_bounds;
 		auto& ub = t->upper_bounds;
 		for ( int i = 0; i < l; ++i ) {
-			if ( lb[ i ] == ub[ i ] )
+			if ( lb[i] == ub[i] )
 				xo_error( "Invalid upper and lower bounds for parameter " + xo::to_str( i ) );
 
 			/* between lb+al and ub-au transformation is the identity */
-			t->al[ i ] = fmin( ( ub[ i ] - lb[ i ] ) / 2., ( 1. + fabs( lb[ i ] ) ) / 20. );
-			t->au[ i ] = fmin( ( ub[ i ] - lb[ i ] ) / 2., ( 1. + fabs( ub[ i ] ) ) / 20. );
+			t->al[i] = fmin( ( ub[i] - lb[i] ) / 2., ( 1. + fabs( lb[i] ) ) / 20. );
+			t->au[i] = fmin( ( ub[i] - lb[i] ) / 2., ( 1. + fabs( ub[i] ) ) / 20. );
 		}
 	}
 
@@ -1084,30 +1084,30 @@ namespace spot
 		auto len = t->lower_bounds.size();
 		for ( size_t i = 0; i < len; ++i ) {
 			double lb, ub, al, au, r, xlow, xup;
-			lb = t->lower_bounds[ i ];
-			ub = t->upper_bounds[ i ];
-			al = t->al[ i ];
-			au = t->au[ i ];
+			lb = t->lower_bounds[i];
+			ub = t->upper_bounds[i];
+			al = t->al[i];
+			au = t->au[i];
 			xlow = lb - 2 * al - ( ub - lb ) / 2.0;
 			xup = ub + 2 * au + ( ub - lb ) / 2.0;
 			r = 2 * ( ub - lb + al + au ); /* == xup - xlow == period of the transformation */
 
-			y[ i ] = x[ i ];
+			y[i] = x[i];
 
-			if ( y[ i ] < xlow ) { /* shift up */
-				y[ i ] += r * ( 1 + (int)( ( xlow - y[ i ] ) / r ) );
+			if ( y[i] < xlow ) { /* shift up */
+				y[i] += r * ( 1 + (int)( ( xlow - y[i] ) / r ) );
 			}
-			if ( y[ i ] > xup ) { /* shift down */
-				y[ i ] -= r * ( 1 + (int)( ( y[ i ] - xup ) / r ) );
+			if ( y[i] > xup ) { /* shift down */
+				y[i] -= r * ( 1 + (int)( ( y[i] - xup ) / r ) );
 				/* printf(" \n%f\n", fmod(y[i] - ub - au, r)); */
 			}
-			if ( y[ i ] < lb - al ) /* mirror */
-				y[ i ] += 2 * ( lb - al - y[ i ] );
-			if ( y[ i ] > ub + au )
-				y[ i ] -= 2 * ( y[ i ] - ub - au );
+			if ( y[i] < lb - al ) /* mirror */
+				y[i] += 2 * ( lb - al - y[i] );
+			if ( y[i] > ub + au )
+				y[i] -= 2 * ( y[i] - ub - au );
 
-			if ( ( y[ i ] < lb - al - 1e-15 ) || ( y[ i ] > ub + au + 1e-15 ) ) {
-				xo_error( xo::stringf( "BUG in cmaes_boundary_transformation_shift_into_feasible_preimage: lb=%f, ub=%f, al=%f au=%f, x=%f, y=%f, i=%d\n", lb, ub, al, au, x[ i ], y[ i ], i ) );
+			if ( ( y[i] < lb - al - 1e-15 ) || ( y[i] > ub + au + 1e-15 ) ) {
+				xo_error( xo::stringf( "BUG in cmaes_boundary_transformation_shift_into_feasible_preimage: lb=%f, ub=%f, al=%f au=%f, x=%f, y=%f, i=%d\n", lb, ub, al, au, x[i], y[i], i ) );
 			}
 		}
 	}
@@ -1118,14 +1118,14 @@ namespace spot
 		cmaes_boundary_trans_shift_into_feasible_preimage( t, x, y );
 		for ( size_t i = 0; i < len; ++i ) {
 			double lb, ub, al, au;
-			lb = t->lower_bounds[ i ];
-			ub = t->upper_bounds[ i ];
-			al = t->al[ i ];
-			au = t->au[ i ];
-			if ( y[ i ] < lb + al )
-				y[ i ] = lb + ( y[ i ] - ( lb - al ) ) * ( y[ i ] - ( lb - al ) ) / 4. / al;
-			else if ( y[ i ] > ub - au )
-				y[ i ] = ub - ( y[ i ] - ( ub + au ) ) * ( y[ i ] - ( ub + au ) ) / 4. / au;
+			lb = t->lower_bounds[i];
+			ub = t->upper_bounds[i];
+			al = t->al[i];
+			au = t->au[i];
+			if ( y[i] < lb + al )
+				y[i] = lb + ( y[i] - ( lb - al ) ) * ( y[i] - ( lb - al ) ) / 4. / al;
+			else if ( y[i] > ub - au )
+				y[i] = ub - ( y[i] - ( ub + au ) ) * ( y[i] - ( ub + au ) ) / 4. / au;
 		}
 	}
 
@@ -1136,15 +1136,15 @@ namespace spot
 
 		for ( i = 0; i < len; ++i ) {
 			double lb, ub, al, au;
-			lb = t->lower_bounds[ i ];
-			ub = t->upper_bounds[ i ];
-			al = t->al[ i ];
-			au = t->au[ i ];
-			y[ i ] = x[ i ];
-			if ( y[ i ] < lb + al )
-				y[ i ] = ( lb - al ) + 2 * sqrt( al * ( y[ i ] - lb ) );
-			else if ( y[ i ] > ub - au )
-				y[ i ] = ( ub + au ) - 2 * sqrt( au * ( ub - y[ i ] ) );
+			lb = t->lower_bounds[i];
+			ub = t->upper_bounds[i];
+			al = t->al[i];
+			au = t->au[i];
+			y[i] = x[i];
+			if ( y[i] < lb + al )
+				y[i] = ( lb - al ) + 2 * sqrt( al * ( y[i] - lb ) );
+			else if ( y[i] > ub - au )
+				y[i] = ( ub + au ) - 2 * sqrt( au * ( ub - y[i] ) );
 		}
 	}
 
@@ -1165,19 +1165,19 @@ namespace spot
 		par_vec mean( n ), std( n ), lb( n ), ub( n );
 		for ( index_t i = 0; i < n; ++i )
 		{
-			auto& p = objective_.info()[ i ];
+			auto& p = objective_.info()[i];
 			if ( !xo::is_between( p.mean, p.min, p.max ) )
 				xo::log::error( "Parameter ", p.name, " initial mean ", p.mean, " is outside range [", p.min, ", ", p.max, "]" );
-			mean[ i ] = p.mean;
-			std[ i ] = p.std;
-			lb[ i ] = p.min;
-			ub[ i ] = p.max;
+			mean[i] = p.mean;
+			std[i] = p.std;
+			lb[i] = p.min;
+			ub[i] = p.max;
 		}
 
 		// create random seed when zero
 		auto seed = options.random_seed;
 		if ( seed == 0 )
-			seed = std::random_device()();
+			seed = std::random_device()( );
 
 		cmaes_init( &pimpl->cmaes, (int)n, mean, std, seed, options.lambda );
 		pimpl->cmaes.sp.updateCmode.modulo = options.update_eigen_modulo;
@@ -1204,7 +1204,7 @@ namespace spot
 		auto& pop = cmaes_SamplePopulation( &pimpl->cmaes );
 		for ( index_t ind_idx = 0; ind_idx < pop.size(); ++ind_idx )
 		{
-			par_vec individual( pop[ ind_idx ].begin(), pop[ ind_idx ].begin() + info().dim() );
+			par_vec individual( pop[ind_idx].begin(), pop[ind_idx].begin() + info().dim() );
 			bool found_individual = false;
 
 			for ( size_t attempts = 0; !found_individual && attempts < max_resample_count; ++attempts )
@@ -1214,7 +1214,7 @@ namespace spot
 				if ( !info().is_feasible( individual ) )
 				{
 					cmaes_ReSampleSingle( &pimpl->cmaes, ind_idx );
-					std::copy_n( pop[ ind_idx ].begin(), info().dim(), individual.begin() );
+					std::copy_n( pop[ind_idx].begin(), info().dim(), individual.begin() );
 				}
 				else found_individual = true;
 			}
@@ -1226,7 +1226,7 @@ namespace spot
 				cmaes_OverwriteSingle( &pimpl->cmaes, ind_idx, individual );
 			}
 
-			pimpl->bounded_pop[ ind_idx ].set_values( individual );
+			pimpl->bounded_pop[ind_idx].set_values( individual );
 		}
 
 		return pimpl->bounded_pop;
@@ -1257,7 +1257,7 @@ namespace spot
 		// get from covariance matrix
 		par_vec stds( dim() );
 		for ( index_t i = 0; i < dim(); ++i )
-			stds[ i ] = par_t( pimpl->cmaes.sigma * sqrt( pimpl->cmaes.C[ i ][ i ] ) );
+			stds[i] = par_t( pimpl->cmaes.sigma * sqrt( pimpl->cmaes.C[i][i] ) );
 
 		return stds;
 	}

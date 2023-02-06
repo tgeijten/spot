@@ -24,8 +24,8 @@ namespace spot
 		virtual xo::optional< par_t > try_get( const string& full_name ) const override;
 		virtual par_t add( const par_info& pi ) override;
 
-		const par_t& operator[]( index_t i ) const { return values_[ i ]; }
-		par_t& operator[]( index_t i ) { return values_[ i ]; }
+		const par_t& operator[]( index_t i ) const { return values_[i]; }
+		par_t& operator[]( index_t i ) { return values_[i]; }
 		using par_io::get;
 
 		const objective_info& info() const { return info_; }

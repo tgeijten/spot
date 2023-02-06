@@ -55,7 +55,7 @@ namespace spot
 	{
 		std::array< T, N > r;
 		for ( int i = 0; i < N; ++i )
-			r[ i ] = T( try_get_par( ps, name + xo::stringf( ".%d", i ), pn, def[ i ] ) );
+			r[i] = T( try_get_par( ps, name + xo::stringf( ".%d", i ), pn, def[i] ) );
 
 		return r;
 	}

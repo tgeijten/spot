@@ -6,7 +6,7 @@ namespace spot
 	{
 		fitness_t sum = 0.0;
 		for ( unsigned int i = 0; i < v.size(); ++i )
-			sum += xo::squared( v[ i ] );
+			sum += xo::squared( v[i] );
 		return sum;
 	}
 
@@ -14,20 +14,20 @@ namespace spot
 	{
 		fitness_t sum = 0.0;
 		for ( unsigned int i = 0; i < v.size(); ++i )
-			sum += ( i + 1 ) * xo::squared( v[ i ] );
+			sum += ( i + 1 ) * xo::squared( v[i] );
 		return sum;
 	}
 
 	fitness_t himmelblau( const par_vec& v )
 	{
-		return xo::squared( xo::squared( v[ 0 ] ) + v[ 1 ] - 11 ) + xo::squared( v[ 0 ] + xo::squared( v[ 1 ] ) - 7 );
+		return xo::squared( xo::squared( v[0] ) + v[1] - 11 ) + xo::squared( v[0] + xo::squared( v[1] ) - 7 );
 	}
 
 	fitness_t rosenbrock( const par_vec& v )
 	{
 		fitness_t sum = 0.0;
 		for ( unsigned int i = 0; i < v.size() - 1; i++ )
-			sum += 100 * xo::squared( v[ i + 1 ] - xo::squared( v[ i ] ) ) + xo::squared( 1. - v[ i ] );
+			sum += 100 * xo::squared( v[i + 1] - xo::squared( v[i] ) ) + xo::squared( 1. - v[i] );
 		return sum;
 	}
 
@@ -35,7 +35,7 @@ namespace spot
 	{
 		fitness_t sum = 0.0;
 		for ( index_t i = 0; i < v.size(); ++i )
-			sum += v[ i ] * sin( sqrt( fabs( v[ i ] ) ) );
+			sum += v[i] * sin( sqrt( fabs( v[i] ) ) );
 		return 418.9829 * v.size() - sum;
 	}
 
@@ -43,7 +43,7 @@ namespace spot
 	{
 		fitness_t sum = 10.0 * v.size();
 		for ( index_t i = 0; i < v.size(); ++i )
-			sum += xo::squared( v[ i ] ) - 10.0 * cos( 2 * xo::constantsd::pi() * v[ i ] );
+			sum += xo::squared( v[i] ) - 10.0 * cos( 2 * xo::constantsd::pi() * v[i] );
 		return sum;
 	}
 
