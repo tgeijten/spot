@@ -30,7 +30,8 @@ namespace spot
 		stop_condition_( nullptr ),
 		max_errors_( 0 )
 	{
-		xo_error_if( o.dim() <= 0, "Objective has no free parameters" );
+		if ( o.dim() <= 0 )
+			xo::log::warning( "Objective has no free parameters" );
 
 		add_stop_condition( std::make_unique< abort_condition >() );
 		add_stop_condition( std::make_unique< error_condition >() );
@@ -43,6 +44,7 @@ namespace spot
 	const stop_condition* optimizer::step()
 	{
 		XO_PROFILE_FUNCTION( profiler_ );
+		xo_error_if( info().dim() <= 0, "Objective has no free parameters" );
 
 		// send out start callback if this is the first step
 		if ( step_count_ == 0 )
@@ -64,6 +66,7 @@ namespace spot
 
 	const stop_condition* optimizer::run( size_t number_of_steps )
 	{
+		xo_error_if( info().dim() <= 0, "Objective has no free parameters" );
 		profiler_.start();
 
 		if ( number_of_steps == 0 )

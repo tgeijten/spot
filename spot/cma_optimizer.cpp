@@ -1181,8 +1181,10 @@ namespace spot
 
 		cmaes_init( &pimpl->cmaes, (int)n, mean, std, seed, options.lambda );
 		pimpl->cmaes.sp.updateCmode.modulo = options.update_eigen_modulo;
-		cmaes_readpara_SupplementDefaults( &pimpl->cmaes );
-		cmaes_init_final( &pimpl->cmaes );
+		if ( n > 0 ) {
+			cmaes_readpara_SupplementDefaults( &pimpl->cmaes );
+			cmaes_init_final( &pimpl->cmaes );
+		}
 
 		pimpl->bounded_pop.resize( lambda(), search_point( objective_.info() ) );
 		cmaes_boundary_trans_init( &pimpl->bounds, lb, ub );
@@ -1200,6 +1202,7 @@ namespace spot
 	const search_point_vec& cma_optimizer::sample_population()
 	{
 		XO_PROFILE_FUNCTION( profiler_ );
+		xo_assert( info().dim() > 0 );
 
 		auto& pop = cmaes_SamplePopulation( &pimpl->cmaes );
 		for ( index_t ind_idx = 0; ind_idx < pop.size(); ++ind_idx )
@@ -1235,6 +1238,7 @@ namespace spot
 	void cma_optimizer::update_distribution( const fitness_vec& results )
 	{
 		XO_PROFILE_FUNCTION( profiler_ );
+		xo_assert( info().dim() > 0 );
 
 		if ( objective_.info().maximize() )
 		{
