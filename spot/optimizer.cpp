@@ -132,7 +132,7 @@ namespace spot
 		if ( fitness_history_.size() >= 2 )
 		{
 			const auto reg = fitness_trend();
-			auto imp = reg.slope() / reg( fitness_history_samples_ - 0.5f * fitness_history_.size() );
+			auto imp = reg.slope() / std::abs( reg( fitness_history_samples_ - 0.5f * fitness_history_.size() ) );
 			return info().minimize() ? -imp : imp;
 		}
 		else return 0.0f;
