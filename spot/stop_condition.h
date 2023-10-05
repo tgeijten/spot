@@ -86,7 +86,7 @@ namespace spot
 
 		vector<par_vec> similarity_points;
 		vector< double > similarities;
-		index_t similar_idx;
+		index_t similar_idx = no_index;
 
 		int min_steps_ = 10;
 		par_t min_distance_ = 1.0;
