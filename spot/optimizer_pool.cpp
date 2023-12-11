@@ -24,7 +24,7 @@ namespace spot
 		INIT_MEMBER( pn, prediction_window_, 100 ),
 		INIT_MEMBER( pn, prediction_start_, prediction_window_ ),
 		INIT_MEMBER( pn, prediction_look_ahead_, prediction_window_ ),
-		INIT_MEMBER( pn, use_predicted_fitness_stop_condition_, true ),
+		INIT_MEMBER( pn, use_predicted_fitness_stop_condition_, false ),
 		INIT_MEMBER( pn, active_optimizations_, 6 ),
 		INIT_MEMBER( pn, concurrent_optimizations_, 3 ),
 		best_fitness_( o.info().worst_fitness() ),
