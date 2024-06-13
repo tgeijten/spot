@@ -1,6 +1,7 @@
 #include "par_io.h"
 #include <cctype>
 #include "xo/serialization/char_stream.h"
+#include "xo/string/string_tools.h"
 
 namespace spot
 {
@@ -37,6 +38,7 @@ namespace spot
 		}
 
 		// parameter not found, try adding a new one
+		xo_error_if( xo::needs_quotes( full_name ), "Invalid parameter name: " + full_name );
 		par_info pi = par_info( full_name, pn, options() );
 		if ( pi.is_constant() )
 			return pi.mean;
