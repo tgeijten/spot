@@ -88,7 +88,6 @@ namespace spot
 			// setup par_history.txt
 			if ( output_par_history_ )
 			{
-				history_ << opt.current_step();
 				for ( auto&& v : opt.current_step_best_point().values() )
 					history_ << '\t' << v;
 				for ( auto&& v : opt.optimizer_state_values() )
