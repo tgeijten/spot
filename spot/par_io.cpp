@@ -25,8 +25,10 @@ namespace spot
 			xo::replace_str( full_name, name, alias );
 
 		// check if we already have a value for this name
-		if ( auto val = try_get( full_name ) )
+		if ( auto val = try_get( full_name ) ) {
+			pn.access();
 			return *val;
+		}
 
 		// if value starts with a letter: must be a reference to another parameter
 		if ( !pn.get_str().empty() && std::isalpha( pn.get_str().front() ) )
