@@ -50,6 +50,20 @@ namespace spot
 		else return def;
 	}
 
+	template< typename T >
+	inline std::pair<T, T> try_get_par( par_io& ps, const string& name, const prop_node& pn, const std::pair<T, T>& def )
+	{
+		if ( auto* ppn = pn.try_get_child( name ) )
+		{
+			xo_error_if( ppn->size() != 2, name + " must have 2 values" );
+			return { 
+				ps.get( name + ".0", ppn->get_child( 0 ) ), 
+				ps.get( name + ".1", ppn->get_child( 1 ) )
+			};
+		}
+		else return def;
+	}
+
 	template< typename T, size_t N >
 	inline std::array< T, N > try_get_par( par_io& ps, const string& name, const prop_node& pn, const std::array< T, N >& def )
 	{
