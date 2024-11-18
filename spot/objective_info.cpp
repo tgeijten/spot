@@ -97,7 +97,7 @@ namespace spot
 		return { params_set, params_not_found };
 	}
 
-	pair< size_t, size_t > objective_info::import_locked( const path& filename )
+	pair< size_t, size_t > objective_info::import_locked( const path& filename, const xo::pattern_matcher& include, const xo::pattern_matcher& exclude )
 	{
 		size_t params_locked = 0;
 		size_t params_not_found = 0;
@@ -108,12 +108,18 @@ namespace spot
 			string name;
 			par_t value, mean, std;
 			str >> name >> value >> mean >> std;
-			if ( !str.fail() )
-			{
-				if ( lock_parameter( name, value ) )
-					++params_locked;
-				else ++params_not_found;
+
+			if ( str.fail() ) {
+				xo_error_if( !name.empty(), "Error reading parameter " + name );
+				continue;
 			}
+
+			if ( ( !include.empty() && !include( name ) ) || ( !exclude.empty() && exclude( name ) ) )
+				continue;
+
+			if ( lock_parameter( name, value ) )
+				++params_locked;
+			else ++params_not_found;
 		}
 		return { params_locked, params_not_found };
 	}
