@@ -37,9 +37,17 @@ namespace spot
 	par_t objective_info::add( const par_info& pi )
 	{
 		xo_error_if( find( pi.name ) != par_infos_.end(), "Parameter already exists: " + pi.name );
-		xo_error_if( pi.is_constant(), "Invalid parameter (STD <= 0): " + pi.name + " " + xo_varstr( pi.std ) );
-		par_infos_.emplace_back( pi );
-		return par_infos_.back().mean;
+		xo_error_if( locked_pars_.find( pi.name ) != locked_pars_.end(), "Parameter already exists: " + pi.name );
+
+		// add locked parameter if std == 0
+		if ( pi.is_constant() ) {
+			locked_pars_[pi.name] = pi.mean;
+			return pi.mean;
+		}
+		else {
+			par_infos_.emplace_back( pi );
+			return par_infos_.back().mean;
+		}
 	}
 
 	index_t objective_info::find_index( const string& name ) const
