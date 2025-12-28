@@ -56,8 +56,7 @@ namespace spot
 		return it != par_infos_.end() ? it - par_infos_.begin() : no_index;
 	}
 
-	pair< size_t, size_t > objective_info::import_mean_std( const path& filename, bool import_std, par_t std_factor, par_t std_offset,
-		const xo::pattern_matcher& include, const xo::pattern_matcher& exclude, bool use_best_as_mean )
+	pair< size_t, size_t > objective_info::import_mean_std( const path& filename, const par_import_settings& pis )
 	{
 		size_t params_set = 0;
 		size_t params_not_found = 0;
@@ -76,7 +75,7 @@ namespace spot
 				continue;
 			}
 
-			if ( ( !include.empty() && !include( name ) ) || ( !exclude.empty() && exclude( name ) ) )
+			if ( ( !pis.include.empty() && !pis.include( name ) ) || ( !pis.exclude.empty() && pis.exclude( name ) ) )
 				continue;
 
 			if ( std == 0 )
@@ -88,11 +87,11 @@ namespace spot
 			else if ( auto p = try_find( name ) )
 			{
 				// read existing parameter, updating mean / std
-				p->mean = use_best_as_mean ? value : mean;
-				if ( import_std )
-					p->std = std_offset + std_factor * std;
-				else if ( std_factor != 1.0 ) // set std to factor of abs(mean)
-					p->std = std_offset + std_factor * std::abs( p->mean );
+				p->mean = pis.value_offset + pis.value_factor * ( pis.use_best_as_mean ? value : mean );
+				if ( pis.import_std )
+					p->std = pis.std_offset + pis.std_factor * std;
+				else if ( pis.std_factor != 1.0 ) // set std to factor of abs(mean)
+					p->std = pis.std_offset + pis.std_factor * std::abs( p->mean );
 				++params_set;
 			}
 			else
