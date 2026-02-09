@@ -5,6 +5,7 @@
 #include "xo/string/string_tools.h"
 #include "xo/numerical/math.h"
 #include "xo/filesystem/filesystem.h"
+#include "xo/system/log.h"
 
 #include <fstream>
 #include <sstream>
@@ -73,7 +74,10 @@ namespace spot
 					values_[idx] = value;
 					++params_set;
 				}
-				else ++params_skipped;
+				else {
+					++params_skipped;
+					xo::log::trace( "Skipped parameter: ", name );
+				}
 			}
 		}
 		return { params_set, params_skipped };
