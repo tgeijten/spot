@@ -38,6 +38,7 @@ namespace spot
 	{
 		xo_error_if( find( pi.name ) != par_infos_.end(), "Parameter already exists: " + pi.name );
 		xo_error_if( locked_pars_.find( pi.name ) != locked_pars_.end(), "Parameter already exists: " + pi.name );
+		xo_error_if( xo::str_contains_any_of( pi.name, " \t\"" ), "Invalid parameter name: " + pi.name );
 
 		// add locked parameter if std == 0
 		if ( pi.is_constant() ) {
