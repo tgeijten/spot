@@ -50,7 +50,10 @@ namespace spot
 
 	par_t search_point::add( const par_info& pi )
 	{
-		xo_error( "Previously undefined parameter: " + pi.name + "; " + xo_varstr( dim() ) );
+		string message = "Previously undefined parameter: " + pi.name + "; parameters: ";
+		for ( auto& p : info() )
+			xo::append_str( message, p.name );
+		xo_error( message );
 	}
 
 	pair< size_t, size_t > search_point::import_values( const path& filename )
