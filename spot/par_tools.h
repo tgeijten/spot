@@ -55,7 +55,7 @@ namespace spot
 	{
 		if ( auto* ppn = pn.try_get_child( name ) )
 		{
-			xo_error_if( ppn->size() != 2, name + " must have 2 values" );
+			xo_error_if( ppn->size() < 2, name + " must have at least 2 values" );
 			return { 
 				ps.get( name + ".0", ppn->get_child( 0 ) ), 
 				ps.get( name + ".1", ppn->get_child( 1 ) )
