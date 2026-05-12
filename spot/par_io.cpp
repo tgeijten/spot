@@ -33,7 +33,13 @@ namespace spot
 		// if value starts with a letter: must be a reference to another parameter
 		if ( !pn.get_str().empty() && std::isalpha( pn.get_str().front() ) )
 		{
-			auto par_ref = pn.get<string>();
+			const auto& par_ref = pn.get_str();
+			if ( !prefix().empty() ) {
+				for ( xo::stack_string pf = prefix_stack(); !pf.empty(); pf.pop_back() ) {
+					if ( auto val = try_get( pf.str() + par_ref ) )
+						return *val; // try name with prefix first
+				}
+			}
 			auto val = try_get( par_ref );
 			xo_error_if( !val, "Could not find parameter " + par_ref );
 			return *val;
@@ -54,3 +60,4 @@ namespace spot
 		else return default_value;
 	}
 }
+

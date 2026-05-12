@@ -28,6 +28,7 @@ namespace spot
 		par_t try_get( const string& name, const prop_node& parent_pn, const string& key, const par_t& default_value );
 
 		const string& prefix() const { return prefix_.str(); }
+		const xo::stack_string& prefix_stack() const { return prefix_; }
 		void set_prefix( const string& s ) { prefix_.set( s ); }
 		void push_prefix( const string& s ) { prefix_.push_back( s ); }
 		void pop_prefix() { prefix_.pop_back(); }
